@@ -658,6 +658,97 @@ input {
     text-align: left;
   }
 }
+
+/* ── 保護者モーダル ── */
+.parent-overlay {
+  position: fixed; inset: 0;
+  background: rgba(30, 20, 60, 0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9000; padding: 20px;
+}
+.parent-overlay[hidden] { display: none; }
+.parent-modal {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 28px 22px 20px;
+  width: 100%; max-width: 300px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+}
+.parent-modal h2 {
+  font-size: 1.05rem; font-weight: 700;
+  text-align: center; margin-bottom: 6px;
+}
+.parent-sub {
+  font-size: 0.82rem; color: var(--sub);
+  text-align: center; margin-bottom: 18px; line-height: 1.6;
+}
+.pin-dots {
+  display: flex; gap: 14px; justify-content: center;
+  margin-bottom: 18px;
+}
+.pin-dot {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid var(--purple);
+  background: transparent;
+  transition: background 0.12s;
+}
+.pin-dot.filled { background: var(--purple); }
+.pin-dot.error  { border-color: #c0304d; background: #c0304d; }
+.pin-keypad {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 8px; margin-bottom: 10px;
+}
+.pin-key {
+  height: 52px; border-radius: var(--r-md);
+  border: 1.5px solid var(--line-md);
+  background: var(--surface-soft);
+  font-size: 1.25rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation;
+  font-family: inherit; color: var(--text);
+  transition: background 0.1s, transform 0.08s;
+}
+.pin-key:active { background: var(--purple-soft); transform: scale(0.93); }
+.pin-key.pin-del { font-size: 1rem; }
+.pin-err {
+  text-align: center; color: #c0304d;
+  font-size: 0.8rem; min-height: 1.1em;
+  margin-bottom: 6px;
+}
+.parent-menu-list {
+  display: flex; flex-direction: column; gap: 9px;
+  margin-bottom: 4px;
+}
+.pmenu-btn {
+  width: 100%; padding: 13px 14px;
+  border-radius: var(--r-md); border: none;
+  cursor: pointer; font-family: inherit;
+  font-size: 0.92rem; font-weight: 700;
+  text-align: left; touch-action: manipulation;
+  transition: opacity 0.1s;
+}
+.pmenu-btn:active { opacity: 0.75; }
+.pmenu-btn.danger   { background: #fdedf0; color: #c0304d; }
+.pmenu-btn.neutral  { background: var(--surface-soft); color: var(--text);
+                      border: 1.5px solid var(--line-md); }
+.parent-cancel {
+  width: 100%; padding: 11px; margin-top: 6px;
+  background: none; border: none;
+  color: var(--hint); font-size: 0.82rem;
+  cursor: pointer; font-family: inherit;
+  touch-action: manipulation;
+}
+.confirm-btns {
+  display: flex; gap: 9px; margin-top: 16px;
+}
+.confirm-btns button {
+  flex: 1; padding: 13px;
+  border-radius: var(--r-md); border: none;
+  font-family: inherit; font-size: 0.92rem; font-weight: 700;
+  cursor: pointer; touch-action: manipulation;
+}
+.cbtn-cancel { background: var(--surface-soft); color: var(--text);
+               border: 1.5px solid var(--line-md); }
+.cbtn-danger { background: #c0304d; color: #fff; }
 </style>
 </head>
 <body>
@@ -748,6 +839,67 @@ input {
     </div>
   </div>
 </main>
+
+<!-- 保護者モーダル -->
+<div class="parent-overlay" id="parent-overlay" hidden>
+  <div class="parent-modal">
+
+    <!-- PIN入力画面 -->
+    <div id="pscreen-pin">
+      <h2>🔒 保護者メニュー</h2>
+      <p class="parent-sub">PINを入力してください<br><small style="font-size:0.75em;color:var(--hint)">（初期値：0000）</small></p>
+      <div class="pin-dots" id="pin-dots">
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+      </div>
+      <div class="pin-keypad" id="pin-keypad"></div>
+      <div class="pin-err" id="pin-err"></div>
+      <button class="parent-cancel" type="button" onclick="closeParentModal()">キャンセル</button>
+    </div>
+
+    <!-- 保護者メニュー画面 -->
+    <div id="pscreen-menu" hidden>
+      <h2>🔒 保護者メニュー</h2>
+      <p class="parent-sub">学習きろくのかんりができます</p>
+      <div class="parent-menu-list">
+        <button class="pmenu-btn danger" type="button" onclick="showPScreen('reset-confirm')">🗑 学習きろくをすべてリセット</button>
+        <button class="pmenu-btn neutral" type="button" onclick="showPScreen('pin-change')">🔑 PINを変える</button>
+      </div>
+      <button class="parent-cancel" type="button" onclick="closeParentModal()">とじる</button>
+    </div>
+
+    <!-- リセット確認画面 -->
+    <div id="pscreen-reset-confirm" hidden>
+      <h2>⚠️ きろくをけす</h2>
+      <p class="parent-sub">なまえ・学習きろくをすべてけします。<br>この操作はもとにもどせません。<br>本当によろしいですか？</p>
+      <div class="confirm-btns">
+        <button class="cbtn-cancel" type="button" onclick="showPScreen('menu')">もどる</button>
+        <button class="cbtn-danger" type="button" onclick="doParentReset()">けす</button>
+      </div>
+    </div>
+
+    <!-- PIN変更画面 -->
+    <div id="pscreen-pin-change" hidden>
+      <h2>🔑 PINを変える</h2>
+      <p class="parent-sub" id="pin-change-label">あたらしいPINを入力してください</p>
+      <div class="pin-dots" id="pin-change-dots">
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+        <span class="pin-dot"></span><span class="pin-dot"></span>
+      </div>
+      <div class="pin-keypad" id="pin-change-keypad"></div>
+      <div class="pin-err" id="pin-change-err"></div>
+      <button class="parent-cancel" type="button" onclick="showPScreen('menu')">もどる</button>
+    </div>
+
+    <!-- PIN変更完了画面 -->
+    <div id="pscreen-pin-done" hidden>
+      <h2>✅ PINを変えました</h2>
+      <p class="parent-sub">あたらしいPINがほぞんされました。</p>
+      <button class="parent-cancel" type="button" onclick="closeParentModal()">とじる</button>
+    </div>
+
+  </div>
+</div>
 
 <script>
 const KEY_NAME = "manabi_room_name";
@@ -1198,6 +1350,143 @@ renderActiveSubject();
 
 if (loadJson(KEY_NAME)) showMainScreen();
 else showSetupScreen();
+
+// ─── 保護者モーダル ───────────────────────────────────────
+const KEY_PARENT_PIN = "manabi_room_parent_pin";
+
+function getParentPin() {
+  return localStorage.getItem(KEY_PARENT_PIN) || "0000";
+}
+
+const PSCREENS = ["pin", "menu", "reset-confirm", "pin-change", "pin-done"];
+
+function showPScreen(name) {
+  PSCREENS.forEach(s => { document.getElementById("pscreen-" + s).hidden = s !== name; });
+  if (name === "pin-change") initPinChange();
+}
+
+function openParentModal() {
+  document.getElementById("parent-overlay").hidden = false;
+  showPScreen("pin");
+  resetPinLogin();
+}
+
+function closeParentModal() {
+  document.getElementById("parent-overlay").hidden = true;
+}
+
+// ── ログインPIN ──
+let pinLoginBuf = "";
+
+function resetPinLogin() {
+  pinLoginBuf = "";
+  setDots("pin-dots", "");
+  document.getElementById("pin-err").textContent = "";
+}
+
+function setDots(id, value) {
+  document.querySelectorAll("#" + id + " .pin-dot").forEach((d, i) => {
+    d.classList.toggle("filled", i < value.length);
+    d.classList.remove("error");
+  });
+}
+
+function shakeDots(dotsId, errId, msg) {
+  document.querySelectorAll("#" + dotsId + " .pin-dot").forEach(d => d.classList.add("error"));
+  document.getElementById(errId).textContent = msg;
+}
+
+function handleLoginKey(key) {
+  if (key === "del") { pinLoginBuf = pinLoginBuf.slice(0, -1); setDots("pin-dots", pinLoginBuf); return; }
+  if (pinLoginBuf.length >= 4) return;
+  pinLoginBuf += key;
+  setDots("pin-dots", pinLoginBuf);
+  if (pinLoginBuf.length === 4) {
+    setTimeout(() => {
+      if (pinLoginBuf === getParentPin()) {
+        showPScreen("menu");
+      } else {
+        shakeDots("pin-dots", "pin-err", "PINがちがいます");
+        setTimeout(resetPinLogin, 800);
+      }
+    }, 80);
+  }
+}
+
+// ── PIN変更 ──
+let pinChangeBuf = "", pinChangePhase = "new", pinNewTemp = "";
+
+function initPinChange() {
+  pinChangeBuf = ""; pinChangePhase = "new"; pinNewTemp = "";
+  setDots("pin-change-dots", "");
+  document.getElementById("pin-change-label").textContent = "あたらしいPINを入力してください";
+  document.getElementById("pin-change-err").textContent = "";
+}
+
+function handleChangeKey(key) {
+  if (key === "del") { pinChangeBuf = pinChangeBuf.slice(0, -1); setDots("pin-change-dots", pinChangeBuf); return; }
+  if (pinChangeBuf.length >= 4) return;
+  pinChangeBuf += key;
+  setDots("pin-change-dots", pinChangeBuf);
+  if (pinChangeBuf.length === 4) {
+    setTimeout(() => {
+      if (pinChangePhase === "new") {
+        pinNewTemp = pinChangeBuf;
+        pinChangePhase = "confirm";
+        pinChangeBuf = "";
+        setDots("pin-change-dots", "");
+        document.getElementById("pin-change-label").textContent = "もういちど入力してください";
+      } else {
+        if (pinChangeBuf === pinNewTemp) {
+          localStorage.setItem(KEY_PARENT_PIN, pinChangeBuf);
+          showPScreen("pin-done");
+        } else {
+          shakeDots("pin-change-dots", "pin-change-err", "PINがあいません。もういちど");
+          setTimeout(initPinChange, 800);
+        }
+      }
+    }, 80);
+  }
+}
+
+// ── キーパッド生成 ──
+function buildKeypad(containerId, handler) {
+  const keys = ["1","2","3","4","5","6","7","8","9","","0","del"];
+  const wrap = document.getElementById(containerId);
+  keys.forEach(k => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "pin-key" + (k === "del" ? " pin-del" : "");
+    btn.textContent = k === "del" ? "⌫" : k;
+    if (!k) { btn.disabled = true; btn.style.visibility = "hidden"; }
+    else btn.addEventListener("click", () => handler(k));
+    wrap.appendChild(btn);
+  });
+}
+buildKeypad("pin-keypad", handleLoginKey);
+buildKeypad("pin-change-keypad", handleChangeKey);
+
+// ── リセット実行 ──
+function doParentReset() {
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("manabi_room") && k !== KEY_PARENT_PIN)
+    .forEach(k => localStorage.removeItem(k));
+  closeParentModal();
+  location.reload();
+}
+
+// ── トリガー：ヒーロータイトルを5回素早くタップ ──
+let heroTaps = 0, heroTimer = null;
+document.querySelector(".hero-title").addEventListener("click", () => {
+  heroTaps++;
+  clearTimeout(heroTimer);
+  heroTimer = setTimeout(() => { heroTaps = 0; }, 2000);
+  if (heroTaps >= 5) {
+    heroTaps = 0;
+    clearTimeout(heroTimer);
+    openParentModal();
+  }
+});
 </script>
 </body>
 </html>
