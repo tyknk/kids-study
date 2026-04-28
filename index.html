@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>きらきら学習ターミナル</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8f4ff;
+  --surface: #ffffff;
+  --surface-soft: #fdfaff;
+  --lav: #c9a8f5;
+  --lav-dk: #7f59c8;
+  --lav-soft: #ede0ff;
+  --pink: #f5a8c9;
+  --pink-dk: #c96090;
+  --pink-soft: #ffe8f3;
+  --mint: #a8e6d4;
+  --mint-dk: #3daa82;
+  --mint-soft: #e7fbf4;
+  --yellow: #ffe97a;
+  --orange: #ffb347;
+  --orange-soft: #fff2df;
+  --text: #34264d;
+  --sub: #8f80ac;
+  --line: #eadfff;
+  --shadow: 0 20px 50px rgba(123, 87, 191, 0.12);
+  --shadow-sm: 0 10px 24px rgba(123, 87, 191, 0.08);
+  --radius: 24px;
+  --radius-sm: 16px;
+  --max: 1120px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  min-height: 100vh;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 233, 122, 0.48), transparent 28%),
+    radial-gradient(circle at top right, rgba(245, 168, 201, 0.30), transparent 24%),
+    radial-gradient(circle at 20% 70%, rgba(201, 168, 245, 0.24), transparent 26%),
+    linear-gradient(180deg, #fbf8ff 0%, #f6fbff 100%);
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+.page {
+  width: min(var(--max), calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 24px 0 56px;
+}
+
+.sparkle-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.sparkle {
+  position: absolute;
+  opacity: 0.16;
+  animation: drift linear infinite;
+  font-size: clamp(1rem, 1.8vw, 2rem);
+}
+
+@keyframes drift {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.16; }
+  50% { opacity: 0.28; }
+  100% { transform: translateY(-110vh) rotate(240deg); opacity: 0; }
+}
+
+.section {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.9fr);
+  gap: 18px;
+}
+
+.hero-main,
+.hero-side,
+.subject-panel,
+.placeholder-panel,
+.roadmap-panel {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(234, 223, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.hero-main {
+  border-radius: 30px;
+  padding: clamp(24px, 3vw, 42px);
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-main::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  bottom: -80px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(201, 168, 245, 0.36), rgba(201, 168, 245, 0));
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--lav-soft);
+  color: var(--lav-dk);
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.hero h1 {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(2.1rem, 5vw, 4.8rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+  margin-bottom: 12px;
+}
+
+.hero-copy {
+  max-width: 28em;
+  font-size: clamp(1rem, 1.55vw, 1.2rem);
+  line-height: 1.9;
+  color: var(--sub);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.btn-primary,
+.btn-secondary,
+.module-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  border-radius: 999px;
+  padding: 0 20px;
+  font-weight: 700;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--lav), var(--pink));
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(182, 122, 208, 0.28);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--lav-dk);
+  border: 1px solid var(--line);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.module-link:hover,
+.subject-tab:hover {
+  transform: translateY(-2px);
+}
+
+.hero-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.kpi {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.kpi-label {
+  color: var(--sub);
+  font-size: 0.88rem;
+  margin-bottom: 6px;
+}
+
+.kpi-value {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+}
+
+.hero-side {
+  border-radius: 30px;
+  padding: clamp(22px, 2.5vw, 28px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.featured-badge,
+.mini-badge,
+.coming-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.featured-badge { background: var(--orange-soft); color: #b96d0b; }
+.mini-badge { background: var(--mint-soft); color: var(--mint-dk); }
+.coming-badge { background: var(--pink-soft); color: var(--pink-dk); }
+
+.featured-title {
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  margin-top: 12px;
+}
+
+.featured-copy {
+  color: var(--sub);
+  line-height: 1.8;
+  margin-top: 10px;
+}
+
+.featured-tags,
+.module-meta,
+.subject-stats,
+.roadmap-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  border-radius: 999px;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--sub);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.featured-link {
+  margin-top: 10px;
+  justify-content: center;
+  width: 100%;
+  background: linear-gradient(135deg, var(--orange), #ff8f55);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(255, 163, 71, 0.25);
+}
+
+.section-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.section-header h2 {
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+}
+
+.section-header p {
+  color: var(--sub);
+  line-height: 1.7;
+}
+
+.subject-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.subject-tab {
+  border: 0;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--sub);
+  border-radius: 18px;
+  min-height: 58px;
+  padding: 12px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(234, 223, 255, 0.95);
+  text-align: left;
+  cursor: pointer;
+}
+
+.subject-tab.active {
+  background: linear-gradient(135deg, rgba(201, 168, 245, 0.22), rgba(168, 230, 212, 0.28));
+  color: var(--text);
+  border-color: rgba(201, 168, 245, 0.9);
+}
+
+.subject-emoji {
+  font-size: 1.65rem;
+  flex-shrink: 0;
+}
+
+.subject-label {
+  display: block;
+  font-weight: 700;
+}
+
+.subject-note {
+  display: block;
+  font-size: 0.84rem;
+  color: var(--sub);
+}
+
+.subject-panel,
+.placeholder-panel,
+.roadmap-panel {
+  border-radius: 28px;
+  padding: clamp(22px, 2.8vw, 32px);
+}
+
+.subject-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: 18px;
+  align-items: start;
+}
+
+.subject-name {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  margin-top: 12px;
+}
+
+.subject-desc {
+  margin-top: 10px;
+  color: var(--sub);
+  line-height: 1.9;
+  max-width: 36em;
+}
+
+.subject-stats { justify-content: flex-end; }
+
+.subject-stat {
+  min-width: 120px;
+  background: linear-gradient(180deg, #fff, #faf7ff);
+  border-radius: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.subject-stat-label {
+  display: block;
+  color: var(--sub);
+  font-size: 0.84rem;
+}
+
+.subject-stat-value {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Kaisei Decol', serif;
+  font-size: 1.35rem;
+}
+
+.units {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.unit-chip {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.unit-chip.ready { background: linear-gradient(180deg, #fff, #fbf8ff); }
+.unit-chip.coming { opacity: 0.72; }
+
+.unit-title {
+  font-weight: 700;
+}
+
+.unit-note {
+  display: block;
+  margin-top: 6px;
+  color: var(--sub);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.module-groups {
+  margin-top: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.module-group {
+  padding-top: 8px;
+}
+
+.module-group-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.module-group-title {
+  font-size: 1.15rem;
+}
+
+.module-group-note {
+  color: var(--sub);
+  font-size: 0.92rem;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.module-card {
+  background: linear-gradient(180deg, #fff, #fcfaff);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.module-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.module-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, rgba(201, 168, 245, 0.22), rgba(245, 168, 201, 0.2));
+}
+
+.module-status {
+  font-size: 0.82rem;
+  color: var(--mint-dk);
+  background: var(--mint-soft);
+  border-radius: 999px;
+  min-height: 30px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+}
+
+.module-title {
+  font-size: 1.2rem;
+  margin-top: 14px;
+}
+
+.module-desc {
+  color: var(--sub);
+  line-height: 1.8;
+  margin-top: 10px;
+  flex: 1;
+}
+
+.module-meta {
+  margin-top: 14px;
+}
+
+.module-link {
+  margin-top: 18px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--lav), var(--lav-dk));
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(127, 89, 200, 0.24);
+}
+
+.placeholder-panel[hidden],
+.subject-panel[hidden] {
+  display: none;
+}
+
+.placeholder-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.placeholder-card {
+  background: linear-gradient(180deg, #fff, #fff8fb);
+  border: 1px dashed rgba(201, 96, 144, 0.38);
+  border-radius: 22px;
+  padding: 18px;
+}
+
+.placeholder-card h3 {
+  font-size: 1.05rem;
+}
+
+.placeholder-card p {
+  margin-top: 8px;
+  color: var(--sub);
+  line-height: 1.8;
+}
+
+.roadmap-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 255, 252, 0.94));
+}
+
+.roadmap-list {
+  margin-top: 16px;
+}
+
+.roadmap-item {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  min-width: 180px;
+}
+
+.roadmap-item strong {
+  display: block;
+}
+
+.roadmap-item span {
+  display: block;
+  margin-top: 6px;
+  color: var(--sub);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.footer-note {
+  margin-top: 18px;
+  color: var(--sub);
+  text-align: center;
+  line-height: 1.8;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 920px) {
+  .hero,
+  .subject-summary,
+  .module-grid,
+  .placeholder-grid,
+  .units {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .subject-stats {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    width: min(var(--max), calc(100vw - 20px));
+    padding-top: 14px;
+  }
+
+  .hero-main,
+  .hero-side,
+  .subject-panel,
+  .placeholder-panel,
+  .roadmap-panel {
+    border-radius: 24px;
+  }
+
+  .subject-tab {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+</style>
+</head>
+<body>
+<div class="sparkle-bg" id="sparkle-bg" aria-hidden="true"></div>
+
+<main class="page">
+  <section class="section hero">
+    <div class="hero-main">
+      <div class="eyebrow">✨ きょうのまなびをえらぼう</div>
+      <h1>きらきら学習ターミナル</h1>
+      <p class="hero-copy">
+        きょうかごとに学べる、みんなの入口ページだよ。
+        やりたい単元をえらんで、レッスンやれんしゅうをすぐにはじめよう。
+      </p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#subjects">さんすうをはじめる</a>
+        <a class="btn-secondary" href="#roadmap">これからふえるきょうか</a>
+      </div>
+      <div class="hero-kpis">
+        <div class="kpi">
+          <div class="kpi-label">いま学べる教材</div>
+          <div class="kpi-value" id="kpi-module-count">2こ</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">いまある教科</div>
+          <div class="kpi-value" id="kpi-subject-count">1きょうか</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">おすすめ単元</div>
+          <div class="kpi-value" id="kpi-featured-unit">わり算</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="hero-side" aria-labelledby="featured-title">
+      <div>
+        <div class="featured-badge">🍊 いまのおすすめ</div>
+        <h2 class="featured-title" id="featured-title">あまりのあるわり算</h2>
+        <p class="featured-copy" id="featured-copy">
+          あまりのいみを、レッスンとれんしゅうでじっくり学べるよ。
+        </p>
+      </div>
+      <div class="featured-tags" id="featured-tags"></div>
+      <a class="module-link featured-link" id="featured-link" href="算数/余りのある割り算アプリ.html">おすすめをはじめる</a>
+    </aside>
+  </section>
+
+  <section class="section" id="subjects">
+    <div class="section-header">
+      <div>
+        <h2>きょうかをえらぶ</h2>
+        <p>まずはやりたいきょうかをえらんで、その中から単元をさがそう。</p>
+      </div>
+    </div>
+    <div class="subject-tabs" id="subject-tabs"></div>
+  </section>
+
+  <section class="section subject-panel" id="subject-panel"></section>
+
+  <section class="section placeholder-panel" id="placeholder-panel" hidden></section>
+
+  <section class="section roadmap-panel" id="roadmap">
+    <div class="section-header">
+      <div>
+        <h2>これからひろがる学び</h2>
+        <p>このトップページは、算数だけでなくほかの教科もまとめて育てていくための土台です。</p>
+      </div>
+    </div>
+    <div class="roadmap-list" id="roadmap-list"></div>
+    <p class="footer-note">
+      いまは入口ページだけをまとめ、学習の中身はそれぞれの教材ファイルでそのまま進められるようにしています。
+    </p>
+  </section>
+</main>
+
+<script>
+const subjects = [
+  {
+    id: "math",
+    label: "さんすう",
+    emoji: "🧮",
+    note: "2つの教材",
+    description: "かけ算、わり算、あまりのあるわり算を、レッスンや問題れんしゅうで学べるよ。",
+    featuredUnit: "わり算",
+    stats: [
+      { label: "つかえる教材", value: "2こ" },
+      { label: "学べる単元", value: "3つ" },
+      { label: "おすすめ", value: "わり算" }
+    ],
+    units: [
+      { id: "multiplication", title: "かけ算", note: "九九のれんしゅうができるよ", ready: true },
+      { id: "division", title: "わり算", note: "あまりなしのわり算にちょうせん", ready: true },
+      { id: "division-remainder", title: "あまりのあるわり算", note: "レッスンつきでじっくり学べるよ", ready: true },
+      { id: "addition", title: "たし算", note: "これから追加よてい", ready: false },
+      { id: "subtraction", title: "ひき算", note: "これから追加よてい", ready: false },
+      { id: "shapes", title: "ずけい", note: "これから追加よてい", ready: false }
+    ]
+  },
+  {
+    id: "japanese",
+    label: "こくご",
+    emoji: "📚",
+    note: "じゅんび中",
+    comingSoon: true,
+    comingTitle: "こくごの教材をじゅんび中",
+    comingCopy: "ひらがな、ことば、ぶんしょうのれんしゅうなどを、あとから同じ入口に足していけるようにします。",
+    placeholders: [
+      { title: "もじとことば", copy: "ひらがな、カタカナ、ことばさがしの教材を追加できる枠です。" },
+      { title: "よみとり", copy: "短い文を読んで答える教材や、音読の入り口を置けます。" }
+    ]
+  },
+  {
+    id: "english",
+    label: "えいご",
+    emoji: "🔤",
+    note: "じゅんび中",
+    comingSoon: true,
+    comingTitle: "えいごの教材をじゅんび中",
+    comingCopy: "アルファベット、あいさつ、かんたんなたんごなどをまとめる教科エリアです。",
+    placeholders: [
+      { title: "アルファベット", copy: "文字にふれる最初の教材を置けます。" },
+      { title: "えいごあそび", copy: "聞く、まねする、えらぶタイプの教材にも広げられます。" }
+    ]
+  },
+  {
+    id: "life",
+    label: "せいかつ",
+    emoji: "🌱",
+    note: "じゅんび中",
+    comingSoon: true,
+    comingTitle: "せいかつの教材をじゅんび中",
+    comingCopy: "季節、時間、くらしのことなど、学校の学びに近い内容を置けるエリアです。",
+    placeholders: [
+      { title: "きせつとくらし", copy: "春夏秋冬や毎日のくらしを学ぶ教材に向いています。" },
+      { title: "時間ときまり", copy: "時計や一日の流れに関する教材もここに入れられます。" }
+    ]
+  }
+];
+
+const learningModules = [
+  {
+    id: "kuku-basic",
+    subject: "math",
+    unit: "multiplication-division",
+    unitLabel: "かけ算 / わり算",
+    title: "九九とわり算れんしゅう",
+    description: "九九と、あまりなしのわり算をテンポよくれんしゅうできる教材です。",
+    learningTypeLabel: "問題れんしゅう",
+    levelLabel: "きほん",
+    durationLabel: "10もん",
+    file: "算数/掛け算割り算(あまりなし)問題アプリ.html",
+    statusLabel: "すぐつかえる",
+    icon: "🌟"
+  },
+  {
+    id: "division-remainder",
+    subject: "math",
+    unit: "division-remainder",
+    unitLabel: "あまりのあるわり算",
+    title: "あまりのあるわり算",
+    description: "あまりの意味をレッスンで学んでから、れんしゅう問題にも進める教材です。",
+    learningTypeLabel: "レッスン + れんしゅう",
+    levelLabel: "きほん",
+    durationLabel: "4ステップ + 10もん",
+    file: "算数/余りのある割り算アプリ.html",
+    statusLabel: "すぐつかえる",
+    icon: "🍊",
+    featured: true
+  }
+];
+
+const roadmapItems = [
+  {
+    title: "教科をふやす",
+    copy: "こくご、えいご、せいかつの教材を同じ入口に追加できる形にしています。"
+  },
+  {
+    title: "単元をふやす",
+    copy: "算数のたし算、ひき算、文章題なども、教材データを足していけば並べられます。"
+  },
+  {
+    title: "学び方をそろえる",
+    copy: "レッスン型、れんしゅう型、ゲーム型などを分かりやすく見分けられるようにします。"
+  }
+];
+
+let activeSubjectId = "math";
+
+function initSparkles() {
+  const wrap = document.getElementById("sparkle-bg");
+  const marks = ["✦", "✧", "♡", "❀", "☆", "◇"];
+  for (let i = 0; i < 20; i++) {
+    const el = document.createElement("div");
+    el.className = "sparkle";
+    el.textContent = marks[Math.floor(Math.random() * marks.length)];
+    el.style.left = Math.random() * 100 + "vw";
+    el.style.top = Math.random() * 100 + "vh";
+    el.style.animationDuration = (10 + Math.random() * 14) + "s";
+    el.style.animationDelay = (Math.random() * 8) + "s";
+    wrap.appendChild(el);
+  }
+}
+
+function groupModulesByUnit(modules) {
+  const map = new Map();
+  modules.forEach((module) => {
+    if (!map.has(module.unitLabel)) {
+      map.set(module.unitLabel, []);
+    }
+    map.get(module.unitLabel).push(module);
+  });
+  return [...map.entries()];
+}
+
+function renderHero() {
+  const featured = learningModules.find((module) => module.featured) || learningModules[0];
+  const availableSubjects = subjects.filter((subject) => !subject.comingSoon).length;
+  document.getElementById("kpi-module-count").textContent = `${learningModules.length}こ`;
+  document.getElementById("kpi-subject-count").textContent = `${availableSubjects}きょうか`;
+  document.getElementById("kpi-featured-unit").textContent = featured.unitLabel;
+  document.getElementById("featured-title").textContent = featured.title;
+  document.getElementById("featured-copy").textContent = featured.description;
+  document.getElementById("featured-link").setAttribute("href", featured.file);
+
+  const featuredTags = document.getElementById("featured-tags");
+  featuredTags.innerHTML = "";
+  [featured.unitLabel, featured.learningTypeLabel, featured.levelLabel].forEach((label) => {
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = label;
+    featuredTags.appendChild(tag);
+  });
+}
+
+function renderTabs() {
+  const tabs = document.getElementById("subject-tabs");
+  tabs.innerHTML = "";
+  subjects.forEach((subject) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "subject-tab" + (subject.id === activeSubjectId ? " active" : "");
+    button.innerHTML = `
+      <span class="subject-emoji">${subject.emoji}</span>
+      <span>
+        <span class="subject-label">${subject.label}</span>
+        <span class="subject-note">${subject.note}</span>
+      </span>
+    `;
+    button.addEventListener("click", () => {
+      activeSubjectId = subject.id;
+      renderTabs();
+      renderActiveSubject();
+    });
+    tabs.appendChild(button);
+  });
+}
+
+function renderActiveSubject() {
+  const subject = subjects.find((item) => item.id === activeSubjectId);
+  const subjectPanel = document.getElementById("subject-panel");
+  const placeholderPanel = document.getElementById("placeholder-panel");
+
+  if (subject.comingSoon) {
+    subjectPanel.hidden = true;
+    placeholderPanel.hidden = false;
+    placeholderPanel.innerHTML = `
+      <div class="coming-badge">${subject.emoji} じゅんび中</div>
+      <h2 class="subject-name">${subject.comingTitle}</h2>
+      <p class="subject-desc">${subject.comingCopy}</p>
+      <div class="placeholder-grid">
+        ${subject.placeholders.map((item) => `
+          <article class="placeholder-card">
+            <h3>${item.title}</h3>
+            <p>${item.copy}</p>
+          </article>
+        `).join("")}
+      </div>
+    `;
+    return;
+  }
+
+  const modules = learningModules.filter((module) => module.subject === subject.id);
+  const groupedModules = groupModulesByUnit(modules);
+
+  subjectPanel.hidden = false;
+  placeholderPanel.hidden = true;
+  subjectPanel.innerHTML = `
+    <div class="subject-summary">
+      <div>
+        <div class="mini-badge">${subject.emoji} ${subject.label}</div>
+        <h2 class="subject-name">${subject.label}の学び</h2>
+        <p class="subject-desc">${subject.description}</p>
+      </div>
+      <div class="subject-stats">
+        ${subject.stats.map((stat) => `
+          <div class="subject-stat">
+            <span class="subject-stat-label">${stat.label}</span>
+            <span class="subject-stat-value">${stat.value}</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+    <div class="units">
+      ${subject.units.map((unit) => `
+        <article class="unit-chip ${unit.ready ? "ready" : "coming"}">
+          <div class="unit-title">${unit.title}</div>
+          <span class="unit-note">${unit.note}</span>
+        </article>
+      `).join("")}
+    </div>
+    <div class="module-groups">
+      ${groupedModules.map(([unitLabel, unitModules]) => `
+        <section class="module-group">
+          <div class="module-group-header">
+            <h3 class="module-group-title">${unitLabel}</h3>
+            <div class="module-group-note">${unitModules.length}つの教材</div>
+          </div>
+          <div class="module-grid">
+            ${unitModules.map((module) => `
+              <article class="module-card">
+                <div class="module-top">
+                  <div class="module-icon">${module.icon}</div>
+                  <div class="module-status">${module.statusLabel}</div>
+                </div>
+                <h4 class="module-title">${module.title}</h4>
+                <p class="module-desc">${module.description}</p>
+                <div class="module-meta">
+                  <span class="tag">${module.unitLabel}</span>
+                  <span class="tag">${module.learningTypeLabel}</span>
+                  <span class="tag">${module.levelLabel}</span>
+                  <span class="tag">${module.durationLabel}</span>
+                </div>
+                <a class="module-link" href="${module.file}">この教材ではじめる</a>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderRoadmap() {
+  const wrap = document.getElementById("roadmap-list");
+  wrap.innerHTML = roadmapItems.map((item) => `
+    <article class="roadmap-item">
+      <strong>${item.title}</strong>
+      <span>${item.copy}</span>
+    </article>
+  `).join("");
+}
+
+initSparkles();
+renderHero();
+renderTabs();
+renderActiveSubject();
+renderRoadmap();
+</script>
+</body>
+</html>

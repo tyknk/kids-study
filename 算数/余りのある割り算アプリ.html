@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>きらきら さんすう学園 ✦ あまりのあるわり算</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #F7F0FF;
+  --card:      #FFFFFF;
+  --lav:       #C9A8F5;
+  --lav-lt:    #EDE0FF;
+  --lav-dk:    #8B5FD4;
+  --pink:      #F5A8C9;
+  --pink-lt:   #FFE8F3;
+  --pink-dk:   #C96090;
+  --mint:      #A8E6D4;
+  --mint-dk:   #3DAA82;
+  --yellow:    #FFE97A;
+  --orange:    #FFB347;
+  --orange-lt: #FFF0D9;
+  --orange-dk: #C87820;
+  --ok:        #78D98A;
+  --ok-lt:     #D6F5DC;
+  --ng:        #FF8FAA;
+  --ng-lt:     #FFE0EA;
+  --text:      #3D2C5A;
+  --sub:       #9B87BB;
+  --sh:        0 0.3vw 1.5vw rgba(140,90,210,0.13);
+  --sh-sm:     0 0.15vw 0.8vw rgba(140,90,210,0.09);
+  --fs-title:   clamp(1.8rem, 4.5vw, 4.5rem);
+  --fs-sub:     clamp(1rem,   1.8vw, 1.8rem);
+  --fs-q:       clamp(2.5rem, 6vw,   7rem);
+  --fs-scene:   clamp(1rem,   1.8vw, 2rem);
+  --fs-choice:  clamp(1.8rem, 4vw,   4.5rem);
+  --fs-explain: clamp(1rem,   1.8vw, 2rem);
+  --fs-badge:   clamp(0.9rem, 1.5vw, 1.6rem);
+  --fs-result:  clamp(2.5rem, 6vw,   7rem);
+  --fs-msg:     clamp(1.2rem, 2.5vw, 2.8rem);
+  --fs-btn:     clamp(1.1rem, 2.2vw, 2.4rem);
+  --fs-info:    clamp(1rem,   1.8vw, 2rem);
+  --fs-star:    clamp(2rem,   4vw,   4.5rem);
+  --pad-card:   clamp(1.5rem, 3vw,   4rem);
+  --gap:        clamp(0.8rem, 1.5vw, 2rem);
+  --r:          clamp(16px,   2vw,   32px);
+  --r-sm:       clamp(10px,   1.2vw, 20px);
+  --max-w:      min(900px, 92vw);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+* { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+button, .choice-btn, .smode-card {
+  touch-action: manipulation; -webkit-appearance: none; appearance: none; cursor: pointer;
+}
+
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--bg);
+  min-height: 100vh; min-height: -webkit-fill-available;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: calc(clamp(1rem,2vw,2.5rem) + 44px) clamp(1rem,3vw,3rem) 3rem;
+  overscroll-behavior: none;
+  background-image:
+    radial-gradient(circle at 10% 10%, #FFE8D0 0%, transparent 45%),
+    radial-gradient(circle at 90% 90%, #FFD6F0 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, #DFFFED 0%, transparent 60%);
+}
+
+.sparkle-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.sp {
+  position: absolute; opacity: 0.18; animation: spFloat linear infinite;
+  font-size: clamp(1rem,2vw,2.5rem);
+}
+@keyframes spFloat {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0.18; }
+  50%  { opacity: 0.28; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+.screen { display: none; width: 100%; max-width: var(--max-w); position: relative; z-index: 1; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+/* ════ START ════ */
+.flower-row { font-size: clamp(1.2rem,2.5vw,3rem); margin-bottom: 0.5rem; text-align:center; letter-spacing:0.3rem; }
+.app-title {
+  font-family: 'Kaisei Decol', serif; font-size: var(--fs-title);
+  line-height: 1.25; text-align: center;
+  background: linear-gradient(135deg, var(--lav-dk), var(--pink-dk));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 0.2rem;
+}
+.app-sub {
+  font-size: clamp(1.2rem,2.5vw,2.8rem); font-weight: 700; text-align: center;
+  background: linear-gradient(135deg, var(--orange-dk), #E05000);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 1.5rem;
+}
+
+.char-stage {
+  display: flex; justify-content: center; align-items: flex-end;
+  gap: clamp(1rem,3vw,4rem); margin-bottom: 1.8rem;
+  height: clamp(90px,14vw,180px);
+}
+.char-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+.char-svg svg { width: clamp(56px,9vw,120px); height: auto; }
+.char-name { font-size: clamp(0.7rem,1.2vw,1.3rem); color: var(--sub); font-weight: 700; }
+@keyframes gentleFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+.char-float { animation: gentleFloat 3s ease-in-out infinite; }
+
+/* モード選択カード */
+.smode-heading {
+  font-size: var(--fs-sub); font-weight: 700; color: var(--sub);
+  letter-spacing: 0.1rem; margin-bottom: 0.8rem; text-align: center;
+}
+.smode-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: var(--gap); width: 100%; margin-bottom: 1.4rem;
+}
+.smode-card {
+  background: var(--card); border: clamp(2px,0.3vw,4px) solid #E8DAFF;
+  border-radius: var(--r);
+  padding: clamp(1.2rem,2.5vw,3rem) clamp(0.8rem,1.5vw,2rem);
+  text-align: center; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  box-shadow: var(--sh-sm); position: relative;
+}
+.smode-card:hover { transform: translateY(-4px); box-shadow: var(--sh); }
+@media (hover: none) {
+  .smode-card:hover { transform: none; box-shadow: var(--sh-sm); }
+  .smode-card:active { transform: translateY(-3px); box-shadow: var(--sh); }
+}
+.smode-card.sel-lesson { border-color: var(--lav); background: var(--lav-lt); }
+.smode-card.sel-prac   { border-color: var(--orange); background: var(--orange-lt); }
+.smode-badge {
+  position: absolute; top: clamp(6px,0.8vw,12px); right: clamp(6px,0.8vw,12px);
+  font-size: clamp(0.65rem,1.1vw,1.2rem); font-weight: 700;
+  padding: 0.2rem 0.6rem; border-radius: 50px;
+}
+.sb-lesson { background: var(--lav-lt); color: var(--lav-dk); }
+.sb-prac   { background: var(--orange-lt); color: var(--orange-dk); }
+.smode-icon { font-size: clamp(2.2rem,4.5vw,5.5rem); display: block; margin-bottom: 0.6rem; }
+.smode-name { font-size: clamp(1.1rem,2.2vw,2.4rem); font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+.smode-desc { font-size: clamp(0.85rem,1.5vw,1.7rem); color: var(--sub); line-height: 1.6; }
+
+.btn-start {
+  width: 100%; border: none; border-radius: 50px;
+  padding: clamp(1rem,2vw,2.5rem) 0;
+  font-family: 'Zen Maru Gothic', sans-serif; font-size: var(--fs-btn); font-weight: 700;
+  cursor: pointer; letter-spacing: 0.15rem; transition: transform 0.1s, box-shadow 0.1s; color: #fff;
+}
+.btn-start.disabled-mode { background: #D8CAEE; box-shadow: 0 clamp(3px,0.5vw,6px) 0 #B0A0CC; cursor: not-allowed; color: #A090BC; }
+.btn-start.lesson-mode { background: linear-gradient(135deg, var(--lav), var(--lav-dk)); box-shadow: 0 clamp(4px,0.6vw,8px) 0 #6A3FAE; }
+.btn-start.prac-mode   { background: linear-gradient(135deg, var(--orange), var(--orange-dk)); box-shadow: 0 clamp(4px,0.6vw,8px) 0 #904800; }
+.btn-start.lesson-mode:active { transform: translateY(4px); box-shadow: 0 1px 0 #6A3FAE; }
+.btn-start.prac-mode:active   { transform: translateY(4px); box-shadow: 0 1px 0 #904800; }
+
+/* ════ LESSON ════ */
+.lesson-card {
+  background: var(--card); border-radius: var(--r);
+  padding: clamp(1.5rem,3vw,4rem) var(--pad-card);
+  width: 100%; box-shadow: var(--sh); border: clamp(2px,0.25vw,4px) solid #FFE0BE;
+  margin-bottom: 1rem;
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(0.8rem,1.5vw,2rem); text-align: center;
+}
+.lesson-badge {
+  font-size: clamp(0.9rem,1.5vw,1.6rem); font-weight: 700;
+  background: linear-gradient(135deg, var(--orange), var(--orange-dk));
+  color: #fff; padding: 0.3rem 1.4rem; border-radius: 50px;
+}
+.lesson-title { font-size: clamp(1.4rem,3vw,3.2rem); font-weight: 700; color: var(--text); line-height: 1.4; }
+.lesson-desc  { font-size: clamp(1.1rem,2.2vw,2.4rem); color: var(--text); line-height: 1.8; }
+.lesson-formula-big {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(2.5rem,6vw,7rem); font-weight: 700; color: var(--text); line-height: 1.2;
+}
+.lesson-result-box {
+  background: linear-gradient(135deg, var(--lav-lt), var(--orange-lt));
+  border-radius: var(--r-sm);
+  padding: clamp(0.8rem,1.5vw,2rem) clamp(1.2rem,2.5vw,3rem);
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(2rem,5vw,6rem); font-weight: 700; color: var(--text); line-height: 1.3;
+}
+.sho-hl { color: var(--lav-dk); }
+.ama-hl { color: var(--orange-dk); }
+.lesson-check {
+  font-size: clamp(1rem,2vw,2.2rem); color: var(--text); line-height: 2.1;
+  background: var(--ok-lt); border-radius: var(--r-sm);
+  padding: clamp(0.6rem,1vw,1.4rem) clamp(1rem,2vw,2.5rem);
+  border: clamp(1px,0.2vw,2px) solid var(--ok); width: 100%;
+}
+
+/* ドット表示 */
+.dot-display {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(6px,1vw,14px); margin: 0.3rem 0;
+}
+.dot-group {
+  display: flex; flex-wrap: wrap; gap: clamp(4px,0.7vw,10px);
+  background: var(--lav-lt); border-radius: var(--r-sm);
+  padding: clamp(8px,1.2vw,16px); border: clamp(2px,0.3vw,4px) solid var(--lav);
+}
+.dot-group.no-group { background: transparent; border-color: transparent; }
+.dot-group.rem-group { background: var(--orange-lt); border-color: var(--orange); }
+.dot-emoji { font-size: clamp(1.6rem,3.2vw,3.8rem); line-height: 1; }
+
+.btn-lesson {
+  width: 100%; border: none; border-radius: 50px;
+  padding: clamp(0.9rem,1.5vw,2rem);
+  font-family: 'Zen Maru Gothic', sans-serif; font-size: var(--fs-btn); font-weight: 700; color: #fff;
+  cursor: pointer; letter-spacing: 0.1rem;
+  background: linear-gradient(135deg, var(--orange), var(--orange-dk));
+  box-shadow: 0 clamp(3px,0.5vw,7px) 0 #904800;
+  transition: transform 0.1s; margin-top: 0.5rem;
+}
+.btn-lesson:active { transform: translateY(3px); box-shadow: none; }
+
+/* ════ LESSON COMPLETE ════ */
+.lc-card {
+  background: var(--card); border-radius: var(--r);
+  padding: clamp(2rem,4vw,5rem) var(--pad-card);
+  width: 100%; box-shadow: var(--sh); text-align: center;
+  border: clamp(2px,0.25vw,4px) solid var(--ok);
+  margin-bottom: 1.2rem;
+}
+.lc-badge {
+  display: inline-block; font-size: clamp(0.9rem,1.5vw,1.7rem); font-weight: 700;
+  background: var(--ok-lt); color: var(--mint-dk);
+  border: clamp(1.5px,0.2vw,3px) solid var(--ok);
+  padding: 0.3rem 1.4rem; border-radius: 50px; margin-bottom: 0.8rem;
+}
+.lc-chars { font-size: clamp(2rem,4vw,5rem); margin-bottom: 0.6rem; letter-spacing: 0.3rem; }
+.lc-title {
+  font-family: 'Kaisei Decol', serif; font-size: clamp(2rem,4.5vw,5rem); font-weight: 700;
+  background: linear-gradient(135deg, var(--lav-dk), var(--mint-dk));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 0.5rem; line-height: 1.2;
+}
+.lc-sub { font-size: clamp(1rem,2vw,2.2rem); color: var(--sub); line-height: 1.8; margin-bottom: 1.2rem; }
+.lc-example-box {
+  background: var(--lav-lt); border-radius: var(--r-sm);
+  border: clamp(2px,0.25vw,3px) dashed var(--lav);
+  padding: clamp(1rem,2vw,2.5rem); margin-bottom: 1.2rem;
+}
+.lc-example-label { font-size: clamp(0.85rem,1.4vw,1.6rem); color: var(--sub); font-weight: 700; margin-bottom: 0.5rem; }
+.lc-example-val {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(2rem,5vw,6rem); font-weight: 700; color: var(--text); line-height: 1.2;
+}
+.lc-example-note { font-size: clamp(0.85rem,1.4vw,1.6rem); color: var(--mint-dk); font-weight: 700; margin-top: 0.6rem; }
+
+.lc-btns { display: flex; flex-direction: column; gap: var(--gap); width: 100%; }
+.lc-btn {
+  width: 100%; border: none; border-radius: 50px;
+  padding: clamp(1rem,2vw,2.5rem);
+  font-family: 'Zen Maru Gothic', sans-serif; font-size: var(--fs-btn); font-weight: 700; color: #fff;
+  cursor: pointer; letter-spacing: 0.1rem; transition: transform 0.1s;
+}
+.lc-btn:active { transform: translateY(3px); }
+.lcb-again  { background: linear-gradient(135deg, var(--lav), var(--lav-dk)); box-shadow: 0 clamp(3px,0.5vw,7px) 0 #6A3FAE; }
+.lcb-prac   { background: linear-gradient(135deg, var(--orange), var(--orange-dk)); box-shadow: 0 clamp(3px,0.5vw,7px) 0 #904800; }
+.lcb-top    { background: transparent; color: var(--sub); font-size: clamp(0.95rem,1.7vw,1.9rem); box-shadow: none; text-decoration: underline; padding: clamp(0.4rem,0.8vw,1rem); }
+
+/* ════ GAME ════ */
+.mode-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: clamp(0.85rem,1.5vw,1.7rem); font-weight: 700;
+  padding: clamp(0.3rem,0.5vw,0.7rem) clamp(0.8rem,1.5vw,1.8rem);
+  border-radius: 50px; margin-bottom: 0.6rem; align-self: flex-start;
+  background: var(--orange-lt); color: var(--orange-dk);
+}
+.mini-char-row { display: flex; justify-content: flex-end; gap: 0.5rem; width: 100%; margin-bottom: 0.4rem; }
+.mini-char { font-size: clamp(1.8rem,3.5vw,4.5rem); transition: transform 0.15s; }
+.prog-wrap {
+  width: 100%; background: #FFE0BE; border-radius: 50px;
+  height: clamp(10px,1.2vw,18px); margin-bottom: 0.3rem; overflow: hidden;
+}
+.prog-fill {
+  height: 100%; border-radius: 50px; transition: width 0.45s ease;
+  background: linear-gradient(90deg, var(--orange), var(--yellow), var(--mint));
+}
+.prog-label { font-size: clamp(0.9rem,1.5vw,1.8rem); color: var(--sub); text-align: right; width: 100%; margin-bottom: 0.8rem; }
+.q-card {
+  background: var(--card); border-radius: var(--r);
+  padding: clamp(2rem,4vw,5rem) var(--pad-card) clamp(1.5rem,3vw,4rem);
+  width: 100%; box-shadow: var(--sh); text-align: center;
+  margin-bottom: clamp(1rem,1.8vw,2.5rem); position: relative;
+  border: clamp(2px,0.25vw,4px) solid #FFE0BE;
+}
+.q-badge {
+  position: absolute; top: clamp(-14px,-1.5vw,-10px); left: 50%; transform: translateX(-50%);
+  font-size: var(--fs-badge); font-weight: 700;
+  padding: clamp(0.3rem,0.5vw,0.6rem) clamp(1rem,2vw,2.5rem);
+  border-radius: 50px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  background: linear-gradient(135deg, var(--orange), var(--orange-dk)); color: #fff;
+}
+.q-scene { font-size: var(--fs-scene); color: var(--sub); margin-bottom: 0.6rem; min-height: 1.6em; line-height: 1.6; }
+.step-formula {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(0.3rem,0.8vw,1.2rem); flex-wrap: wrap;
+  font-family: 'Kaisei Decol', serif; font-size: var(--fs-q);
+  color: var(--text); font-weight: 700; line-height: 1.2; margin: 0.2rem 0 0.5rem;
+}
+.formula-slot {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: clamp(50px,7vw,95px); background: var(--lav-lt);
+  border: clamp(2px,0.3vw,4px) dashed var(--lav); border-radius: clamp(8px,1.2vw,18px);
+  color: var(--lav-dk); padding: 0 clamp(0.3rem,0.8vw,1rem);
+  animation: pulseSlot 1.6s ease-in-out infinite;
+}
+.formula-slot.slot-r {
+  background: var(--orange-lt); border-color: var(--orange); color: var(--orange-dk);
+  animation: pulseSlotO 1.6s ease-in-out infinite;
+}
+.formula-slot.filled { background: var(--ok-lt); border-style: solid; border-color: var(--ok); color: #1A7A30; animation: none; }
+.formula-slot.dimmed { background: #f2f2f2; border-color: #ccc; color: #bbb; animation: none; }
+@keyframes pulseSlot  { 0%,100%{background:var(--lav-lt);}  50%{background:#D8C0FF;} }
+@keyframes pulseSlotO { 0%,100%{background:var(--orange-lt);} 50%{background:#FFD9A0;} }
+.ama-label { font-size: clamp(1rem,2vw,2.2rem); color: var(--sub); font-family: 'Zen Maru Gothic', sans-serif; font-weight: 700; }
+.step-indicator {
+  font-size: clamp(0.95rem,1.8vw,2rem); font-weight: 700;
+  padding: clamp(0.3rem,0.5vw,0.8rem) clamp(0.8rem,1.5vw,2rem);
+  border-radius: 50px; margin: 0.3rem 0 0.5rem; display: inline-block;
+}
+.si-q { background: var(--lav-lt); color: var(--lav-dk); }
+.si-r { background: var(--orange-lt); color: var(--orange-dk); }
+
+.choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); width: 100%; margin-bottom: 0.5rem; }
+.choice-btn {
+  background: var(--card); border: clamp(2px,0.3vw,4px) solid #E8DAFF;
+  border-radius: var(--r-sm);
+  padding: clamp(1rem,2.5vw,3.5rem) clamp(0.5rem,1vw,1.5rem);
+  font-family: 'Zen Maru Gothic', sans-serif; font-size: var(--fs-choice); font-weight: 700;
+  color: var(--text); cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s, background 0.12s;
+  box-shadow: var(--sh-sm);
+}
+.choice-btn:hover:not(:disabled) { transform: scale(1.05); }
+.hv-q:hover:not(:disabled) { border-color: var(--lav); background: var(--lav-lt); }
+.hv-r:hover:not(:disabled) { border-color: var(--orange); background: var(--orange-lt); }
+@media (hover: none) {
+  .choice-btn:hover:not(:disabled) { transform: none; }
+  .hv-q:hover:not(:disabled),
+  .hv-r:hover:not(:disabled) { border-color: #E8DAFF; background: var(--card); }
+  .hv-q:active:not(:disabled) { border-color: var(--lav); background: var(--lav-lt); transform: scale(1.04); }
+  .hv-r:active:not(:disabled) { border-color: var(--orange); background: var(--orange-lt); transform: scale(1.04); }
+}
+.choice-btn:disabled { cursor: default; }
+.choice-btn.correct { border-color: var(--ok); background: var(--ok-lt); color: #1A7A30; animation: popUp 0.4s ease; }
+.choice-btn.wrong   { border-color: var(--ng); background: var(--ng-lt); color: #A02050; animation: shake 0.35s ease; }
+@keyframes popUp { 0%{transform:scale(1);} 30%{transform:scale(1.12);} 60%{transform:scale(0.97);} 100%{transform:scale(1);} }
+@keyframes shake  { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+@keyframes bounce   { 0%,100%{transform:translateY(0) scale(1);} 20%{transform:translateY(-22px) scale(1.08);} 40%{transform:translateY(-10px) scale(1.04);} 60%{transform:translateY(-18px) scale(1.06);} 80%{transform:translateY(-5px) scale(1.02);} }
+@keyframes sadShake { 0%,100%{transform:translateX(0) rotate(0deg);} 25%{transform:translateX(-5px) rotate(-4deg);} 75%{transform:translateX(5px) rotate(4deg);} }
+.heart-burst { position: fixed; pointer-events: none; z-index: 300; font-size: clamp(1.2rem,2.5vw,3rem); animation: heartFly 0.9s ease forwards; }
+@keyframes heartFly { 0%{opacity:1;transform:translateY(0) scale(1);} 100%{opacity:0;transform:translateY(-80px) scale(1.6);} }
+
+/* ════ POPUP (正解) ════ */
+.overlay {
+  position: fixed; inset: 0; background: rgba(80,40,120,0.38);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 100; padding: clamp(0.8rem,1.5vw,2rem);
+  opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+.popup {
+  background: var(--card);
+  border-radius: clamp(20px,3vw,36px) clamp(20px,3vw,36px) clamp(16px,2vw,28px) clamp(16px,2vw,28px);
+  padding: clamp(1.5rem,2.5vw,3.5rem) clamp(1.2rem,2vw,3rem) clamp(1.2rem,2vw,3rem);
+  width: 100%; max-width: var(--max-w);
+  transform: translateY(40px); transition: transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
+  border-top: clamp(3px,0.4vw,6px) solid var(--orange);
+}
+.overlay.show .popup { transform: translateY(0); }
+.popup-char { text-align: center; font-size: clamp(2.5rem,5vw,6rem); margin-bottom: 0.3rem; display: block; }
+.popup-result-text { font-size: clamp(1.3rem,2.5vw,3rem); font-weight: 700; text-align: center; margin-bottom: 0.8rem; }
+.popup-result-text.ok { color: #2A8A40; }
+.popup-result-text.ng { color: #C03060; }
+.popup-correct-ans { font-size: clamp(0.95rem,1.6vw,1.9rem); color: var(--sub); text-align: center; margin-bottom: 0.7rem; }
+.popup-correct-ans strong { color: var(--orange-dk); font-size: clamp(1.1rem,2vw,2.3rem); }
+.explain-box {
+  background: var(--orange-lt); border: clamp(1px,0.2vw,2px) solid #FFD0A0;
+  border-radius: var(--r-sm);
+  padding: clamp(0.8rem,1.5vw,2rem) clamp(1rem,1.8vw,2.5rem);
+  margin-bottom: clamp(0.8rem,1.5vw,2rem);
+}
+.explain-title { font-size: clamp(0.85rem,1.4vw,1.6rem); font-weight: 700; color: var(--orange-dk); margin-bottom: 0.6rem; }
+.explain-body { font-size: var(--fs-explain); color: var(--text); line-height: 2; }
+.hl { font-weight: 700; }
+.hl-q { color: var(--lav-dk); }
+.hl-r { color: var(--orange-dk); }
+.hl-v { color: var(--mint-dk); }
+.chip { display: inline-block; border-radius: clamp(6px,0.8vw,12px); padding: 0.15rem clamp(0.5rem,1vw,1.2rem); font-weight: 700; font-size: clamp(1rem,1.8vw,2rem); margin: 0.1rem 0; }
+.chip-q { background: var(--lav); color: #fff; }
+.chip-r { background: var(--orange); color: #fff; }
+.chip-v { background: var(--mint); color: #1A5A40; }
+.bridge { display: block; font-size: clamp(0.85rem,1.4vw,1.6rem); color: var(--sub); margin-top: 0.7rem; border-top: clamp(1px,0.15vw,2px) dashed #ddd; padding-top: 0.7rem; line-height: 1.8; }
+.btn-next {
+  width: 100%; border: none; border-radius: 50px; padding: clamp(0.9rem,1.5vw,2rem);
+  font-family: 'Zen Maru Gothic', sans-serif; font-size: var(--fs-btn); font-weight: 700; color: #fff;
+  cursor: pointer; letter-spacing: 0.1rem;
+  background: linear-gradient(135deg, var(--orange), var(--orange-dk));
+  box-shadow: 0 clamp(3px,0.5vw,7px) 0 #904800; transition: transform 0.1s;
+}
+.btn-next:active { transform: translateY(3px); box-shadow: none !important; }
+
+/* ════ 不正解ポップアップ ════ */
+.wrong-overlay {
+  position: fixed; inset: 0;
+  background: rgba(160,32,80,0.22);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 150; padding: clamp(1rem,2vw,2.5rem);
+  opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.wrong-overlay.show { opacity: 1; pointer-events: all; }
+.wrong-popup {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: clamp(1.5rem,3vw,4rem) clamp(1.2rem,2.5vw,3rem);
+  width: 100%; max-width: var(--max-w);
+  border-top: clamp(4px,0.5vw,7px) solid var(--ng);
+  box-shadow: var(--sh);
+  transform: scale(0.9); transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  text-align: center;
+}
+.wrong-overlay.show .wrong-popup { transform: scale(1); }
+.wrong-icon {
+  font-size: clamp(2.5rem,5vw,6rem);
+  display: block; margin-bottom: 0.4rem;
+}
+.wrong-title {
+  font-size: clamp(1.3rem,2.8vw,3rem); font-weight: 700;
+  color: #C03060; margin-bottom: 0.8rem; line-height: 1.4;
+}
+.wrong-body {
+  font-size: clamp(1rem,2vw,2.2rem); color: var(--text); line-height: 1.9;
+  background: var(--ng-lt); border: clamp(1px,0.15vw,2px) solid var(--ng);
+  border-radius: var(--r-sm);
+  padding: clamp(0.8rem,1.5vw,2rem); margin-bottom: clamp(1rem,2vw,2.5rem);
+  text-align: left;
+}
+.btn-retry {
+  width: 100%; border: none; border-radius: 50px;
+  padding: clamp(0.9rem,1.5vw,2rem);
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: var(--fs-btn); font-weight: 700; color: #fff;
+  cursor: pointer; letter-spacing: 0.1rem;
+  background: linear-gradient(135deg, #FF8FAA, #C03060);
+  box-shadow: 0 clamp(3px,0.5vw,7px) 0 #8A1040;
+  transition: transform 0.1s;
+}
+.btn-retry:active { transform: translateY(3px); box-shadow: none; }
+
+/* ════ RESULT ════ */
+.result-card {
+  background: var(--card); border-radius: var(--r);
+  padding: clamp(2rem,4vw,5rem) clamp(1.5rem,3vw,4rem);
+  width: 100%; box-shadow: var(--sh); text-align: center;
+  margin: 1.2rem 0 1rem; border: clamp(2px,0.25vw,4px) solid #FFE0BE;
+}
+.result-chars { display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 1rem; font-size: clamp(2rem,4vw,5rem); }
+.result-stars { font-size: var(--fs-star); letter-spacing: 0.3rem; display: block; margin-bottom: 0.6rem; }
+.result-lbl   { font-size: clamp(0.9rem,1.6vw,1.9rem); color: var(--sub); margin-bottom: 0.2rem; }
+.result-score { font-family: 'Kaisei Decol', serif; font-size: var(--fs-result); font-weight: 700; line-height: 1.1; margin-bottom: 0.3rem; color: var(--orange-dk); }
+.result-score span { font-size: clamp(1.2rem,2.2vw,2.5rem); color: var(--sub); }
+.result-msg { font-size: var(--fs-msg); font-weight: 700; color: var(--text); margin: 1rem 0 0.5rem; line-height: 1.5; }
+.result-sub { font-size: clamp(0.95rem,1.7vw,1.9rem); color: var(--sub); line-height: 1.75; white-space: pre-line; }
+.result-detail { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); width: 100%; margin-bottom: 1rem; }
+.r-stat { background: var(--card); border-radius: var(--r-sm); padding: clamp(0.8rem,1.5vw,2rem); box-shadow: var(--sh-sm); text-align: center; border: clamp(1px,0.2vw,2px) solid #FFE0BE; }
+.r-stat-n { font-family: 'Kaisei Decol', serif; font-size: clamp(2rem,4vw,5rem); font-weight: 700; }
+.rn-g { color: var(--ok); }
+.rn-r { color: var(--ng); }
+.r-stat-l { font-size: clamp(0.85rem,1.4vw,1.7rem); color: var(--sub); margin-top: 0.2rem; }
+.result-btns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); width: 100%; }
+.btn-res { border: none; border-radius: 50px; padding: clamp(1rem,2vw,2.5rem) clamp(0.5rem,1vw,1.5rem); font-family: 'Zen Maru Gothic', sans-serif; font-size: var(--fs-btn); font-weight: 700; cursor: pointer; color: #fff; letter-spacing: 0.08rem; transition: transform 0.1s; }
+.btn-res:active { transform: translateY(3px); }
+.br-main   { background: linear-gradient(135deg,var(--orange),var(--orange-dk)); box-shadow: 0 clamp(3px,0.5vw,7px) 0 #904800; }
+.br-switch { background: linear-gradient(135deg,var(--mint),var(--mint-dk));     box-shadow: 0 clamp(3px,0.5vw,7px) 0 #2A8062; }
+
+.confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 200; overflow: hidden; }
+.cf { position: absolute; top: -16px; border-radius: 50%; animation: cfFall linear forwards; }
+@keyframes cfFall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+/* ════ ホームナビバー ════ */
+.home-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 44px;
+  display: flex; align-items: center; padding: 0 clamp(12px,3vw,24px);
+  background: rgba(247,240,255,0.9);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201,168,245,0.3);
+  box-shadow: 0 1px 8px rgba(140,90,210,0.08);
+}
+.home-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(139,95,212,0.12); color: var(--lav-dk);
+  border: none; border-radius: 999px; padding: 0 14px; height: 32px;
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: clamp(0.72rem,1.4vw,0.82rem); font-weight: 700;
+  cursor: pointer; touch-action: manipulation;
+  transition: background 0.15s, transform 0.1s;
+}
+.home-btn:active { transform: scale(0.95); background: rgba(139,95,212,0.22); }
+.home-nav-app-title {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-size: clamp(0.65rem,1.2vw,0.75rem); font-weight: 700;
+  color: var(--sub); pointer-events: none;
+}
+/* ════ 離脱確認ポップアップ ════ */
+.home-confirm-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(61,44,90,0.22);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.18s ease;
+}
+.home-confirm-overlay.show { opacity: 1; pointer-events: all; }
+.home-confirm-popup {
+  background: #fff; border-radius: clamp(14px,2vw,22px);
+  box-shadow: 0 12px 48px rgba(61,44,90,0.22);
+  padding: clamp(20px,4vw,32px); width: min(340px,86vw); text-align: center;
+}
+.home-confirm-icon { font-size: clamp(2rem,4vw,3rem); display: block; margin-bottom: 10px; }
+.home-confirm-title { font-size: clamp(1rem,2.2vw,1.3rem); font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.home-confirm-body { font-size: clamp(0.82rem,1.6vw,0.95rem); color: var(--sub); line-height: 1.75; margin-bottom: 18px; }
+.home-confirm-btns { display: flex; gap: 10px; }
+.home-confirm-stay,.home-confirm-go {
+  flex: 1; border: none; border-radius: 999px;
+  height: clamp(42px,6vw,52px);
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: clamp(0.88rem,1.7vw,1rem); font-weight: 700;
+  cursor: pointer; touch-action: manipulation;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.home-confirm-stay { background: var(--lav-lt); color: var(--lav-dk); border: 2px solid var(--lav); }
+.home-confirm-go {
+  background: linear-gradient(135deg,var(--lav),var(--lav-dk));
+  color: #fff; box-shadow: 0 4px 0 #6A3FAE;
+}
+.home-confirm-go:active { transform: translateY(3px); box-shadow: 0 1px 0 #6A3FAE; }
+.home-confirm-stay:active { transform: translateY(2px); }
+</style>
+</head>
+<body>
+
+<nav class="home-nav">
+  <button class="home-btn" id="home-nav-btn" type="button">🏠 まなびのへや</button>
+  <span class="home-nav-app-title">あまりのあるわり算</span>
+</nav>
+
+<div class="home-confirm-overlay" id="home-confirm-overlay">
+  <div class="home-confirm-popup">
+    <span class="home-confirm-icon">🏠</span>
+    <div class="home-confirm-title">まなびのへやにもどる？</div>
+    <div class="home-confirm-body">今のれんしゅうのとちゅうだよ。<br>もどると今のもんだいはきえるよ。</div>
+    <div class="home-confirm-btns">
+      <button class="home-confirm-stay" type="button" id="home-confirm-stay">つづける</button>
+      <button class="home-confirm-go" type="button" id="home-confirm-go">もどる</button>
+    </div>
+  </div>
+</div>
+
+<div class="sparkle-bg" id="sparkle-bg"></div>
+
+<!-- ═══ START ═══ -->
+<div class="screen active" id="screen-start">
+  <div style="height:clamp(0.5rem,1.5vw,1.5rem)"></div>
+  <div class="flower-row">🍊 ✨ 🌸 ✨ 🍊</div>
+  <div class="app-title">きらきら さんすう学園</div>
+  <div class="app-sub">あまりのあるわり算</div>
+  <div class="char-stage" id="start-stage"></div>
+
+  <div class="smode-heading">どっちからはじめる？ ✦</div>
+  <div class="smode-cards">
+    <div class="smode-card" id="card-lesson" onclick="selectMode('lesson')">
+      <span class="smode-badge sb-lesson">📖 はじめて</span>
+      <span class="smode-icon">✏️</span>
+      <div class="smode-name">レッスンから</div>
+      <div class="smode-desc">「あまり」を<br>いちからまなぼう！</div>
+    </div>
+    <div class="smode-card" id="card-prac" onclick="selectMode('prac')">
+      <span class="smode-badge sb-prac">🍊 わかる</span>
+      <span class="smode-icon">🎯</span>
+      <div class="smode-name">れんしゅうから</div>
+      <div class="smode-desc">もんだいを<br>どんどんとこう！</div>
+    </div>
+  </div>
+  <button class="btn-start disabled-mode" id="btn-start" onclick="handleStart()">えらんでね 🌸</button>
+</div>
+
+<!-- ═══ LESSON ═══ -->
+<div class="screen" id="screen-lesson">
+  <div style="height:clamp(0.5rem,1.5vw,1.5rem)"></div>
+  <div class="lesson-card" id="lesson-card"></div>
+  <button class="btn-lesson" id="btn-lesson" onclick="nextLessonStep()">つぎへ →</button>
+</div>
+
+<!-- ═══ LESSON COMPLETE ═══ -->
+<div class="screen" id="screen-lesson-complete">
+  <div style="height:clamp(0.5rem,1.5vw,1.5rem)"></div>
+  <div class="lc-card">
+    <div class="lc-badge">✅ レッスンかんりょう！</div>
+    <div class="lc-chars" id="lc-chars">🐰🐱🐻⭐</div>
+    <div class="lc-title">よくできました！</div>
+    <div class="lc-sub">「あまりのあるわり算」の<br>かんがえかたがわかったね！</div>
+    <div class="lc-example-box">
+      <div class="lc-example-label">🍎 今回のれいだい</div>
+      <div class="lc-example-val" id="lc-example-val"></div>
+      <div class="lc-example-note">🔄 もういちどすると、ちがうれいでれんしゅうできるよ！</div>
+    </div>
+  </div>
+  <div class="lc-btns">
+    <button class="lc-btn lcb-again" onclick="goLessonAgain()">🔄 ちがうれいでもういちどレッスン</button>
+    <button class="lc-btn lcb-prac"  onclick="startGame()">🍊 れんしゅうもんだいをやってみる！</button>
+    <button class="lc-btn lcb-top"   onclick="goStart()">トップにもどる</button>
+  </div>
+</div>
+
+<!-- ═══ GAME ═══ -->
+<div class="screen" id="screen-game">
+  <div class="mode-pill">🍊 あまりのあるわり算れんしゅう</div>
+  <div class="mini-char-row" id="mini-chars"></div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-label" id="prog-label">1 / 10</div>
+  <div class="q-card">
+    <div class="q-badge" id="q-badge">だい1もん</div>
+    <div class="q-scene" id="q-scene"></div>
+    <div class="step-formula" id="step-formula"></div>
+    <div class="step-indicator" id="step-indicator"></div>
+  </div>
+  <div class="choices-grid" id="choices-grid"></div>
+</div>
+
+<!-- ═══ 正解ポップアップ ═══ -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <span class="popup-char" id="popup-char">🐰</span>
+    <div class="popup-result-text" id="popup-result-text"></div>
+    <div class="popup-correct-ans" id="popup-correct-ans" style="display:none">
+      ただしいこたえは <strong id="popup-ans-num"></strong> だよ
+    </div>
+    <div class="explain-box">
+      <div class="explain-title">💡 かんがえかた ＋ たしかめ算</div>
+      <div class="explain-body" id="explain-body"></div>
+    </div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">つぎへ →</button>
+  </div>
+</div>
+
+<!-- ═══ 不正解ポップアップ ═══ -->
+<div class="wrong-overlay" id="wrong-overlay">
+  <div class="wrong-popup">
+    <span class="wrong-icon" id="wrong-icon">🤔</span>
+    <div class="wrong-title" id="wrong-title"></div>
+    <div class="wrong-body" id="wrong-body"></div>
+    <button class="btn-retry" onclick="closeWrongPopup()">わかった！ もういちど！ 🌸</button>
+  </div>
+</div>
+
+<!-- ═══ RESULT ═══ -->
+<div class="screen" id="screen-result">
+  <div class="result-card">
+    <div class="result-chars" id="result-chars"></div>
+    <span class="result-stars" id="result-stars">⭐⭐⭐</span>
+    <div class="result-lbl">⭐ 一発せいかいは</div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <div class="result-sub" id="result-sub"></div>
+  </div>
+  <div class="result-detail">
+    <div class="r-stat">
+      <div class="r-stat-n rn-g" id="stat-first">0</div>
+      <div class="r-stat-l">⭐ 一発せいかい</div>
+    </div>
+    <div class="r-stat">
+      <div class="r-stat-n rn-r" id="stat-retry">0</div>
+      <div class="r-stat-l">🔄 やり直してせいかい</div>
+    </div>
+  </div>
+  <div class="result-btns">
+    <button class="btn-res br-main"   onclick="retryGame()">もういちど！ 🔄</button>
+    <button class="btn-res br-switch" onclick="goStart()">トップへ 🌸</button>
+  </div>
+</div>
+
+<div class="confetti-wrap" id="confetti-wrap"></div>
+
+<script>
+/* ── タッチ最適化 ── */
+let lastTap = 0;
+document.addEventListener('touchend', function(e) {
+  if (Date.now() - lastTap < 300) e.preventDefault();
+  lastTap = Date.now();
+}, { passive: false });
+
+/* ── キャラクター ── */
+const CHARS = [
+  { id:'usagi', name:'うさぎちゃん', emoji:'🐰',
+    svg:`<svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="32" cy="52" rx="20" ry="18" fill="#F5E6FF" stroke="#C9A8F5" stroke-width="1.5"/>
+      <ellipse cx="32" cy="34" rx="14" ry="13" fill="#F5E6FF" stroke="#C9A8F5" stroke-width="1.5"/>
+      <ellipse cx="20" cy="14" rx="5" ry="12" fill="#F5E6FF" stroke="#C9A8F5" stroke-width="1.5"/>
+      <ellipse cx="44" cy="14" rx="5" ry="12" fill="#F5E6FF" stroke="#C9A8F5" stroke-width="1.5"/>
+      <ellipse cx="20" cy="14" rx="3" ry="9" fill="#FFBCE0"/>
+      <ellipse cx="44" cy="14" rx="3" ry="9" fill="#FFBCE0"/>
+      <circle cx="27" cy="32" r="2.5" fill="#3D2C5A"/><circle cx="37" cy="32" r="2.5" fill="#3D2C5A"/>
+      <circle cx="28" cy="31" r="1" fill="#fff"/><circle cx="38" cy="31" r="1" fill="#fff"/>
+      <ellipse cx="32" cy="36" rx="3" ry="2" fill="#FFB3D0"/>
+      <path d="M28 39 Q32 42 36 39" fill="none" stroke="#C9A8F5" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>` },
+  { id:'neko', name:'ねこちゃん', emoji:'🐱',
+    svg:`<svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="32" cy="52" rx="20" ry="18" fill="#FFF0D6" stroke="#F5C878" stroke-width="1.5"/>
+      <ellipse cx="32" cy="34" rx="14" ry="13" fill="#FFF0D6" stroke="#F5C878" stroke-width="1.5"/>
+      <polygon points="18,24 22,12 28,22" fill="#FFF0D6" stroke="#F5C878" stroke-width="1.5"/>
+      <polygon points="46,24 42,12 36,22" fill="#FFF0D6" stroke="#F5C878" stroke-width="1.5"/>
+      <polygon points="20,23 23,14 27,22" fill="#FFBCE0"/>
+      <polygon points="44,23 41,14 37,22" fill="#FFBCE0"/>
+      <circle cx="27" cy="32" r="2.5" fill="#3D2C5A"/><circle cx="37" cy="32" r="2.5" fill="#3D2C5A"/>
+      <circle cx="28" cy="31" r="1" fill="#fff"/><circle cx="38" cy="31" r="1" fill="#fff"/>
+      <ellipse cx="32" cy="36" rx="3" ry="2" fill="#FFB3D0"/>
+      <path d="M28 39 Q32 42 36 39" fill="none" stroke="#F5A828" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="18" y1="35" x2="28" y2="36" stroke="#F5C878" stroke-width="1" stroke-linecap="round"/>
+      <line x1="18" y1="38" x2="28" y2="38" stroke="#F5C878" stroke-width="1" stroke-linecap="round"/>
+      <line x1="46" y1="35" x2="36" y2="36" stroke="#F5C878" stroke-width="1" stroke-linecap="round"/>
+      <line x1="46" y1="38" x2="36" y2="38" stroke="#F5C878" stroke-width="1" stroke-linecap="round"/>
+    </svg>` },
+  { id:'kuma', name:'くまちゃん', emoji:'🐻',
+    svg:`<svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="32" cy="52" rx="20" ry="18" fill="#E8D8C0" stroke="#C4A878" stroke-width="1.5"/>
+      <ellipse cx="32" cy="34" rx="14" ry="13" fill="#E8D8C0" stroke="#C4A878" stroke-width="1.5"/>
+      <circle cx="20" cy="24" r="7" fill="#E8D8C0" stroke="#C4A878" stroke-width="1.5"/>
+      <circle cx="44" cy="24" r="7" fill="#E8D8C0" stroke="#C4A878" stroke-width="1.5"/>
+      <circle cx="20" cy="24" r="4.5" fill="#C4A878" opacity="0.4"/>
+      <circle cx="44" cy="24" r="4.5" fill="#C4A878" opacity="0.4"/>
+      <circle cx="27" cy="32" r="2.5" fill="#3D2C5A"/><circle cx="37" cy="32" r="2.5" fill="#3D2C5A"/>
+      <circle cx="28" cy="31" r="1" fill="#fff"/><circle cx="38" cy="31" r="1" fill="#fff"/>
+      <ellipse cx="32" cy="37" rx="5" ry="4" fill="#C4A878" opacity="0.5"/>
+      <ellipse cx="32" cy="37" rx="3" ry="2.5" fill="#FFB3D0"/>
+      <path d="M28 40 Q32 43 36 40" fill="none" stroke="#C4A878" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>` },
+  { id:'hoshi', name:'ほしちゃん', emoji:'⭐',
+    svg:`<svg viewBox="0 0 64 72" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="32,8 38,26 58,26 43,38 49,56 32,44 15,56 21,38 6,26 26,26" fill="#FFE97A" stroke="#F0C820" stroke-width="1.5"/>
+      <circle cx="27" cy="30" r="2.5" fill="#3D2C5A"/><circle cx="37" cy="30" r="2.5" fill="#3D2C5A"/>
+      <circle cx="28" cy="29" r="1" fill="#fff"/><circle cx="38" cy="29" r="1" fill="#fff"/>
+      <path d="M28 35 Q32 38 36 35" fill="none" stroke="#F0C820" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>` }
+];
+
+/* ── 読み仮名 ── */
+const RD = ['','いち','に','さん','し','ご','ろく','しち','はち','く'];
+function r(n) { return RD[n] || String(n); }
+function readNum(n) {
+  if (n <= 9) return r(n);
+  const t = Math.floor(n/10), o = n%10;
+  return (t===1?'じゅう':r(t)+'じゅう')+(o===0?'':r(o));
+}
+
+/* ── 場面文 ── */
+const SCENES = {
+  2:["{A}このあめを{B}にんでわけると？","{A}まいのシールを{B}にんにくばると？"],
+  3:["{A}このりんごを{B}にんでわけると？","{A}本のえんぴつを{B}にんにくばると？"],
+  4:["{A}このおかしを{B}まいの皿にわけると？","{A}このボールを{B}つのかごにいれると？"],
+  5:["{A}このみかんを{B}にんでわけると？","{A}このクッキーを{B}まいの皿にわけると？"],
+  6:["{A}このチョコを{B}にんでわけると？","{A}まいのカードを{B}にんにくばると？"],
+  7:["{A}このシールを{B}にんにくばると？","{A}このあめを{B}にんでわけると？"],
+  8:["{A}このたまごを{B}こずつパックにいれると？","{A}まいのおりがみを{B}にんにくばると？"],
+  9:["{A}このプレゼントを{B}ひとにわたすと？","{A}このビー玉を{B}にんでわけると？"]
+};
+function getScene(divisor, dividend) {
+  const list = SCENES[divisor] || SCENES[2];
+  return list[Math.floor(Math.random()*list.length)].replace(/{A}/g, dividend).replace(/{B}/g, divisor);
+}
+
+/* ════════════════════════════
+   レッスンれい題プール
+════════════════════════════ */
+const LESSON_POOL = [
+  { dividend:13, divisor:4, quotient:3, remainder:1, fruit:'🍎' },
+  { dividend:17, divisor:5, quotient:3, remainder:2, fruit:'🍓' },
+  { dividend:11, divisor:3, quotient:3, remainder:2, fruit:'🍊' },
+  { dividend:14, divisor:4, quotient:3, remainder:2, fruit:'🍇' },
+  { dividend:16, divisor:5, quotient:3, remainder:1, fruit:'🌽' },
+  { dividend:13, divisor:3, quotient:4, remainder:1, fruit:'🍑' },
+  { dividend:15, divisor:4, quotient:3, remainder:3, fruit:'🍋' },
+  { dividend:17, divisor:6, quotient:2, remainder:5, fruit:'🍒' },
+  { dividend:19, divisor:6, quotient:3, remainder:1, fruit:'🥝' },
+  { dividend:14, divisor:3, quotient:4, remainder:2, fruit:'🫐' },
+];
+let lessonEx = LESSON_POOL[0];
+let lastLessonIdx = 0;
+
+function pickLessonEx() {
+  let idx;
+  do { idx = Math.floor(Math.random() * LESSON_POOL.length); }
+  while (idx === lastLessonIdx && LESSON_POOL.length > 1);
+  lastLessonIdx = idx;
+  lessonEx = LESSON_POOL[idx];
+}
+
+/* ── ドット表示 ── */
+function buildDots(dividend, divisor, quotient, remainder, showGroups) {
+  const f = lessonEx.fruit;
+  let html = '<div class="dot-display">';
+  if (!showGroups) {
+    html += '<div class="dot-group no-group">';
+    for (let i=0; i<dividend; i++) html += `<span class="dot-emoji">${f}</span>`;
+    html += '</div>';
+  } else {
+    for (let g=0; g<quotient; g++) {
+      html += '<div class="dot-group">';
+      for (let i=0; i<divisor; i++) html += `<span class="dot-emoji">${f}</span>`;
+      html += '</div>';
+    }
+    if (remainder > 0) {
+      html += '<div class="dot-group rem-group">';
+      for (let i=0; i<remainder; i++) html += `<span class="dot-emoji">${f}</span>`;
+      html += '</div>';
+    }
+  }
+  html += '</div>';
+  return html;
+}
+
+/* ── レッスンステップ ── */
+let lessonStep = 0;
+
+const LESSON_STEPS = [
+  {
+    badge: 'ステップ① みてみよう',
+    getTitle:   () => '「あまり」ってなに？',
+    getContent: () => {
+      const ex = lessonEx;
+      return `
+        <div class="lesson-formula-big">${ex.dividend} ÷ ${ex.divisor} ＝ ？</div>
+        ${buildDots(ex.dividend, ex.divisor, ex.quotient, ex.remainder, false)}
+        <div class="lesson-desc">${ex.dividend}この${ex.fruit}を<br>${ex.divisor}にんで分けてみよう！</div>
+      `;
+    },
+    btn: 'わけてみよう →'
+  },
+  {
+    badge: 'ステップ② わけてみよう',
+    getTitle:   () => lessonEx.divisor + 'こずつグループにすると…',
+    getContent: () => {
+      const ex = lessonEx;
+      return `
+        ${buildDots(ex.dividend, ex.divisor, ex.quotient, ex.remainder, true)}
+        <div class="lesson-desc">
+          むらさきのグループが <span style="color:#8B5FD4;font-weight:700;font-size:1.2em">${ex.quotient}つ</span> できたよ！<br><br>
+          でも… オレンジのが <span style="color:#C87820;font-weight:700;font-size:1.2em">${ex.remainder}こあまった！</span>
+        </div>
+      `;
+    },
+    btn: 'しきにしよう →'
+  },
+  {
+    badge: 'ステップ③ しきにしよう',
+    getTitle:   () => 'しきにするとこうなる！',
+    getContent: () => {
+      const ex = lessonEx;
+      return `
+        <div class="lesson-result-box">
+          ${ex.dividend} ÷ ${ex.divisor} ＝ <span class="sho-hl">${ex.quotient}</span> あまり <span class="ama-hl">${ex.remainder}</span>
+        </div>
+        <div class="lesson-desc">
+          こたえ（商）= <span style="color:#8B5FD4;font-weight:700">${ex.quotient}</span>（グループのかず）<br>
+          あまり = <span style="color:#C87820;font-weight:700">${ex.remainder}</span>（のこったかず）
+        </div>
+      `;
+    },
+    btn: 'たしかめ算をみよう →'
+  },
+  {
+    badge: 'ステップ④ たしかめ算',
+    getTitle:   () => 'こたえがあっているかかくにんしよう！',
+    getContent: () => {
+      const ex = lessonEx;
+      const check = ex.divisor * ex.quotient + ex.remainder;
+      return `
+        <div class="lesson-check">
+          <strong>たしかめ算のしかた</strong><br><br>
+          わる数 × こたえ ＋ あまり ＝ もとの数<br><br>
+          <span style="color:#8B5FD4;font-weight:700">${ex.divisor} × ${ex.quotient}</span>
+          ＋ <span style="color:#C87820;font-weight:700">${ex.remainder}</span>
+          ＝ <span style="color:#3DAA82;font-weight:700">${check}</span> ✅<br><br>
+          <span style="font-size:0.85em;color:var(--sub)">
+            もとの数（${ex.dividend}）になったら正しいよ！<br>
+            あまり（${ex.remainder}）＜ わる数（${ex.divisor}）もかくにんしよう！
+          </span>
+        </div>
+      `;
+    },
+    btn: 'レッスンをおわる 🌸'
+  }
+];
+
+function renderLessonStep() {
+  const s = LESSON_STEPS[lessonStep];
+  document.getElementById('lesson-card').innerHTML =
+    `<div class="lesson-badge">${s.badge}</div>
+     <div class="lesson-title">${s.getTitle()}</div>
+     ${s.getContent()}`;
+  document.getElementById('btn-lesson').textContent = s.btn;
+}
+
+function nextLessonStep() {
+  lessonStep++;
+  if (lessonStep >= LESSON_STEPS.length) {
+    showLessonComplete();
+    return;
+  }
+  renderLessonStep();
+}
+
+/* ── レッスン完了画面 ── */
+function showLessonComplete() {
+  const ex = lessonEx;
+  document.getElementById('lc-example-val').innerHTML =
+    `${ex.dividend} ÷ ${ex.divisor} ＝ <span class="sho-hl">${ex.quotient}</span> あまり <span class="ama-hl">${ex.remainder}</span>`;
+  document.getElementById('lc-chars').textContent = CHARS.map(c=>c.emoji).join('');
+  showScreen('lesson-complete');
+  window.scrollTo(0, 0);
+  launchConfetti(30);
+}
+
+/* ════════════════════════════
+   スタート画面
+════════════════════════════ */
+let startMode = null;
+
+function selectMode(m) {
+  startMode = m;
+  document.getElementById('card-lesson').className = 'smode-card' + (m==='lesson' ? ' sel-lesson' : '');
+  document.getElementById('card-prac').className   = 'smode-card' + (m==='prac'   ? ' sel-prac'   : '');
+  const btn = document.getElementById('btn-start');
+  if (m === 'lesson') {
+    btn.className = 'btn-start lesson-mode';
+    btn.textContent = '✏️ レッスンをはじめる！';
+  } else {
+    btn.className = 'btn-start prac-mode';
+    btn.textContent = '🍊 れんしゅうをはじめる！';
+  }
+}
+
+function handleStart() {
+  if (!startMode) return;
+  if (startMode === 'lesson') goLesson();
+  else startGame();
+}
+
+function goLesson() {
+  pickLessonEx();
+  lessonStep = 0;
+  renderLessonStep();
+  showScreen('lesson');
+  window.scrollTo(0, 0);
+}
+
+function goLessonAgain() {
+  goLesson();
+}
+
+/* ── 画面切り替え ── */
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+}
+
+function goStart() {
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('wrong-overlay').classList.remove('show');
+  startMode = null;
+  document.getElementById('card-lesson').className = 'smode-card';
+  document.getElementById('card-prac').className   = 'smode-card';
+  document.getElementById('btn-start').className   = 'btn-start disabled-mode';
+  document.getElementById('btn-start').textContent = 'えらんでね 🌸';
+  window.scrollTo(0, 0);
+  renderStartChars();
+  showScreen('start');
+}
+
+/* ════════════════════════════
+   もんだい生成
+════════════════════════════ */
+function shuffle(a) {
+  for (let i=a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function makeWariAri() {
+  const all = [];
+  for (let d=2; d<=9; d++)
+    for (let q=1; q<=9; q++)
+      for (let rem=1; rem<d; rem++) {
+        const dividend = d*q+rem;
+        if (dividend <= 80) all.push({ dividend, divisor:d, quotient:q, remainder:rem });
+      }
+  shuffle(all);
+  const easy = all.filter(p => p.divisor<=3);
+  const mid  = all.filter(p => p.divisor>=4 && p.divisor<=6);
+  const hard = all.filter(p => p.divisor>=7);
+  const sel  = [...easy.slice(0,3), ...mid.slice(0,4), ...hard.slice(0,3)];
+  if (sel.length < 10) {
+    for (let i=0; sel.length<10 && i<all.length; i++) {
+      if (!sel.includes(all[i])) sel.push(all[i]);
+    }
+  }
+  return [...sel.slice(0,3), ...shuffle(sel.slice(3))].slice(0,10);
+}
+function makeQuotientChoices(q) {
+  const set = new Set([q]); let t=0;
+  while (set.size<4 && t++<60) { const c=q+Math.floor(Math.random()*5)-2; if(c>=1&&c<=9) set.add(c); }
+  for (const v of [1,2,3,4,5,6,7,8,9]) { if(set.size>=4) break; set.add(v); }
+  return shuffle([...set].slice(0,4));
+}
+function makeRemainderChoices(rem, divisor) {
+  const cands = [];
+  for (let v=0; v<=Math.min(divisor+1,9); v++) { if(v!==rem) cands.push(v); }
+  shuffle(cands);
+  const set = new Set([rem]);
+  for (const c of cands) { if(set.size>=4) break; set.add(c); }
+  return shuffle([...set].slice(0,4));
+}
+
+/* ── 解説 ── */
+function makeExplain(dividend, divisor, quotient, remainder) {
+  const groupVal = divisor*quotient;
+  const check    = groupVal+remainder;
+  return `
+<span class="hl hl-q">${dividend} ÷ ${divisor}</span> は、「<span class="hl hl-q">${r(divisor)}のだんの九九</span>」を使うよ！<br><br>
+<span class="chip chip-q">${divisor} × □ ＝ ?</span><br>
+${r(divisor)} × <span class="hl hl-q">${quotient}</span> ＝ ${groupVal}（いちばんちかくて小さい）<br>
+→ <strong>こたえ（商）は <span class="hl hl-q">${quotient}</span></strong><br><br>
+のこりは：<span class="chip chip-r">${dividend} ー ${groupVal} ＝ ${remainder}</span><br>
+→ <strong>あまりは <span class="hl hl-r">${remainder}</span></strong><br><br>
+<span class="chip chip-v">✅ たしかめ算</span><br>
+<span class="hl hl-v">${divisor} × ${quotient} ＋ ${remainder} ＝ ${check}</span>　→　${check} ＝ ${dividend}　OK！
+<span class="bridge">💡 あまり（<strong>${remainder}</strong>）は わる数（<strong>${divisor}</strong>）より小さい → OK！</span>`;
+}
+
+/* ════════════════════════════
+   ゲーム
+════════════════════════════ */
+let questions=[], idx=0, correctCount=0;
+let currentStep='quotient', selectedQ=null, firstTry=true;
+
+function startGame() {
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('wrong-overlay').classList.remove('show');
+  questions = makeWariAri();
+  idx=0; correctCount=0;
+  renderMiniChars();
+  window.scrollTo(0,0);
+  showScreen('game');
+  renderQ();
+}
+function retryGame() { startGame(); }
+
+function renderQ() {
+  const q = questions[idx];
+  currentStep='quotient'; selectedQ=null; firstTry=true;
+  document.getElementById('prog-fill').style.width = ((idx/10)*100)+'%';
+  document.getElementById('prog-label').textContent = (idx+1)+' / 10';
+  document.getElementById('q-badge').textContent    = 'だい'+(idx+1)+'もん';
+  document.getElementById('q-scene').textContent    = getScene(q.divisor, q.dividend);
+  setFormula(q, 'quotient');
+  setChoices(q, 'quotient');
+}
+
+function setFormula(q, step) {
+  const fe = document.getElementById('step-formula');
+  const si = document.getElementById('step-indicator');
+  if (step === 'quotient') {
+    fe.innerHTML = `<span>${q.dividend}</span><span>÷</span><span>${q.divisor}</span><span>＝</span><span class="formula-slot" id="slot-q">？</span><span class="ama-label">あまり</span><span class="formula-slot slot-r dimmed" id="slot-r">？</span>`;
+    si.textContent = '① こたえ（商）をえらんでね！';
+    si.className   = 'step-indicator si-q';
+  } else {
+    fe.innerHTML = `<span>${q.dividend}</span><span>÷</span><span>${q.divisor}</span><span>＝</span><span class="formula-slot filled">${selectedQ}</span><span class="ama-label">あまり</span><span class="formula-slot slot-r" id="slot-r">？</span>`;
+    si.textContent = '② あまりをえらんでね！';
+    si.className   = 'step-indicator si-r';
+  }
+}
+
+function setChoices(q, step) {
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = '';
+  const choices = step==='quotient' ? makeQuotientChoices(q.quotient) : makeRemainderChoices(q.remainder, q.divisor);
+  choices.forEach(function(val) {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn ' + (step==='quotient' ? 'hv-q' : 'hv-r');
+    btn.textContent = val;
+    const v=Number(val), qSnap=q;
+    let tapped=false;
+    btn.addEventListener('touchstart', function(e) {
+      e.preventDefault(); if(tapped) return; tapped=true;
+      step==='quotient' ? doQ(btn,v,qSnap) : doR(btn,v,qSnap);
+    }, { passive:false });
+    btn.addEventListener('click', function() {
+      if(tapped){tapped=false;return;}
+      step==='quotient' ? doQ(btn,v,qSnap) : doR(btn,v,qSnap);
+    });
+    grid.appendChild(btn);
+  });
+}
+
+/* ── こたえ（商）えらび ── */
+function doQ(btn, val, q) {
+  if (val !== q.quotient) {
+    firstTry = false;
+    btn.classList.add('wrong');
+    charReact(false);
+    // すべてのボタンを一時無効化してポップアップ表示
+    document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+    setTimeout(() => {
+      const groupVal = q.divisor * val;
+      let type;
+      if (groupVal > q.dividend) type = 'quotient-too-large';
+      else type = 'quotient-too-small';
+      showWrongPopup(type, val, q);
+    }, 380);
+    return;
+  }
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('correct'); selectedQ=val; heartBurst(btn); charReact(true);
+  setTimeout(()=>{ currentStep='remainder'; setFormula(q,'remainder'); setChoices(q,'remainder'); }, 600);
+}
+
+/* ── あまりえらび ── */
+function doR(btn, val, q) {
+  if (val !== q.remainder) {
+    firstTry = false;
+    btn.classList.add('wrong');
+    charReact(false);
+    document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+    setTimeout(() => {
+      let type;
+      if (val === 0)           type = 'remainder-zero';
+      else if (val >= q.divisor) type = 'remainder-too-large';
+      else                     type = 'remainder-other';
+      showWrongPopup(type, val, q);
+    }, 380);
+    return;
+  }
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('correct');
+  if (firstTry) correctCount++;
+  heartBurst(btn); charReact(true);
+  const qc=q;
+  setTimeout(()=>showPopup(firstTry,qc), 320);
+}
+
+/* ── 不正解ポップアップ ── */
+function showWrongPopup(type, val, q) {
+  let icon, title, body;
+
+  if (type === 'quotient-too-large') {
+    icon  = '😅';
+    title = 'ちょっと大きすぎるよ！';
+    body  = `${q.divisor} × ${val} ＝ ${q.divisor * val} になるね。<br>
+でも もとの数は <strong>${q.dividend}</strong> だよ！<br>
+${q.divisor * val} ＞ ${q.dividend} になっちゃうから、もう少し<strong>小さい数</strong>をえらんでみよう🌸`;
+  } else if (type === 'quotient-too-small') {
+    icon  = '🤔';
+    title = 'まだわけられるよ！';
+    body  = `${q.divisor} × ${val} ＝ ${q.divisor * val} だから、<br>
+のこりは ${q.dividend} ー ${q.divisor * val} ＝ <strong>${q.dividend - q.divisor * val}</strong> になるね。<br>
+でも <strong>${q.dividend - q.divisor * val}</strong> は <strong>${q.divisor}</strong> 以上だから、まだ分けられるよ！<br>
+もう少し<strong>大きい数</strong>をえらんでみよう！`;
+  } else if (type === 'remainder-zero') {
+    icon  = '😮';
+    title = 'あまり0はわりきれたことになるよ！';
+    body  = `あまりが <strong>0</strong> だと、「ちょうどわりきれた」ことになるよ。<br>
+でも、この問題はわりきれないはず！<br>
+${q.divisor} × ${q.quotient} ＝ ${q.divisor * q.quotient}　で、<br>
+${q.dividend} ー ${q.divisor * q.quotient} ＝ <strong>？</strong><br>
+0 いがいの数をえらんでみよう🌸`;
+  } else if (type === 'remainder-too-large') {
+    icon  = '⚡';
+    title = 'あまりが大きすぎる！';
+    body  = `あまりは、わる数（<strong>${q.divisor}</strong>）より<strong>小さく</strong>ないといけないよ！<br>
+${val} は ${q.divisor} より大きいから、まだ ${q.divisor} こ分けられるはず！<br>
+もっと<strong>小さい数</strong>をえらんでみよう！`;
+  } else {
+    // remainder-other
+    icon  = '🌟';
+    title = 'もういちどかんがえよう！';
+    body  = `ヒント：${q.dividend} ÷ ${q.divisor} のあまりを考えよう！<br>
+${q.divisor} × ${q.quotient} ＝ <strong>${q.divisor * q.quotient}</strong><br>
+${q.dividend} ー ${q.divisor * q.quotient} ＝ <strong>？</strong><br>
+のこった数があまりだよ！`;
+  }
+
+  document.getElementById('wrong-icon').textContent  = icon;
+  document.getElementById('wrong-title').textContent = title;
+  document.getElementById('wrong-body').innerHTML    = body;
+  document.getElementById('wrong-overlay').classList.add('show');
+}
+
+function closeWrongPopup() {
+  document.getElementById('wrong-overlay').classList.remove('show');
+  // ボタンをふたたび使えるようにする
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('wrong');
+  });
+}
+
+/* ── 正解ポップアップ ── */
+const CC=['🐰 すごい！かんぺき！','🐱 やったね！せいかい！','🐻 よくできました！','⭐ きらきら〜！'];
+const CW=['🐰 つぎはできるよ！','🐱 いっしょにがんばろう！','🐻 もういちど！','⭐ だいじょうぶ！'];
+function showPopup(ok, q) {
+  document.getElementById('popup-char').textContent = ok
+    ? CHARS[Math.floor(Math.random()*3)].emoji+'✨'
+    : CHARS[Math.floor(Math.random()*3)].emoji;
+  const rt=document.getElementById('popup-result-text');
+  rt.textContent = ok ? CC[Math.floor(Math.random()*CC.length)] : CW[Math.floor(Math.random()*CW.length)];
+  rt.className = 'popup-result-text '+(ok?'ok':'ng');
+  const ca=document.getElementById('popup-correct-ans');
+  if (!ok) { ca.style.display='block'; document.getElementById('popup-ans-num').textContent=q.quotient+' あまり '+q.remainder; }
+  else ca.style.display='none';
+  document.getElementById('explain-body').innerHTML = makeExplain(q.dividend, q.divisor, q.quotient, q.remainder);
+  document.getElementById('btn-next').textContent = idx===9 ? 'けっかを見る！ 🌸' : 'つぎへ →';
+  document.getElementById('overlay').classList.add('show');
+}
+
+function nextQuestion() {
+  document.getElementById('overlay').classList.remove('show');
+  const wasLast = (idx===9); idx++;
+  if (wasLast) setTimeout(showResult, 300);
+  else setTimeout(renderQ, 250);
+}
+
+/* ── 結果 ── */
+function showResult() {
+  showScreen('result');
+  const sc = correctCount;          // 一発せいかい数
+  const retry = 10 - sc;           // やり直してせいかい数
+
+  document.getElementById('result-score').innerHTML = sc + ' <span>もん！</span>';
+  document.getElementById('stat-first').textContent = sc;
+  document.getElementById('stat-retry').textContent = retry;
+  document.getElementById('result-chars').innerHTML = CHARS.map(c=>c.emoji).join(' ');
+
+  let stars, msg, sub;
+  if (sc === 10) {
+    stars = '⭐⭐⭐';
+    msg   = '🎉 かんぺき！100てんまんてん！！';
+    sub   = 'ぜんもん一発せいかい！すごすぎる〜！\nたしかめ算もバッチリだね！';
+    launchConfetti(80);
+  } else if (sc >= 8) {
+    stars = '⭐⭐⭐';
+    msg   = '🌸 すばらしい！もうすぐかんぺき！';
+    sub   = 'あとすこしでまんてんだよ！\nかいせつのたしかめ算をもういちど読もう！';
+    launchConfetti(40);
+  } else if (sc >= 6) {
+    stars = '⭐⭐';
+    msg   = '💜 よくできました！えらい！';
+    sub   = 'だいぶわかってきたね！\nもういちどチャレンジしてみよう！';
+  } else if (sc >= 4) {
+    stars = '⭐';
+    msg   = '💪 もうすこし！いっしょにがんばろう！';
+    sub   = '九九のおさらいをすると\nわり算がもっとかんたんになるよ！';
+  } else {
+    stars = '🌱';
+    msg   = '🌱 さいしょはみんなむずかしい！';
+    sub   = 'ゆっくりでいいよ。もういちどやってみよう！\nうさぎちゃんたちがおうえんしてるよ！';
+  }
+
+  document.getElementById('result-stars').textContent = stars;
+  document.getElementById('result-msg').textContent   = msg;
+  document.getElementById('result-sub').textContent   = sub;
+}
+
+/* ── キャラ ── */
+function renderStartChars() {
+  const stage=document.getElementById('start-stage'); stage.innerHTML='';
+  [CHARS[0],CHARS[1],CHARS[2]].forEach((c,i)=>{
+    const wrap=document.createElement('div'); wrap.className='char-wrap';
+    const svg=document.createElement('div'); svg.className='char-svg char-float';
+    svg.style.animationDelay=(i*0.8)+'s'; svg.innerHTML=c.svg;
+    const name=document.createElement('div'); name.className='char-name'; name.textContent=c.name;
+    wrap.appendChild(svg); wrap.appendChild(name); stage.appendChild(wrap);
+  });
+}
+function renderMiniChars() {
+  const row=document.getElementById('mini-chars'); row.innerHTML='';
+  CHARS.forEach(c=>{
+    const el=document.createElement('div'); el.className='mini-char'; el.id='mini-'+c.id;
+    el.textContent=c.emoji; row.appendChild(el);
+  });
+}
+function charReact(ok) {
+  CHARS.forEach(c=>{
+    const el=document.getElementById('mini-'+c.id); if(!el) return;
+    el.style.animation='none'; void el.offsetWidth;
+    el.style.animation=ok?'bounce 0.9s ease both':'sadShake 0.5s ease both';
+    el.style.animationDelay=ok?(Math.random()*0.2)+'s':'0s';
+  });
+}
+function heartBurst(btn) {
+  const rect=btn.getBoundingClientRect();
+  ['🍊','💜','💗','⭐','✨','🌸','💛'].forEach((e,i)=>{
+    const el=document.createElement('div'); el.className='heart-burst';
+    el.textContent=e;
+    el.style.left=(rect.left+rect.width/2-10+Math.random()*40-20)+'px';
+    el.style.top=(rect.top+Math.random()*20)+'px';
+    el.style.animationDelay=(i*0.08)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1000);
+  });
+}
+
+/* ── スパークル ── */
+function initSparkles() {
+  const wrap=document.getElementById('sparkle-bg');
+  const em=['✦','✧','♡','✿','❀','◇','☆'];
+  for(let i=0;i<22;i++){
+    const el=document.createElement('div'); el.className='sp';
+    el.textContent=em[Math.floor(Math.random()*em.length)];
+    el.style.left=Math.random()*100+'vw';
+    el.style.top=Math.random()*100+'vh';
+    el.style.animationDuration=(8+Math.random()*14)+'s';
+    el.style.animationDelay=(Math.random()*10)+'s';
+    wrap.appendChild(el);
+  }
+}
+
+/* ── 紙吹雪 ── */
+function launchConfetti(n=50) {
+  const wrap=document.getElementById('confetti-wrap'); wrap.innerHTML='';
+  const cols=['#FFB347','#C9A8F5','#F5A8C9','#A8E6D4','#FFE97A','#FFB3D0','#B39DFF'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('div'); el.className='cf';
+    el.style.left=Math.random()*100+'vw';
+    el.style.background=cols[Math.floor(Math.random()*cols.length)];
+    const s=8+Math.random()*14; el.style.width=s+'px'; el.style.height=s+'px';
+    el.style.borderRadius=Math.random()>0.4?'50%':'3px';
+    el.style.animationDuration=(1.8+Math.random()*2.2)+'s';
+    el.style.animationDelay=(Math.random()*0.8)+'s';
+    wrap.appendChild(el);
+  }
+  setTimeout(()=>{ wrap.innerHTML=''; },5500);
+}
+
+initSparkles();
+renderStartChars();
+
+// ─── ホームナビ ───────────────────────────────────────────
+(function(){
+  // レッスン中・問題中のみ確認ポップアップを表示
+  const CONFIRM_SCREENS = new Set(['screen-lesson','screen-game']);
+  function currentScreenId(){
+    const el = document.querySelector('.screen.active');
+    return el ? el.id : '';
+  }
+  document.getElementById('home-nav-btn').addEventListener('click', ()=>{
+    if(CONFIRM_SCREENS.has(currentScreenId())){
+      document.getElementById('home-confirm-overlay').classList.add('show');
+    } else {
+      location.href = '../まなびのへや.html';
+    }
+  });
+  document.getElementById('home-confirm-stay').addEventListener('click', ()=>{
+    document.getElementById('home-confirm-overlay').classList.remove('show');
+  });
+  document.getElementById('home-confirm-go').addEventListener('click', ()=>{
+    location.href = '../まなびのへや.html';
+  });
+})();
+</script>
+</body>
+</html>
