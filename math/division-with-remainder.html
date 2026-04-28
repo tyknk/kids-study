@@ -207,6 +207,25 @@ body {
 .dot-group.rem-group { background: var(--orange-lt); border-color: var(--orange); }
 .dot-emoji { font-size: clamp(1.6rem,3.2vw,3.8rem); line-height: 1; }
 
+.lesson-rule-box {
+  display: flex; align-items: center; gap: clamp(10px,2vw,20px);
+  background: linear-gradient(135deg, #fff8e7, #fff0f0);
+  border: clamp(2px,0.35vw,4px) solid #E8A000;
+  border-radius: var(--r-md);
+  padding: clamp(14px,2.5vw,28px);
+  margin: 0.4rem 0 0.8rem;
+  width: 100%;
+}
+.lesson-rule-icon { font-size: clamp(2rem,4vw,5rem); flex-shrink: 0; }
+.lesson-rule-text {
+  font-size: clamp(1.2rem,2.6vw,3rem);
+  font-weight: 700; line-height: 1.6; color: var(--text);
+}
+.lesson-rule-text em {
+  font-style: normal; color: #c0304d;
+  background: #fde0e6; border-radius: 6px; padding: 0 6px;
+}
+
 .btn-lesson {
   width: 100%; border: none; border-radius: 50px;
   padding: clamp(0.9rem,1.5vw,2rem);
@@ -788,6 +807,10 @@ const LESSON_POOL = [
   { dividend:17, divisor:6, quotient:2, remainder:5, fruit:'🍒' },
   { dividend:19, divisor:6, quotient:3, remainder:1, fruit:'🥝' },
   { dividend:14, divisor:3, quotient:4, remainder:2, fruit:'🫐' },
+  { dividend:22, divisor:5, quotient:4, remainder:2, fruit:'🍫' },
+  { dividend:25, divisor:4, quotient:6, remainder:1, fruit:'🥕' },
+  { dividend:23, divisor:3, quotient:7, remainder:2, fruit:'🍡' },
+  { dividend:20, divisor:6, quotient:3, remainder:2, fruit:'🍬' },
 ];
 let lessonEx = LESSON_POOL[0];
 let lastLessonIdx = 0;
@@ -875,7 +898,7 @@ const LESSON_STEPS = [
   },
   {
     badge: 'ステップ④ たしかめ算',
-    getTitle:   () => 'こたえがあっているかかくにんしよう！',
+    getTitle:   () => 'こたえがあっているかたしかめよう！',
     getContent: () => {
       const ex = lessonEx;
       const check = ex.divisor * ex.quotient + ex.remainder;
@@ -887,9 +910,32 @@ const LESSON_STEPS = [
           ＋ <span style="color:#C87820;font-weight:700">${ex.remainder}</span>
           ＝ <span style="color:#3DAA82;font-weight:700">${check}</span> ✅<br><br>
           <span style="font-size:0.85em;color:var(--sub)">
-            もとの数（${ex.dividend}）になったら正しいよ！<br>
-            あまり（${ex.remainder}）＜ わる数（${ex.divisor}）もかくにんしよう！
+            もとの数（${ex.dividend}）になったら正しいよ！
           </span>
+        </div>
+      `;
+    },
+    btn: 'つぎへ →'
+  },
+  {
+    badge: 'ステップ⑤ おぼえよう！',
+    getTitle:   () => 'あまりのだいじなルール',
+    getContent: () => {
+      const ex = lessonEx;
+      const maxRem = ex.divisor - 1;
+      return `
+        <div class="lesson-rule-box">
+          <span class="lesson-rule-icon">⚠️</span>
+          <div class="lesson-rule-text">
+            あまりは かならず<br>
+            わる数より <em>小さく</em> なる！
+          </div>
+        </div>
+        <div class="lesson-desc">
+          この もんだいは ÷ <span style="font-weight:700;color:#8B5FD4">${ex.divisor}</span> だから、<br>
+          あまりは <span style="font-weight:700;color:#C87820">1 〜 ${maxRem}</span> のどれかになるよ。<br><br>
+          もし あまりが <span style="font-weight:700;color:#c0304d">${ex.divisor} かそれより大きかったら</span>、<br>
+          まだ わけられるから、こたえがまちがいだよ！
         </div>
       `;
     },
@@ -1168,7 +1214,7 @@ ${q.divisor * val} ＞ ${q.dividend} になっちゃうから、もう少し<str
     title = 'まだわけられるよ！';
     body  = `${q.divisor} × ${val} ＝ ${q.divisor * val} だから、<br>
 のこりは ${q.dividend} ー ${q.divisor * val} ＝ <strong>${q.dividend - q.divisor * val}</strong> になるね。<br>
-でも <strong>${q.dividend - q.divisor * val}</strong> は <strong>${q.divisor}</strong> 以上だから、まだ分けられるよ！<br>
+でも <strong>${q.dividend - q.divisor * val}</strong> は <strong>${q.divisor}</strong> と同じかそれより大きいから、まだ分けられるよ！<br>
 もう少し<strong>大きい数</strong>をえらんでみよう！`;
   } else if (type === 'remainder-zero') {
     icon  = '😮';
