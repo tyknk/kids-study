@@ -911,9 +911,9 @@ const SUBJECTS = [
     id: "math",
     label: "さんすう",
     emoji: "🧮",
-    note: "2つのべんきょう",
+    note: "3つのべんきょう",
     available: true,
-    description: "かけ算、わり算、あまりのあるわり算を、れんしゅうやレッスンで学べます。"
+    description: "かけ算、わり算、あまりのあるわり算、ながさの単位を、れんしゅうやレッスンで学べます。"
   },
   {
     id: "japanese",
@@ -955,6 +955,12 @@ const UNITS = [
     subjectId: "math",
     title: "あまりのあるわり算",
     description: "あまりのいみをレッスンから学んで、あとでもんだいにもすすめるたんげんです。"
+  },
+  {
+    id: "math-length",
+    subjectId: "math",
+    title: "ながさ（mm・km）",
+    description: "ミリメートルとキロメートルをおぼえて、たんいのへんかんをれんしゅうするたんげんです。"
   }
 ];
 
@@ -978,6 +984,16 @@ const MODULES = [
     learningType: "レッスン + れんしゅう",
     level: "きほん",
     href: "./math/division-with-remainder.html"
+  },
+  {
+    id: "math-length-mm-km",
+    subjectId: "math",
+    unitId: "math-length",
+    title: "ながさ もんだい（mm・km）",
+    description: "mm（ミリメートル）と km（キロメートル）のたんいへんかんをれんしゅうしよう。",
+    learningType: "レッスン + れんしゅう",
+    level: "きほん",
+    href: "./math/length-mm-km.html"
   }
 ];
 

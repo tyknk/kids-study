@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ながさ もんだい（mm・km）</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --teal:       #5CC8B8;
+      --teal-lt:    #B3EAE3;
+      --teal-dk:    #3BA89A;
+      --amber:      #FFB347;
+      --amber-lt:   #FFF0D9;
+      --amber-dk:   #C87820;
+      --km-green:   #5BAD7A;
+      --km-lt:      #D4F5E0;
+      --sky:        #89C4F4;
+      --sky-lt:     #DFF0FF;
+      --green:      #78D98A;
+      --coral:      #FF8FAA;
+      --bg:         #F0FAF8;
+      --card:       #FFFFFF;
+      --text:       #1E3D38;
+      --sub:        #5A8A82;
+      --sh:         0 6px 24px rgba(0,0,0,0.09);
+      --r:          28px;
+      --r-sm:       16px;
+      --max-w:      min(900px, 92vw);
+    }
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1rem 1rem 4rem;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    * { -webkit-tap-highlight-color: transparent; }
+    button { touch-action: manipulation; -webkit-appearance: none; appearance: none; cursor: pointer; }
+
+    .container { width: var(--max-w); }
+
+    /* ── Nav ── */
+    .nav-bar { margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.6rem; }
+    .home-btn {
+      background: white; border: 2.5px solid var(--teal); border-radius: 999px;
+      padding: 0.4rem 1rem;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: clamp(0.75rem,2vw,0.95rem);
+      font-weight: 700; color: var(--teal-dk);
+      box-shadow: 0 2px 0 var(--teal-lt); transition: transform .1s, box-shadow .1s;
+    }
+    .home-btn:active { transform: translateY(2px); box-shadow: none; }
+
+    /* ── Screens ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card); border-radius: var(--r);
+      padding: clamp(1.5rem,4vw,2.5rem); box-shadow: var(--sh);
+    }
+
+    /* ── Common title ── */
+    .app-title {
+      font-family: 'Kaisei Decol', serif;
+      font-size: clamp(2rem,5.5vw,3rem); color: var(--teal-dk);
+      text-align: center; margin-bottom: 0.35rem;
+    }
+    .subtitle { text-align: center; font-size: clamp(0.9rem,2.2vw,1.15rem); color: var(--sub); margin-bottom: 1.5rem; }
+
+    /* ── Ruler deco ── */
+    .ruler-deco {
+      background: linear-gradient(90deg, #FFE082, #FFB800);
+      border-radius: 6px; height: 26px; margin-bottom: 1.4rem;
+      position: relative; overflow: hidden; display: flex; align-items: center;
+    }
+    .ruler-deco::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(90deg, transparent 0, transparent 19px, rgba(0,0,0,.15) 19px, rgba(0,0,0,.15) 20px);
+    }
+    .ruler-deco-text { position: relative; font-size: .75rem; font-weight: 700; color: #5A3A00; padding: 0 .8rem; }
+
+    /* ── Unit ref cards ── */
+    .unit-ref-wrap { display: flex; gap: 1rem; margin-bottom: 1.6rem; }
+    .unit-ref-card {
+      flex: 1; background: linear-gradient(135deg, #C8F5EE, #A8E6FF);
+      border-radius: 18px; padding: clamp(.9rem,2.5vw,1.4rem); text-align: center;
+    }
+    .unit-ref-label { font-family: 'Kaisei Decol', serif; font-size: clamp(1.5rem,4.5vw,2.3rem); font-weight: 700; color: var(--teal-dk); }
+    .unit-ref-formula { font-size: clamp(.9rem,2.3vw,1.2rem); font-weight: 700; color: #2B6B62; margin-top: .2rem; }
+
+    /* ── Mode selection ── */
+    .mode-heading { font-size: clamp(.85rem,2vw,1rem); font-weight: 700; color: var(--sub); text-align: center; margin-bottom: .7rem; letter-spacing: .05em; }
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; margin-bottom: 1.4rem; }
+    .mode-card {
+      background: var(--card); border: 3px solid #D5EEE8; border-radius: 20px;
+      padding: clamp(1rem,2.5vw,1.6rem) .8rem; text-align: center;
+      transition: border-color .15s, background .15s, transform .12s; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      position: relative;
+    }
+    .mode-card:active { transform: translateY(2px); }
+    .mode-card.selected.mc-lesson  { border-color: var(--amber); background: var(--amber-lt); }
+    .mode-card.selected.mc-practice{ border-color: var(--teal);  background: var(--teal-lt); }
+    .mode-icon { font-size: clamp(2rem,5vw,3rem); display: block; margin-bottom: .4rem; }
+    .mode-name { font-size: clamp(1rem,2.5vw,1.3rem); font-weight: 700; color: var(--text); margin-bottom: .25rem; }
+    .mode-desc { font-size: clamp(.78rem,1.8vw,.95rem); color: var(--sub); line-height: 1.5; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: block; width: 100%; border: none; border-radius: 999px;
+      padding: clamp(.85rem,2.5vw,1.2rem);
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: clamp(1.15rem,3vw,1.5rem);
+      font-weight: 700; text-align: center; cursor: pointer;
+      transition: transform .1s, box-shadow .1s;
+    }
+    .btn:active { transform: translateY(3px); box-shadow: 0 1px 4px rgba(0,0,0,.12) !important; }
+    .btn-start   { background: linear-gradient(135deg,var(--teal),var(--teal-dk)); color:#fff; font-size:clamp(1.2rem,3.2vw,1.7rem); box-shadow:0 5px 0 var(--teal-dk),0 7px 14px rgba(0,0,0,.13); }
+    .btn-primary { background: linear-gradient(135deg,var(--teal),var(--teal-dk)); color:#fff; box-shadow:0 4px 0 var(--teal-dk),0 6px 12px rgba(0,0,0,.11); }
+    .btn-secondary { background:#fff; color:var(--teal-dk); border:3px solid var(--teal); box-shadow:0 3px 0 var(--teal-lt); }
+    .btn-danger  { background:var(--coral); color:#fff; box-shadow:0 4px 0 #D96080; }
+    .btn-lesson  { background: linear-gradient(135deg,var(--amber),var(--amber-dk)); color:#fff; box-shadow:0 4px 0 var(--amber-dk); }
+    .btn-lesson-finish { background: linear-gradient(135deg,var(--km-green),#3A8A58); color:#fff; box-shadow:0 4px 0 #3A8A58; }
+
+    /* ═══════════════════════════
+       LESSON SCREEN
+    ═══════════════════════════ */
+    .lp-wrap { margin-bottom: 1rem; }
+    .lp-label { font-size: clamp(.78rem,2vw,.92rem); color: var(--sub); text-align: right; margin-bottom: .25rem; }
+    .lp-track { background: var(--amber-lt); border-radius: 999px; height: 11px; overflow: hidden; }
+    .lp-fill { height: 100%; background: linear-gradient(90deg,var(--amber),var(--amber-dk)); border-radius: 999px; transition: width .4s ease; }
+
+    .lstep { display: none; flex-direction: column; gap: 1rem; }
+    .lstep.active { display: flex; }
+
+    .lcard {
+      background: var(--card); border-radius: var(--r);
+      padding: clamp(1.4rem,3.5vw,2.2rem); box-shadow: var(--sh);
+      border: 3px solid var(--amber-lt);
+      display: flex; flex-direction: column; align-items: center; gap: clamp(.9rem,2vw,1.4rem);
+      text-align: center;
+    }
+    .lcard.lcard-km { border-color: var(--km-lt); }
+
+    .ls-badge {
+      display: inline-block; border-radius: 999px;
+      padding: .3rem 1.2rem;
+      font-size: clamp(.78rem,1.8vw,.95rem); font-weight: 700;
+    }
+    .ls-badge-mm { background: var(--amber); color: #fff; }
+    .ls-badge-km { background: var(--km-green); color: #fff; }
+
+    .ls-title { font-size: clamp(1.2rem,3vw,1.7rem); font-weight: 700; line-height: 1.4; }
+
+    .ls-formula-big {
+      font-family: 'Kaisei Decol', serif;
+      font-size: clamp(2.2rem,6vw,4rem); font-weight: 700; line-height: 1.2;
+    }
+    .fml-eq  { color: var(--sub); margin: 0 .3rem; }
+    .fml-hl  { color: var(--amber-dk); }
+    .fml-hlk { color: var(--km-green); }
+
+    /* mm blocks visual */
+    .mm-blocks-wrap { width: 100%; }
+    .mm-bracket-label {
+      font-size: clamp(.8rem,2vw,1rem); font-weight: 700; color: var(--amber-dk);
+      margin-bottom: .4rem;
+    }
+    .mm-blocks { display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; margin-bottom: .4rem; }
+    .mm-block {
+      width: clamp(26px,6.5vw,44px); height: clamp(26px,6.5vw,44px);
+      background: var(--amber-lt); border: 2.5px solid var(--amber);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: clamp(.7rem,1.5vw,.85rem); font-weight: 700; color: var(--amber-dk);
+    }
+    .mm-count-label { font-size: clamp(.78rem,1.8vw,.92rem); color: var(--sub); }
+
+    /* Ruler visual */
+    .ruler-vis-wrap { width: 100%; text-align: center; }
+    .ruler-vis {
+      display: inline-block;
+      width: min(300px, 90%);
+      height: 48px;
+      background: linear-gradient(135deg, #FFE082, #FFB800);
+      border: 2px solid #E8A000;
+      border-radius: 6px;
+      position: relative;
+      margin: .5rem auto;
+    }
+    .r-tick { position: absolute; top: 2px; width: 2px; background: #5A3A00; transform: translateX(-50%); }
+    .r-mm   { height: 28%; }
+    .r-5mm  { height: 46%; }
+    .r-cm   { height: 65%; }
+    .r-num  {
+      position: absolute; top: 100%; margin-top: 2px;
+      font-size: clamp(.6rem,1.3vw,.72rem); font-weight: 700;
+      color: #3A2000; transform: translateX(-50%); white-space: nowrap;
+    }
+    .ruler-cm-labels { display: flex; justify-content: space-between; width: min(304px,90.5%); margin: 0 auto .25rem; font-size: .65rem; color: #5A3A00; font-weight: 700; padding: 0 1px; }
+
+    /* Conversion diagram */
+    .conv-diag { display: flex; align-items: center; justify-content: center; gap: clamp(.6rem,2vw,1.2rem); flex-wrap: wrap; width: 100%; }
+    .conv-box {
+      border-radius: 14px; padding: clamp(.7rem,2vw,1rem) clamp(1rem,3vw,1.6rem);
+      font-family: 'Kaisei Decol', serif; font-size: clamp(1.4rem,3.5vw,2.2rem); font-weight: 700;
+    }
+    .conv-in   { background: var(--sky-lt);  border: 2.5px solid var(--sky); color: #1A4A8A; }
+    .conv-out  { background: var(--teal-lt); border: 2.5px solid var(--teal); color: var(--teal-dk); }
+    .conv-outk { background: var(--km-lt);   border: 2.5px solid var(--km-green); color: #2A6A42; }
+    .conv-mid { display: flex; flex-direction: column; align-items: center; gap: .15rem; }
+    .conv-op { font-size: clamp(1rem,2.5vw,1.4rem); font-weight: 700; color: var(--amber-dk); }
+    .conv-arr { font-size: clamp(1.4rem,3vw,2rem); color: var(--amber-dk); }
+
+    /* Example list */
+    .ls-ex-list { width: 100%; display: flex; flex-direction: column; gap: .55rem; }
+    .ls-ex-row { display: flex; align-items: center; justify-content: center; gap: clamp(.6rem,2vw,1rem); }
+    .ex-in  { background: var(--sky-lt);  border: 2px solid var(--sky); border-radius: 10px; padding: .35rem .9rem; font-weight: 700; font-size: clamp(1rem,2.5vw,1.3rem); }
+    .ex-arr { color: var(--sub); font-size: clamp(1rem,2.2vw,1.2rem); font-weight: 700; }
+    .ex-out { background: var(--teal-lt); border: 2px solid var(--teal); border-radius: 10px; padding: .35rem .9rem; font-weight: 700; font-size: clamp(1rem,2.5vw,1.3rem); color: var(--teal-dk); }
+    .ex-outk{ background: var(--km-lt);   border: 2px solid var(--km-green); border-radius: 10px; padding: .35rem .9rem; font-weight: 700; font-size: clamp(1rem,2.5vw,1.3rem); color: #2A6A42; }
+
+    /* Decomposition */
+    .decomp-vis { width: 100%; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+    .decomp-in {
+      font-family: 'Kaisei Decol', serif; font-size: clamp(1.6rem,4vw,2.4rem); font-weight: 700;
+      background: var(--sky-lt); border: 2.5px solid var(--sky); border-radius: 14px; padding: .5rem 1.4rem;
+    }
+    .decomp-down { font-size: 1.4rem; color: var(--sub); }
+    .decomp-parts { display: flex; align-items: flex-start; gap: .6rem; justify-content: center; flex-wrap: wrap; }
+    .decomp-part {
+      display: flex; flex-direction: column; align-items: center; gap: .3rem;
+      border-radius: 14px; padding: .6rem .9rem; min-width: 80px;
+    }
+    .dp-cm { background: var(--sky-lt); border: 2.5px solid var(--sky); }
+    .dp-mm { background: var(--teal-lt); border: 2.5px solid var(--teal); }
+    .dp-val { font-size: clamp(1rem,2.5vw,1.3rem); font-weight: 700; }
+    .dp-op  { font-size: clamp(.75rem,1.8vw,.9rem); color: var(--sub); }
+    .dp-res { font-size: clamp(1rem,2.5vw,1.3rem); font-weight: 700; }
+    .dp-plus { font-family: 'Kaisei Decol', serif; font-size: clamp(1.4rem,3.5vw,2rem); font-weight: 700; color: var(--sub); align-self: center; }
+    .decomp-out {
+      font-family: 'Kaisei Decol', serif; font-size: clamp(1.8rem,5vw,3rem); font-weight: 700;
+      background: linear-gradient(135deg,var(--teal-lt),#D4F5E0); border-radius: 16px; padding: .5rem 1.6rem;
+      border: 2.5px solid var(--teal);
+    }
+    .decomp-ans { color: var(--teal-dk); }
+
+    /* km road visual */
+    .km-road-vis { display: flex; align-items: center; gap: .8rem; width: 100%; }
+    .km-ep { text-align: center; font-size: clamp(2rem,5vw,3rem); flex-shrink: 0; }
+    .km-ep small { display: block; font-size: clamp(.7rem,1.5vw,.85rem); color: var(--sub); font-weight: 700; }
+    .km-road { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .25rem; }
+    .km-road-line { width: 100%; height: 5px; background: linear-gradient(90deg,var(--km-green),#3A8A58); border-radius: 999px; }
+    .km-road-lbl { font-size: clamp(.8rem,2vw,1rem); font-weight: 700; color: var(--km-green); }
+
+    /* Rule box */
+    .ls-rule-box {
+      display: flex; align-items: flex-start; gap: .7rem;
+      background: linear-gradient(135deg,#FFF8E6,#FFFDE0);
+      border: 2.5px solid var(--amber); border-radius: 14px;
+      padding: clamp(.7rem,1.8vw,1.1rem); width: 100%;
+    }
+    .ls-rule-box.rb-km { background: linear-gradient(135deg,#F0FFF6,#E8F8F0); border-color: var(--km-green); }
+    .ls-rule-icon { font-size: clamp(1.4rem,3vw,2rem); flex-shrink: 0; }
+    .ls-rule-text { font-size: clamp(.9rem,2.2vw,1.15rem); font-weight: 700; line-height: 1.6; text-align: left; }
+    .ls-rule-text em { font-style: normal; color: var(--amber-dk); background: var(--amber-lt); border-radius: 5px; padding: 0 5px; }
+    .ls-rule-text.rtk em { color: var(--km-green); background: var(--km-lt); }
+
+    /* Summary box */
+    .ls-sum-box {
+      width: 100%; background: linear-gradient(135deg,var(--teal-lt),var(--km-lt));
+      border-radius: 16px; padding: clamp(.9rem,2vw,1.3rem);
+      border: 2.5px solid var(--teal);
+    }
+    .ls-sum-title { font-weight: 700; color: var(--teal-dk); margin-bottom: .7rem; font-size: clamp(.85rem,2vw,1.05rem); }
+    .ls-sum-row { display: flex; align-items: center; gap: .7rem; margin-bottom: .5rem; }
+    .ls-sum-row:last-child { margin-bottom: 0; }
+    .sum-bdg {
+      border-radius: 999px; padding: .2rem .75rem;
+      font-size: clamp(.75rem,1.8vw,.9rem); font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .sum-mm { background: var(--amber-dk); }
+    .sum-km { background: var(--km-green); }
+    .sum-txt { font-size: clamp(.88rem,2.1vw,1.05rem); font-weight: 700; }
+    .sum-txt strong { color: var(--teal-dk); font-size: clamp(1rem,2.4vw,1.2rem); }
+
+    /* Lesson nav button */
+    .btn-lnav {
+      width: 100%; border: none; border-radius: 999px;
+      padding: clamp(.85rem,2.2vw,1.15rem);
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: clamp(1.1rem,2.8vw,1.45rem);
+      font-weight: 700; color: #fff; cursor: pointer; letter-spacing: .05em;
+      background: linear-gradient(135deg,var(--amber),var(--amber-dk));
+      box-shadow: 0 4px 0 var(--amber-dk); transition: transform .1s, box-shadow .1s;
+    }
+    .btn-lnav:active { transform: translateY(4px); box-shadow: none; }
+    .btn-lnav.lnav-finish { background: linear-gradient(135deg,var(--km-green),#3A8A58); box-shadow: 0 4px 0 #2A6A42; }
+
+    /* ── Lesson Done ── */
+    .ld-badge {
+      display: inline-block; background: var(--green); color: #fff;
+      border-radius: 999px; padding: .3rem 1.2rem;
+      font-size: clamp(.8rem,1.9vw,1rem); font-weight: 700; margin-bottom: .3rem;
+    }
+    .ld-chars { font-size: clamp(2.5rem,6vw,4rem); text-align: center; letter-spacing: .3rem; margin-bottom: .3rem; }
+    .ld-title { font-family: 'Kaisei Decol', serif; font-size: clamp(1.5rem,4vw,2.4rem); font-weight: 700; text-align: center; color: var(--teal-dk); margin-bottom: .3rem; }
+    .ld-sub { font-size: clamp(.9rem,2.2vw,1.1rem); color: var(--sub); text-align: center; margin-bottom: 1.2rem; }
+    .ld-review {
+      background: linear-gradient(135deg,var(--amber-lt),var(--km-lt));
+      border-radius: 16px; padding: clamp(.9rem,2vw,1.3rem); margin-bottom: 1.4rem;
+      border: 2.5px dashed var(--teal);
+    }
+    .ld-rev-row { display: flex; align-items: center; gap: .7rem; margin-bottom: .55rem; }
+    .ld-rev-row:last-child { margin-bottom: 0; }
+    .ld-rev-bdg { border-radius: 999px; padding: .2rem .7rem; font-size: clamp(.75rem,1.8vw,.9rem); font-weight: 700; color: #fff; }
+    .bdg-mm { background: var(--amber-dk); }
+    .bdg-km { background: var(--km-green); }
+    .ld-rev-fml { font-size: clamp(.95rem,2.3vw,1.2rem); font-weight: 700; }
+    .ld-btns { display: flex; flex-direction: column; gap: .8rem; }
+
+    /* ═══════════════════════════
+       PROBLEM SCREEN
+    ═══════════════════════════ */
+    .pg-label { text-align: right; font-size: clamp(.78rem,2vw,.92rem); color: var(--sub); margin-bottom: .25rem; }
+    .pg-track { background: #D8F5EF; border-radius: 999px; height: 12px; overflow: hidden; margin-bottom: 1.4rem; }
+    .pg-fill { height: 100%; background: linear-gradient(90deg,var(--teal),var(--teal-dk)); border-radius: 999px; transition: width .4s ease; }
+    .badge-hint { display: inline-block; background: var(--teal-lt); color: var(--teal-dk); border-radius: 10px; padding: .3rem .8rem; font-size: clamp(.78rem,2vw,.98rem); font-weight: 700; margin-bottom: 1.1rem; }
+    .question-box { min-height: clamp(4.5rem,10vw,7rem); display: flex; align-items: center; justify-content: center; margin-bottom: 1.4rem; }
+    .question-text { font-size: clamp(1.5rem,4vw,2.6rem); font-weight: 700; text-align: center; line-height: 1.5; }
+    .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-bottom: 1.1rem; }
+    .choice-btn {
+      background: white; border: 3px solid #C8EDE8; border-radius: 16px;
+      padding: clamp(.75rem,2.2vw,1.05rem) .5rem;
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: clamp(1.2rem,3.2vw,1.9rem); font-weight: 700;
+      color: var(--text); box-shadow: 0 3px 0 #C8EDE8;
+      transition: transform .1s, box-shadow .1s, background .12s, border-color .12s;
+    }
+    .choice-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+    .choice-btn.correct { background: var(--green);  border-color: #5BBD70; color: #fff; box-shadow: 0 3px 0 #5BBD70; }
+    .choice-btn.wrong   { background: var(--coral);  border-color: #D96080; color: #fff; box-shadow: 0 3px 0 #D96080; }
+    .choice-btn:disabled { cursor: default; }
+    .fb-box { display: none; border-radius: 16px; padding: .9rem 1.1rem; margin-bottom: 1.1rem; text-align: center; }
+    .fb-box.show { display: block; }
+    .fb-box.fb-ok { background: #D4F5DC; }
+    .fb-box.fb-ng { background: #FFE0EA; }
+    .fb-main { font-size: clamp(1.1rem,2.8vw,1.5rem); font-weight: 900; margin-bottom: .3rem; }
+    .fb-hint { font-size: clamp(.85rem,2vw,1.05rem); color: #2A2A2A; line-height: 1.55; }
+
+    /* ── Result ── */
+    .res-stars { font-size: clamp(2.8rem,7vw,4.5rem); text-align: center; margin: .5rem 0; }
+    .res-score { font-family: 'Kaisei Decol', serif; font-size: clamp(2.5rem,6.5vw,4rem); text-align: center; color: var(--teal-dk); font-weight: 700; }
+    .res-msg   { font-size: clamp(1.05rem,2.6vw,1.4rem); text-align: center; margin: .7rem 0 1.8rem; color: #2A5A52; }
+    .res-btns  { display: flex; gap: .8rem; }
+    .res-btns .btn { flex: 1; }
+
+    /* ── Popup ── */
+    .popup-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+    .popup-ov.show { display: flex; }
+    .popup-box { background: white; border-radius: 24px; padding: clamp(1.4rem,4vw,2rem); width: min(370px,90vw); text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+    .popup-title { font-size: clamp(1.05rem,2.8vw,1.35rem); font-weight: 700; margin-bottom: .4rem; }
+    .popup-body  { font-size: clamp(.85rem,2.1vw,1rem); color: #666; margin-bottom: 1.4rem; line-height: 1.55; }
+    .popup-btns  { display: flex; gap: .7rem; }
+    .popup-btns .btn { flex: 1; font-size: clamp(.95rem,2.3vw,1.2rem); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Nav -->
+  <div class="nav-bar">
+    <button class="home-btn" onclick="goHome()">🏠 まなびのへや</button>
+  </div>
+
+  <!-- ══════════════════════════
+       Screen: Start
+  ══════════════════════════ -->
+  <div id="screen-start" class="screen active">
+    <div class="card">
+      <div class="app-title">📏 ながさ もんだい</div>
+      <div class="subtitle">mm（ミリメートル）と km（キロメートル）</div>
+
+      <div class="ruler-deco"><span class="ruler-deco-text">📐 ものさし</span></div>
+
+      <div class="unit-ref-wrap">
+        <div class="unit-ref-card">
+          <div class="unit-ref-label">mm</div>
+          <div class="unit-ref-formula">1 cm = 10 mm</div>
+        </div>
+        <div class="unit-ref-card">
+          <div class="unit-ref-label">km</div>
+          <div class="unit-ref-formula">1 km = 1000 m</div>
+        </div>
+      </div>
+
+      <div class="mode-heading">モードをえらぼう！</div>
+      <div class="mode-grid">
+        <div class="mode-card mc-lesson" id="mc-lesson" onclick="selectMode('lesson')">
+          <div class="mode-icon">📖</div>
+          <div class="mode-name">レッスン</div>
+          <div class="mode-desc">はじめて学ぶ人は<br>これ！</div>
+        </div>
+        <div class="mode-card mc-practice selected" id="mc-practice" onclick="selectMode('practice')">
+          <div class="mode-icon">✏️</div>
+          <div class="mode-name">れんしゅう</div>
+          <div class="mode-desc">もんだいをとこう！</div>
+        </div>
+      </div>
+
+      <button class="btn btn-start" onclick="startSelected()">はじめる！</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       Screen: Lesson
+  ══════════════════════════ -->
+  <div id="screen-lesson" class="screen">
+    <div class="lp-wrap">
+      <div class="lp-label">ステップ <span id="lp-num">1</span> / 5</div>
+      <div class="lp-track"><div class="lp-fill" id="lp-fill" style="width:0%"></div></div>
+    </div>
+
+    <!-- Step 1: mm intro -->
+    <div class="lstep active" id="lstep-1">
+      <div class="lcard">
+        <div class="ls-badge ls-badge-mm">📏 mm（ミリメートル）</div>
+        <div class="ls-title">ものさしの いちばん小さい めもりです</div>
+
+        <div class="mm-blocks-wrap">
+          <div class="mm-bracket-label">← 1 cm のながさ →</div>
+          <div class="mm-blocks" id="mm-blocks"></div>
+          <div class="mm-count-label">1 こが 1 mm　ぜんぶで 10 こならんでいます</div>
+        </div>
+
+        <div class="ls-formula-big">
+          1 cm <span class="fml-eq">=</span> <span class="fml-hl">10</span> mm
+        </div>
+
+        <div class="ls-rule-box">
+          <div class="ls-rule-icon">💡</div>
+          <div class="ls-rule-text">cm（センチメートル）より さらに細かい長さを mm で あらわすことができます</div>
+        </div>
+      </div>
+      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+    </div>
+
+    <!-- Step 2: cm → mm -->
+    <div class="lstep" id="lstep-2">
+      <div class="lcard">
+        <div class="ls-badge ls-badge-mm">📐 cm から mm へ</div>
+        <div class="ls-title">cm の数を <span style="color:var(--amber-dk)">10 ばい</span> するよ！</div>
+
+        <div class="conv-diag">
+          <div class="conv-box conv-in">3 cm</div>
+          <div class="conv-mid">
+            <div class="conv-op">× 10</div>
+            <div class="conv-arr">→</div>
+          </div>
+          <div class="conv-box conv-out">30 mm</div>
+        </div>
+
+        <div class="ls-ex-list">
+          <div class="ls-ex-row">
+            <span class="ex-in">5 cm</span><span class="ex-arr">→</span><span class="ex-out">50 mm</span>
+          </div>
+          <div class="ls-ex-row">
+            <span class="ex-in">8 cm</span><span class="ex-arr">→</span><span class="ex-out">80 mm</span>
+          </div>
+          <div class="ls-ex-row">
+            <span class="ex-in">12 cm</span><span class="ex-arr">→</span><span class="ex-out">120 mm</span>
+          </div>
+        </div>
+
+        <div class="ls-rule-box">
+          <div class="ls-rule-icon">✅</div>
+          <div class="ls-rule-text">cm の数 <em>× 10</em> = mm の数</div>
+        </div>
+      </div>
+      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+    </div>
+
+    <!-- Step 3: cm + mm → mm -->
+    <div class="lstep" id="lstep-3">
+      <div class="lcard">
+        <div class="ls-badge ls-badge-mm">🔢 cm と mm がまざっているとき</div>
+        <div class="ls-title">2 cm 4 mm は なん mm？</div>
+
+        <div class="decomp-vis">
+          <div class="decomp-in">2 cm 4 mm</div>
+          <div class="decomp-down">↓</div>
+          <div class="decomp-parts">
+            <div class="decomp-part dp-cm">
+              <div class="dp-val">2 cm</div>
+              <div class="dp-op">↓ × 10</div>
+              <div class="dp-res">20 mm</div>
+            </div>
+            <div class="dp-plus">＋</div>
+            <div class="decomp-part dp-mm">
+              <div class="dp-val">4 mm</div>
+              <div class="dp-op">↓ そのまま</div>
+              <div class="dp-res">4 mm</div>
+            </div>
+          </div>
+          <div class="decomp-down">↓</div>
+          <div class="decomp-out">= <span class="decomp-ans">24</span> mm ✅</div>
+        </div>
+
+        <div class="ls-rule-box">
+          <div class="ls-rule-icon">💡</div>
+          <div class="ls-rule-text">cm の部分を <em>× 10</em> してから、mm をたす！</div>
+        </div>
+      </div>
+      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+    </div>
+
+    <!-- Step 4: km intro -->
+    <div class="lstep" id="lstep-4">
+      <div class="lcard lcard-km">
+        <div class="ls-badge ls-badge-km">🛣️ km（キロメートル）</div>
+        <div class="ls-title">とても長いきょりを あらわします</div>
+
+        <div class="km-road-vis">
+          <div class="km-ep">🏫<small>学校</small></div>
+          <div class="km-road">
+            <div class="km-road-line"></div>
+            <div class="km-road-lbl">1 km</div>
+          </div>
+          <div class="km-ep">🏪<small>スーパー</small></div>
+        </div>
+
+        <div class="ls-formula-big">
+          1 km <span class="fml-eq">=</span> <span class="fml-hlk">1000</span> m
+        </div>
+
+        <div class="ls-rule-box rb-km">
+          <div class="ls-rule-icon">💡</div>
+          <div class="ls-rule-text rtk">1000 m は　学校のグラウンドを <em>10 周</em> するぐらいの長さです</div>
+        </div>
+      </div>
+      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+    </div>
+
+    <!-- Step 5: km → m + summary -->
+    <div class="lstep" id="lstep-5">
+      <div class="lcard lcard-km">
+        <div class="ls-badge ls-badge-km">🗺️ km から m へ</div>
+        <div class="ls-title">km の数を <span style="color:var(--km-green)">1000 ばい</span> するよ！</div>
+
+        <div class="conv-diag">
+          <div class="conv-box conv-in">3 km</div>
+          <div class="conv-mid">
+            <div class="conv-op" style="color:var(--km-green)">× 1000</div>
+            <div class="conv-arr" style="color:var(--km-green)">→</div>
+          </div>
+          <div class="conv-box conv-outk">3000 m</div>
+        </div>
+
+        <div class="ls-ex-list">
+          <div class="ls-ex-row">
+            <span class="ex-in">2 km</span><span class="ex-arr">→</span><span class="ex-outk">2000 m</span>
+          </div>
+          <div class="ls-ex-row">
+            <span class="ex-in">5 km</span><span class="ex-arr">→</span><span class="ex-outk">5000 m</span>
+          </div>
+        </div>
+
+        <div class="ls-sum-box">
+          <div class="ls-sum-title">📝 まとめ</div>
+          <div class="ls-sum-row">
+            <span class="sum-bdg sum-mm">mm</span>
+            <span class="sum-txt">1 cm = <strong>10</strong> mm（× 10）</span>
+          </div>
+          <div class="ls-sum-row">
+            <span class="sum-bdg sum-km">km</span>
+            <span class="sum-txt">1 km = <strong>1000</strong> m（× 1000）</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-lnav lnav-finish" onclick="finishLesson()">れんしゅうへ ✨</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       Screen: Lesson Done
+  ══════════════════════════ -->
+  <div id="screen-lesson-done" class="screen">
+    <div class="card" style="text-align:center">
+      <div class="ld-badge">✅ レッスンおわり！</div>
+      <div class="ld-chars">🎉🌟🎉</div>
+      <div class="ld-title">すごい！ おぼえたね！</div>
+      <div class="ld-sub">おぼえたことを　かくにんしよう</div>
+
+      <div class="ld-review">
+        <div class="ld-rev-row">
+          <span class="ld-rev-bdg bdg-mm">mm</span>
+          <span class="ld-rev-fml">1 cm = 10 mm（cm × 10）</span>
+        </div>
+        <div class="ld-rev-row">
+          <span class="ld-rev-bdg bdg-km">km</span>
+          <span class="ld-rev-fml">1 km = 1000 m（km × 1000）</span>
+        </div>
+      </div>
+
+      <div class="ld-btns">
+        <button class="btn btn-secondary" onclick="startLesson()">もういちど みる 📖</button>
+        <button class="btn btn-primary" onclick="startGame()">れんしゅう もんだいへ ✏️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       Screen: Problem
+  ══════════════════════════ -->
+  <div id="screen-problem" class="screen">
+    <div class="card">
+      <div class="pg-label"><span id="q-num">1</span> / <span id="q-total">15</span> もんだい</div>
+      <div class="pg-track"><div class="pg-fill" id="pg-fill" style="width:0%"></div></div>
+
+      <div><span class="badge-hint" id="badge-hint">1 cm = 10 mm</span></div>
+
+      <div class="question-box">
+        <div class="question-text" id="question-text"></div>
+      </div>
+
+      <div class="choices-grid" id="choices-grid"></div>
+
+      <div class="fb-box" id="fb-box">
+        <div class="fb-main" id="fb-main"></div>
+        <div class="fb-hint" id="fb-hint"></div>
+      </div>
+
+      <button class="btn btn-primary" id="next-btn" style="display:none" onclick="nextQuestion()">
+        つぎのもんだい →
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════
+       Screen: Result
+  ══════════════════════════ -->
+  <div id="screen-result" class="screen">
+    <div class="card" style="text-align:center">
+      <div class="app-title">📏 けっか</div>
+      <div class="res-stars" id="res-stars"></div>
+      <div class="res-score" id="res-score"></div>
+      <div class="res-msg"   id="res-msg"></div>
+      <div class="res-btns">
+        <button class="btn btn-secondary" onclick="goHome()">🏠 もどる</button>
+        <button class="btn btn-primary"   onclick="startGame()">もういちど！</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Home popup -->
+<div class="popup-ov" id="popup-home">
+  <div class="popup-box">
+    <div class="popup-title">まなびのへやに もどる？</div>
+    <div class="popup-body">もどると　いまのもんだいは　きえるよ</div>
+    <div class="popup-btns">
+      <button class="btn btn-secondary" onclick="closePopup()">つづける</button>
+      <button class="btn btn-danger"    onclick="confirmGoHome()">もどる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ─── Problem bank ────────────────────────────────────────────────────────────
+const PROBLEMS = [
+  { q:"3 cm は　なん mm ですか？",       ans:30,   unit:"mm", choices:[30,3,20,40],      hint:"1 cm = 10 mm だから　3 × 10 = 30 mm",    badge:"1 cm = 10 mm" },
+  { q:"5 cm は　なん mm ですか？",       ans:50,   unit:"mm", choices:[50,5,40,60],      hint:"1 cm = 10 mm だから　5 × 10 = 50 mm",    badge:"1 cm = 10 mm" },
+  { q:"7 cm は　なん mm ですか？",       ans:70,   unit:"mm", choices:[70,7,60,80],      hint:"1 cm = 10 mm だから　7 × 10 = 70 mm",    badge:"1 cm = 10 mm" },
+  { q:"9 cm は　なん mm ですか？",       ans:90,   unit:"mm", choices:[90,9,80,100],     hint:"1 cm = 10 mm だから　9 × 10 = 90 mm",    badge:"1 cm = 10 mm" },
+  { q:"12 cm は　なん mm ですか？",      ans:120,  unit:"mm", choices:[120,12,100,130],  hint:"1 cm = 10 mm だから　12 × 10 = 120 mm",  badge:"1 cm = 10 mm" },
+  { q:"15 cm は　なん mm ですか？",      ans:150,  unit:"mm", choices:[150,15,140,160],  hint:"1 cm = 10 mm だから　15 × 10 = 150 mm",  badge:"1 cm = 10 mm" },
+  { q:"20 mm は　なん cm ですか？",      ans:2,    unit:"cm", choices:[2,20,1,3],        hint:"10 mm = 1 cm だから　20 ÷ 10 = 2 cm",    badge:"10 mm = 1 cm" },
+  { q:"50 mm は　なん cm ですか？",      ans:5,    unit:"cm", choices:[5,50,4,6],        hint:"10 mm = 1 cm だから　50 ÷ 10 = 5 cm",    badge:"10 mm = 1 cm" },
+  { q:"70 mm は　なん cm ですか？",      ans:7,    unit:"cm", choices:[7,70,6,8],        hint:"10 mm = 1 cm だから　70 ÷ 10 = 7 cm",    badge:"10 mm = 1 cm" },
+  { q:"90 mm は　なん cm ですか？",      ans:9,    unit:"cm", choices:[9,90,8,10],       hint:"10 mm = 1 cm だから　90 ÷ 10 = 9 cm",    badge:"10 mm = 1 cm" },
+  { q:"100 mm は　なん cm ですか？",     ans:10,   unit:"cm", choices:[10,100,9,11],     hint:"10 mm = 1 cm だから　100 ÷ 10 = 10 cm",  badge:"10 mm = 1 cm" },
+  { q:"1 cm 3 mm は　なん mm ですか？",  ans:13,   unit:"mm", choices:[13,10,3,12],      hint:"1 cm = 10 mm　10 ＋ 3 = 13 mm",          badge:"1 cm = 10 mm" },
+  { q:"2 cm 4 mm は　なん mm ですか？",  ans:24,   unit:"mm", choices:[24,20,4,26],      hint:"2 cm = 20 mm　20 ＋ 4 = 24 mm",          badge:"1 cm = 10 mm" },
+  { q:"3 cm 6 mm は　なん mm ですか？",  ans:36,   unit:"mm", choices:[36,30,6,34],      hint:"3 cm = 30 mm　30 ＋ 6 = 36 mm",          badge:"1 cm = 10 mm" },
+  { q:"4 cm 5 mm は　なん mm ですか？",  ans:45,   unit:"mm", choices:[45,40,5,44],      hint:"4 cm = 40 mm　40 ＋ 5 = 45 mm",          badge:"1 cm = 10 mm" },
+  { q:"5 cm 9 mm は　なん mm ですか？",  ans:59,   unit:"mm", choices:[59,50,9,55],      hint:"5 cm = 50 mm　50 ＋ 9 = 59 mm",          badge:"1 cm = 10 mm" },
+  { q:"8 cm 2 mm は　なん mm ですか？",  ans:82,   unit:"mm", choices:[82,80,2,79],      hint:"8 cm = 80 mm　80 ＋ 2 = 82 mm",          badge:"1 cm = 10 mm" },
+  { q:"1 km は　なん m ですか？",        ans:1000, unit:"m",  choices:[1000,100,10,2000],  hint:"1 km = 1000 m です",                     badge:"1 km = 1000 m" },
+  { q:"2 km は　なん m ですか？",        ans:2000, unit:"m",  choices:[2000,200,2,1000],   hint:"1 km = 1000 m だから　2 × 1000 = 2000 m", badge:"1 km = 1000 m" },
+  { q:"3 km は　なん m ですか？",        ans:3000, unit:"m",  choices:[3000,300,3,2000],   hint:"1 km = 1000 m だから　3 × 1000 = 3000 m", badge:"1 km = 1000 m" },
+  { q:"4 km は　なん m ですか？",        ans:4000, unit:"m",  choices:[4000,400,4,3000],   hint:"1 km = 1000 m だから　4 × 1000 = 4000 m", badge:"1 km = 1000 m" },
+  { q:"5 km は　なん m ですか？",        ans:5000, unit:"m",  choices:[5000,500,5,4000],   hint:"1 km = 1000 m だから　5 × 1000 = 5000 m", badge:"1 km = 1000 m" },
+  { q:"7 km は　なん m ですか？",        ans:7000, unit:"m",  choices:[7000,700,7,6000],   hint:"1 km = 1000 m だから　7 × 1000 = 7000 m", badge:"1 km = 1000 m" },
+  { q:"2000 m は　なん km ですか？",     ans:2,    unit:"km", choices:[2,2000,20,3],      hint:"1000 m = 1 km だから　2000 ÷ 1000 = 2 km", badge:"1000 m = 1 km" },
+  { q:"4000 m は　なん km ですか？",     ans:4,    unit:"km", choices:[4,4000,40,3],      hint:"1000 m = 1 km だから　4000 ÷ 1000 = 4 km", badge:"1000 m = 1 km" },
+  { q:"6000 m は　なん km ですか？",     ans:6,    unit:"km", choices:[6,6000,60,5],      hint:"1000 m = 1 km だから　6000 ÷ 1000 = 6 km", badge:"1000 m = 1 km" },
+  { q:"8000 m は　なん km ですか？",     ans:8,    unit:"km", choices:[8,8000,80,7],      hint:"1000 m = 1 km だから　8000 ÷ 1000 = 8 km", badge:"1000 m = 1 km" },
+  { q:"15 mm ＋ 20 mm は　なん mm ですか？", ans:35, unit:"mm", choices:[35,30,25,40],   hint:"15 ＋ 20 = 35 mm",                         badge:"1 cm = 10 mm" },
+  { q:"40 mm ＋ 35 mm は　なん mm ですか？", ans:75, unit:"mm", choices:[75,70,80,65],   hint:"40 ＋ 35 = 75 mm",                         badge:"1 cm = 10 mm" },
+  { q:"60 mm ＋ 25 mm は　なん mm ですか？", ans:85, unit:"mm", choices:[85,80,90,75],   hint:"60 ＋ 25 = 85 mm",                         badge:"1 cm = 10 mm" },
+];
+
+const TOTAL = 15;
+let queue    = [];
+let qIdx     = 0;
+let score    = 0;
+let answered = false;
+
+let selectedMode  = 'practice';
+let currentLStep  = 1;
+const TOTAL_LSTEPS = 5;
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ─── Mode selection ───────────────────────────────────────────────────────────
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById('mc-lesson').classList.toggle('selected', mode === 'lesson');
+  document.getElementById('mc-practice').classList.toggle('selected', mode === 'practice');
+}
+selectMode('practice');
+
+function startSelected() {
+  if (selectedMode === 'lesson') startLesson();
+  else startGame();
+}
+
+// ─── Lesson ───────────────────────────────────────────────────────────────────
+function buildMmBlocks() {
+  const wrap = document.getElementById('mm-blocks');
+  if (wrap.children.length > 0) return;
+  for (let i = 1; i <= 10; i++) {
+    const d = document.createElement('div');
+    d.className = 'mm-block';
+    d.textContent = i;
+    wrap.appendChild(d);
+  }
+}
+
+function startLesson() {
+  buildMmBlocks();
+  currentLStep = 1;
+  showLStep(1);
+  answered = false;
+  showScreen('screen-lesson');
+}
+
+function showLStep(n) {
+  document.querySelectorAll('.lstep').forEach(s => s.classList.remove('active'));
+  document.getElementById('lstep-' + n).classList.add('active');
+  document.getElementById('lp-num').textContent = n;
+  document.getElementById('lp-fill').style.width = (n / TOTAL_LSTEPS * 100) + '%';
+  currentLStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextLStep() {
+  if (currentLStep < TOTAL_LSTEPS) showLStep(currentLStep + 1);
+  else finishLesson();
+}
+
+function finishLesson() {
+  showScreen('screen-lesson-done');
+}
+
+// ─── Practice ─────────────────────────────────────────────────────────────────
+function startGame() {
+  queue    = shuffle(PROBLEMS).slice(0, TOTAL);
+  qIdx     = 0;
+  score    = 0;
+  answered = false;
+  showScreen('screen-problem');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const p = queue[qIdx];
+
+  document.getElementById('q-num').textContent    = qIdx + 1;
+  document.getElementById('q-total').textContent  = TOTAL;
+  document.getElementById('pg-fill').style.width  = (qIdx / TOTAL * 100) + '%';
+  document.getElementById('badge-hint').textContent = p.badge;
+  document.getElementById('question-text').textContent = p.q;
+
+  const fb = document.getElementById('fb-box');
+  fb.className = 'fb-box';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = '';
+  shuffle(p.choices).forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = val + ' ' + p.unit;
+    btn.dataset.val = val;
+    btn.onclick = () => checkAnswer(val, p);
+    grid.appendChild(btn);
+  });
+}
+
+function checkAnswer(chosen, p) {
+  if (answered) return;
+  answered = true;
+
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.disabled = true;
+    const v = Number(btn.dataset.val);
+    if (v === p.ans) btn.classList.add('correct');
+    else if (v === chosen) btn.classList.add('wrong');
+  });
+
+  const ok = chosen === p.ans;
+  if (ok) score++;
+
+  const fb = document.getElementById('fb-box');
+  document.getElementById('fb-main').textContent = ok ? '⭕ せいかい！' : 'もういちど！';
+  document.getElementById('fb-hint').textContent = ok
+    ? p.hint
+    : 'こたえは ' + p.ans + ' ' + p.unit + ' だよ！　' + p.hint;
+  fb.className = 'fb-box show ' + (ok ? 'fb-ok' : 'fb-ng');
+
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= TOTAL) showResult();
+  else renderQuestion();
+}
+
+function showResult() {
+  document.getElementById('pg-fill').style.width = '100%';
+  showScreen('screen-result');
+
+  const pct = score / TOTAL;
+  let stars, msg;
+  if      (pct === 1)  { stars = '🏆🎉🏆'; msg = 'ぜんぶ せいかい！ かんぺき だよ！'; }
+  else if (pct >= 0.8) { stars = '⭐⭐⭐';  msg = 'すごい！ もうすこしで かんぺき！'; }
+  else if (pct >= 0.6) { stars = '⭐⭐';    msg = 'いい かんじ！ もういちど チャレンジ しよう！'; }
+  else                 { stars = '💪';      msg = 'もういちど れんしゅう しよう！ がんばれ！'; }
+
+  document.getElementById('res-stars').textContent = stars;
+  document.getElementById('res-score').textContent = score + ' / ' + TOTAL + ' てん';
+  document.getElementById('res-msg').textContent   = msg;
+}
+
+// ─── Home navigation ──────────────────────────────────────────────────────────
+function goHome() {
+  const onLesson  = document.getElementById('screen-lesson').classList.contains('active');
+  const onProblem = document.getElementById('screen-problem').classList.contains('active');
+  if (onLesson || onProblem) {
+    document.getElementById('popup-home').classList.add('show');
+  } else {
+    window.location.href = '../index.html';
+  }
+}
+
+function closePopup()   { document.getElementById('popup-home').classList.remove('show'); }
+function confirmGoHome(){ window.location.href = '../index.html'; }
+</script>
+</body>
+</html>
