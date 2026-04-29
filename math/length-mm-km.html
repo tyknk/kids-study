@@ -351,8 +351,41 @@
     .fb-box.show { display: block; }
     .fb-box.fb-ok { background: #D4F5DC; }
     .fb-box.fb-ng { background: #FFE0EA; }
-    .fb-main { font-size: clamp(1.1rem,2.8vw,1.5rem); font-weight: 900; margin-bottom: .3rem; }
-    .fb-hint { font-size: clamp(.85rem,2vw,1.05rem); color: #2A2A2A; line-height: 1.55; }
+    .fb-main { font-size: clamp(1.1rem,2.8vw,1.5rem); font-weight: 900; margin-bottom: .5rem; }
+    .fb-visual { margin-top: .1rem; }
+
+    /* feedback visual: shared */
+    .fv-conv { display: flex; align-items: center; justify-content: center; gap: clamp(.4rem,1.5vw,.9rem); margin-bottom: .45rem; flex-wrap: wrap; }
+    .fv-box { border-radius: 12px; padding: .35rem .85rem; font-family: 'Kaisei Decol', serif; font-size: clamp(1.15rem,3vw,1.8rem); font-weight: 700; }
+    .fv-cm  { background: var(--sky-lt);  border: 2.5px solid var(--sky); color: #1A4A8A; }
+    .fv-mm  { background: var(--teal-lt); border: 2.5px solid var(--teal); color: var(--teal-dk); }
+    .fv-km  { background: var(--km-lt);   border: 2.5px solid var(--km-green); color: #2A6A42; }
+    .fv-m   { background: var(--sky-lt);  border: 2.5px solid var(--sky); color: #1A4A8A; }
+    .fv-ans { background: linear-gradient(135deg,var(--teal-lt),#D4F5E0); border: 2.5px solid var(--teal); color: var(--teal-dk); }
+    .fv-mid { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
+    .fv-op  { font-size: clamp(.9rem,2.2vw,1.25rem); font-weight: 700; color: var(--amber-dk); }
+    .fv-op-km { color: var(--km-green); }
+    .fv-arr { font-size: clamp(1.1rem,2.6vw,1.6rem); color: var(--amber-dk); }
+    .fv-arr-km { color: var(--km-green); }
+    .fv-rule { font-size: clamp(.78rem,1.9vw,.98rem); color: #2A2A2A; font-weight: 700; background: rgba(255,255,255,.7); border-radius: 8px; padding: .28rem .65rem; text-align: center; }
+
+    /* feedback visual: decomp (cm+mm→mm) */
+    .fv-decomp { display: flex; flex-direction: column; align-items: center; gap: .38rem; }
+    .fv-decomp-in { font-family: 'Kaisei Decol', serif; font-size: clamp(1.1rem,2.8vw,1.5rem); font-weight: 700; background: var(--sky-lt); border: 2px solid var(--sky); border-radius: 10px; padding: .3rem .95rem; color: #1A4A8A; }
+    .fv-decomp-arrow { font-size: 1.15rem; color: var(--sub); line-height: 1; }
+    .fv-decomp-parts { display: flex; align-items: flex-start; gap: .5rem; justify-content: center; flex-wrap: wrap; }
+    .fv-dpart { display: flex; flex-direction: column; align-items: center; gap: .18rem; border-radius: 10px; padding: .38rem .65rem; min-width: 70px; }
+    .fv-dpart-cm { background: var(--sky-lt);  border: 2px solid var(--sky); }
+    .fv-dpart-mm { background: var(--teal-lt); border: 2px solid var(--teal); }
+    .fv-dp-top { font-size: clamp(.9rem,2.2vw,1.1rem); font-weight: 700; }
+    .fv-dp-op  { font-size: clamp(.7rem,1.6vw,.84rem); color: var(--sub); }
+    .fv-dp-bot { font-size: clamp(.95rem,2.3vw,1.2rem); font-weight: 700; }
+    .fv-dplus { font-family: 'Kaisei Decol', serif; font-size: clamp(1.1rem,2.8vw,1.6rem); font-weight: 700; color: var(--sub); align-self: center; }
+    .fv-decomp-out { font-family: 'Kaisei Decol', serif; font-size: clamp(1.15rem,3vw,1.7rem); font-weight: 700; background: linear-gradient(135deg,var(--teal-lt),#D4F5E0); border-radius: 12px; padding: .38rem 1.1rem; border: 2px solid var(--teal); color: var(--teal-dk); }
+
+    /* feedback visual: addition */
+    .fv-add { display: flex; align-items: center; justify-content: center; gap: clamp(.3rem,.8vw,.55rem); flex-wrap: wrap; }
+    .fv-addop { font-family: 'Kaisei Decol', serif; font-size: clamp(1.1rem,2.8vw,1.6rem); font-weight: 700; color: var(--sub); }
 
     /* ── Result ── */
     .res-stars { font-size: clamp(2.8rem,7vw,4.5rem); text-align: center; margin: .5rem 0; }
@@ -633,7 +666,7 @@
 
       <div class="fb-box" id="fb-box">
         <div class="fb-main" id="fb-main"></div>
-        <div class="fb-hint" id="fb-hint"></div>
+        <div class="fb-visual" id="fb-visual"></div>
       </div>
 
       <button class="btn btn-primary" id="next-btn" style="display:none" onclick="nextQuestion()">
@@ -677,36 +710,36 @@
 
 // ─── Problem bank ────────────────────────────────────────────────────────────
 const PROBLEMS = [
-  { q:"3 cm は　なん mm ですか？",       ans:30,   unit:"mm", choices:[30,3,20,40],      hint:"1 cm = 10 mm だから　3 × 10 = 30 mm",    badge:"1 cm = 10 mm" },
-  { q:"5 cm は　なん mm ですか？",       ans:50,   unit:"mm", choices:[50,5,40,60],      hint:"1 cm = 10 mm だから　5 × 10 = 50 mm",    badge:"1 cm = 10 mm" },
-  { q:"7 cm は　なん mm ですか？",       ans:70,   unit:"mm", choices:[70,7,60,80],      hint:"1 cm = 10 mm だから　7 × 10 = 70 mm",    badge:"1 cm = 10 mm" },
-  { q:"9 cm は　なん mm ですか？",       ans:90,   unit:"mm", choices:[90,9,80,100],     hint:"1 cm = 10 mm だから　9 × 10 = 90 mm",    badge:"1 cm = 10 mm" },
-  { q:"12 cm は　なん mm ですか？",      ans:120,  unit:"mm", choices:[120,12,100,130],  hint:"1 cm = 10 mm だから　12 × 10 = 120 mm",  badge:"1 cm = 10 mm" },
-  { q:"15 cm は　なん mm ですか？",      ans:150,  unit:"mm", choices:[150,15,140,160],  hint:"1 cm = 10 mm だから　15 × 10 = 150 mm",  badge:"1 cm = 10 mm" },
-  { q:"20 mm は　なん cm ですか？",      ans:2,    unit:"cm", choices:[2,20,1,3],        hint:"10 mm = 1 cm だから　20 ÷ 10 = 2 cm",    badge:"10 mm = 1 cm" },
-  { q:"50 mm は　なん cm ですか？",      ans:5,    unit:"cm", choices:[5,50,4,6],        hint:"10 mm = 1 cm だから　50 ÷ 10 = 5 cm",    badge:"10 mm = 1 cm" },
-  { q:"70 mm は　なん cm ですか？",      ans:7,    unit:"cm", choices:[7,70,6,8],        hint:"10 mm = 1 cm だから　70 ÷ 10 = 7 cm",    badge:"10 mm = 1 cm" },
-  { q:"90 mm は　なん cm ですか？",      ans:9,    unit:"cm", choices:[9,90,8,10],       hint:"10 mm = 1 cm だから　90 ÷ 10 = 9 cm",    badge:"10 mm = 1 cm" },
-  { q:"100 mm は　なん cm ですか？",     ans:10,   unit:"cm", choices:[10,100,9,11],     hint:"10 mm = 1 cm だから　100 ÷ 10 = 10 cm",  badge:"10 mm = 1 cm" },
-  { q:"1 cm 3 mm は　なん mm ですか？",  ans:13,   unit:"mm", choices:[13,10,3,12],      hint:"1 cm = 10 mm　10 ＋ 3 = 13 mm",          badge:"1 cm = 10 mm" },
-  { q:"2 cm 4 mm は　なん mm ですか？",  ans:24,   unit:"mm", choices:[24,20,4,26],      hint:"2 cm = 20 mm　20 ＋ 4 = 24 mm",          badge:"1 cm = 10 mm" },
-  { q:"3 cm 6 mm は　なん mm ですか？",  ans:36,   unit:"mm", choices:[36,30,6,34],      hint:"3 cm = 30 mm　30 ＋ 6 = 36 mm",          badge:"1 cm = 10 mm" },
-  { q:"4 cm 5 mm は　なん mm ですか？",  ans:45,   unit:"mm", choices:[45,40,5,44],      hint:"4 cm = 40 mm　40 ＋ 5 = 45 mm",          badge:"1 cm = 10 mm" },
-  { q:"5 cm 9 mm は　なん mm ですか？",  ans:59,   unit:"mm", choices:[59,50,9,55],      hint:"5 cm = 50 mm　50 ＋ 9 = 59 mm",          badge:"1 cm = 10 mm" },
-  { q:"8 cm 2 mm は　なん mm ですか？",  ans:82,   unit:"mm", choices:[82,80,2,79],      hint:"8 cm = 80 mm　80 ＋ 2 = 82 mm",          badge:"1 cm = 10 mm" },
-  { q:"1 km は　なん m ですか？",        ans:1000, unit:"m",  choices:[1000,100,10,2000],  hint:"1 km = 1000 m です",                     badge:"1 km = 1000 m" },
-  { q:"2 km は　なん m ですか？",        ans:2000, unit:"m",  choices:[2000,200,2,1000],   hint:"1 km = 1000 m だから　2 × 1000 = 2000 m", badge:"1 km = 1000 m" },
-  { q:"3 km は　なん m ですか？",        ans:3000, unit:"m",  choices:[3000,300,3,2000],   hint:"1 km = 1000 m だから　3 × 1000 = 3000 m", badge:"1 km = 1000 m" },
-  { q:"4 km は　なん m ですか？",        ans:4000, unit:"m",  choices:[4000,400,4,3000],   hint:"1 km = 1000 m だから　4 × 1000 = 4000 m", badge:"1 km = 1000 m" },
-  { q:"5 km は　なん m ですか？",        ans:5000, unit:"m",  choices:[5000,500,5,4000],   hint:"1 km = 1000 m だから　5 × 1000 = 5000 m", badge:"1 km = 1000 m" },
-  { q:"7 km は　なん m ですか？",        ans:7000, unit:"m",  choices:[7000,700,7,6000],   hint:"1 km = 1000 m だから　7 × 1000 = 7000 m", badge:"1 km = 1000 m" },
-  { q:"2000 m は　なん km ですか？",     ans:2,    unit:"km", choices:[2,2000,20,3],      hint:"1000 m = 1 km だから　2000 ÷ 1000 = 2 km", badge:"1000 m = 1 km" },
-  { q:"4000 m は　なん km ですか？",     ans:4,    unit:"km", choices:[4,4000,40,3],      hint:"1000 m = 1 km だから　4000 ÷ 1000 = 4 km", badge:"1000 m = 1 km" },
-  { q:"6000 m は　なん km ですか？",     ans:6,    unit:"km", choices:[6,6000,60,5],      hint:"1000 m = 1 km だから　6000 ÷ 1000 = 6 km", badge:"1000 m = 1 km" },
-  { q:"8000 m は　なん km ですか？",     ans:8,    unit:"km", choices:[8,8000,80,7],      hint:"1000 m = 1 km だから　8000 ÷ 1000 = 8 km", badge:"1000 m = 1 km" },
-  { q:"15 mm ＋ 20 mm は　なん mm ですか？", ans:35, unit:"mm", choices:[35,30,25,40],   hint:"15 ＋ 20 = 35 mm",                         badge:"1 cm = 10 mm" },
-  { q:"40 mm ＋ 35 mm は　なん mm ですか？", ans:75, unit:"mm", choices:[75,70,80,65],   hint:"40 ＋ 35 = 75 mm",                         badge:"1 cm = 10 mm" },
-  { q:"60 mm ＋ 25 mm は　なん mm ですか？", ans:85, unit:"mm", choices:[85,80,90,75],   hint:"60 ＋ 25 = 85 mm",                         badge:"1 cm = 10 mm" },
+  { q:"3 cm は　なん mm ですか？",            ans:30,   unit:"mm", choices:[30,3,20,40],       type:'cm2mm',  vis:{from:3},    badge:"1 cm = 10 mm" },
+  { q:"5 cm は　なん mm ですか？",            ans:50,   unit:"mm", choices:[50,5,40,60],       type:'cm2mm',  vis:{from:5},    badge:"1 cm = 10 mm" },
+  { q:"7 cm は　なん mm ですか？",            ans:70,   unit:"mm", choices:[70,7,60,80],       type:'cm2mm',  vis:{from:7},    badge:"1 cm = 10 mm" },
+  { q:"9 cm は　なん mm ですか？",            ans:90,   unit:"mm", choices:[90,9,80,100],      type:'cm2mm',  vis:{from:9},    badge:"1 cm = 10 mm" },
+  { q:"12 cm は　なん mm ですか？",           ans:120,  unit:"mm", choices:[120,12,100,130],   type:'cm2mm',  vis:{from:12},   badge:"1 cm = 10 mm" },
+  { q:"15 cm は　なん mm ですか？",           ans:150,  unit:"mm", choices:[150,15,140,160],   type:'cm2mm',  vis:{from:15},   badge:"1 cm = 10 mm" },
+  { q:"20 mm は　なん cm ですか？",           ans:2,    unit:"cm", choices:[2,20,1,3],         type:'mm2cm',  vis:{from:20},   badge:"10 mm = 1 cm" },
+  { q:"50 mm は　なん cm ですか？",           ans:5,    unit:"cm", choices:[5,50,4,6],         type:'mm2cm',  vis:{from:50},   badge:"10 mm = 1 cm" },
+  { q:"70 mm は　なん cm ですか？",           ans:7,    unit:"cm", choices:[7,70,6,8],         type:'mm2cm',  vis:{from:70},   badge:"10 mm = 1 cm" },
+  { q:"90 mm は　なん cm ですか？",           ans:9,    unit:"cm", choices:[9,90,8,10],        type:'mm2cm',  vis:{from:90},   badge:"10 mm = 1 cm" },
+  { q:"100 mm は　なん cm ですか？",          ans:10,   unit:"cm", choices:[10,100,9,11],      type:'mm2cm',  vis:{from:100},  badge:"10 mm = 1 cm" },
+  { q:"1 cm 3 mm は　なん mm ですか？",       ans:13,   unit:"mm", choices:[13,10,3,12],       type:'mix2mm', vis:{cm:1,mm:3}, badge:"1 cm = 10 mm" },
+  { q:"2 cm 4 mm は　なん mm ですか？",       ans:24,   unit:"mm", choices:[24,20,4,26],       type:'mix2mm', vis:{cm:2,mm:4}, badge:"1 cm = 10 mm" },
+  { q:"3 cm 6 mm は　なん mm ですか？",       ans:36,   unit:"mm", choices:[36,30,6,34],       type:'mix2mm', vis:{cm:3,mm:6}, badge:"1 cm = 10 mm" },
+  { q:"4 cm 5 mm は　なん mm ですか？",       ans:45,   unit:"mm", choices:[45,40,5,44],       type:'mix2mm', vis:{cm:4,mm:5}, badge:"1 cm = 10 mm" },
+  { q:"5 cm 9 mm は　なん mm ですか？",       ans:59,   unit:"mm", choices:[59,50,9,55],       type:'mix2mm', vis:{cm:5,mm:9}, badge:"1 cm = 10 mm" },
+  { q:"8 cm 2 mm は　なん mm ですか？",       ans:82,   unit:"mm", choices:[82,80,2,79],       type:'mix2mm', vis:{cm:8,mm:2}, badge:"1 cm = 10 mm" },
+  { q:"1 km は　なん m ですか？",             ans:1000, unit:"m",  choices:[1000,100,10,2000], type:'km2m',   vis:{from:1},    badge:"1 km = 1000 m" },
+  { q:"2 km は　なん m ですか？",             ans:2000, unit:"m",  choices:[2000,200,2,1000],  type:'km2m',   vis:{from:2},    badge:"1 km = 1000 m" },
+  { q:"3 km は　なん m ですか？",             ans:3000, unit:"m",  choices:[3000,300,3,2000],  type:'km2m',   vis:{from:3},    badge:"1 km = 1000 m" },
+  { q:"4 km は　なん m ですか？",             ans:4000, unit:"m",  choices:[4000,400,4,3000],  type:'km2m',   vis:{from:4},    badge:"1 km = 1000 m" },
+  { q:"5 km は　なん m ですか？",             ans:5000, unit:"m",  choices:[5000,500,5,4000],  type:'km2m',   vis:{from:5},    badge:"1 km = 1000 m" },
+  { q:"7 km は　なん m ですか？",             ans:7000, unit:"m",  choices:[7000,700,7,6000],  type:'km2m',   vis:{from:7},    badge:"1 km = 1000 m" },
+  { q:"2000 m は　なん km ですか？",          ans:2,    unit:"km", choices:[2,2000,20,3],      type:'m2km',   vis:{from:2000}, badge:"1000 m = 1 km" },
+  { q:"4000 m は　なん km ですか？",          ans:4,    unit:"km", choices:[4,4000,40,3],      type:'m2km',   vis:{from:4000}, badge:"1000 m = 1 km" },
+  { q:"6000 m は　なん km ですか？",          ans:6,    unit:"km", choices:[6,6000,60,5],      type:'m2km',   vis:{from:6000}, badge:"1000 m = 1 km" },
+  { q:"8000 m は　なん km ですか？",          ans:8,    unit:"km", choices:[8,8000,80,7],      type:'m2km',   vis:{from:8000}, badge:"1000 m = 1 km" },
+  { q:"15 mm ＋ 20 mm は　なん mm ですか？",  ans:35,   unit:"mm", choices:[35,30,25,40],      type:'mm_add', vis:{a:15,b:20}, badge:"1 cm = 10 mm" },
+  { q:"40 mm ＋ 35 mm は　なん mm ですか？",  ans:75,   unit:"mm", choices:[75,70,80,65],      type:'mm_add', vis:{a:40,b:35}, badge:"1 cm = 10 mm" },
+  { q:"60 mm ＋ 25 mm は　なん mm ですか？",  ans:85,   unit:"mm", choices:[85,80,90,75],      type:'mm_add', vis:{a:60,b:25}, badge:"1 cm = 10 mm" },
 ];
 
 const TOTAL = 15;
@@ -821,6 +854,81 @@ function renderQuestion() {
   });
 }
 
+function buildFeedbackVisual(p) {
+  const { type, vis, ans } = p;
+
+  if (type === 'cm2mm') {
+    return `<div class="fv-conv">
+      <div class="fv-box fv-cm">${vis.from} cm</div>
+      <div class="fv-mid"><span class="fv-op">× 10</span><span class="fv-arr">→</span></div>
+      <div class="fv-box fv-mm">${ans} mm</div>
+    </div>
+    <div class="fv-rule">1 cm ＝ 10 mm　だから　cm の数 × 10 ＝ mm の数</div>`;
+  }
+
+  if (type === 'mm2cm') {
+    return `<div class="fv-conv">
+      <div class="fv-box fv-mm">${vis.from} mm</div>
+      <div class="fv-mid"><span class="fv-op">÷ 10</span><span class="fv-arr">→</span></div>
+      <div class="fv-box fv-cm">${ans} cm</div>
+    </div>
+    <div class="fv-rule">10 mm ＝ 1 cm　だから　mm の数 ÷ 10 ＝ cm の数</div>`;
+  }
+
+  if (type === 'mix2mm') {
+    const mmFromCm = vis.cm * 10;
+    return `<div class="fv-decomp">
+      <div class="fv-decomp-in">${vis.cm} cm ${vis.mm} mm</div>
+      <div class="fv-decomp-arrow">↓</div>
+      <div class="fv-decomp-parts">
+        <div class="fv-dpart fv-dpart-cm">
+          <div class="fv-dp-top">${vis.cm} cm</div>
+          <div class="fv-dp-op">× 10</div>
+          <div class="fv-dp-bot">${mmFromCm} mm</div>
+        </div>
+        <div class="fv-dplus">＋</div>
+        <div class="fv-dpart fv-dpart-mm">
+          <div class="fv-dp-top">${vis.mm} mm</div>
+          <div class="fv-dp-op">そのまま</div>
+          <div class="fv-dp-bot">${vis.mm} mm</div>
+        </div>
+      </div>
+      <div class="fv-decomp-arrow">↓</div>
+      <div class="fv-decomp-out">＝ ${ans} mm ✅</div>
+    </div>`;
+  }
+
+  if (type === 'km2m') {
+    return `<div class="fv-conv">
+      <div class="fv-box fv-km">${vis.from} km</div>
+      <div class="fv-mid"><span class="fv-op fv-op-km">× 1000</span><span class="fv-arr fv-arr-km">→</span></div>
+      <div class="fv-box fv-m">${ans} m</div>
+    </div>
+    <div class="fv-rule">1 km ＝ 1000 m　だから　km の数 × 1000 ＝ m の数</div>`;
+  }
+
+  if (type === 'm2km') {
+    return `<div class="fv-conv">
+      <div class="fv-box fv-m">${vis.from} m</div>
+      <div class="fv-mid"><span class="fv-op fv-op-km">÷ 1000</span><span class="fv-arr fv-arr-km">→</span></div>
+      <div class="fv-box fv-km">${ans} km</div>
+    </div>
+    <div class="fv-rule">1000 m ＝ 1 km　だから　m の数 ÷ 1000 ＝ km の数</div>`;
+  }
+
+  if (type === 'mm_add') {
+    return `<div class="fv-add">
+      <div class="fv-box fv-mm">${vis.a} mm</div>
+      <div class="fv-addop">＋</div>
+      <div class="fv-box fv-mm">${vis.b} mm</div>
+      <div class="fv-addop">＝</div>
+      <div class="fv-box fv-ans">${ans} mm</div>
+    </div>`;
+  }
+
+  return '';
+}
+
 function checkAnswer(chosen, p) {
   if (answered) return;
   answered = true;
@@ -836,10 +944,8 @@ function checkAnswer(chosen, p) {
   if (ok) score++;
 
   const fb = document.getElementById('fb-box');
-  document.getElementById('fb-main').textContent = ok ? '⭕ せいかい！' : 'もういちど！';
-  document.getElementById('fb-hint').textContent = ok
-    ? p.hint
-    : 'こたえは ' + p.ans + ' ' + p.unit + ' だよ！　' + p.hint;
+  document.getElementById('fb-main').textContent = ok ? '⭕ せいかい！' : '❌ こたえは ' + p.ans + ' ' + p.unit + ' だよ！';
+  document.getElementById('fb-visual').innerHTML = buildFeedbackVisual(p);
   fb.className = 'fb-box show ' + (ok ? 'fb-ok' : 'fb-ng');
 
   document.getElementById('next-btn').style.display = 'block';
