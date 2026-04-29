@@ -48,12 +48,13 @@
 
 ```
 子供達学習用/
-├── CLAUDE.md              ← このファイル
-├── AGENTS.md              ← ほぼ同内容の共通ガイド
+├── CLAUDE.md              ← このファイル（共通ガイドラインの正本）
+├── AGENTS.md              ← CLAUDE.md を参照（エージェント向け案内のみ記載）
 ├── index.html             ← 統合トップページ（親が設定する落ち着いたデザイン）
 └── math/
     ├── multiplication-division.html
     ├── division-with-remainder.html
+    ├── length-mm-km.html
     └── 教科書PDF/
         ├── 単元マップ.md
         └── 小3算数教科書(...).pdf
@@ -83,6 +84,20 @@
 | `manabi_room_name` | ユーザー名（JSON文字列） |
 | `manabi_room_days` | 学習日の配列（`["2025-04-01", ...]`） |
 | `manabi_room_module_{id}` | 各モジュールの進捗 `{ visitCount, lastVisited }` |
+| `manabi_room_parent_pin` | 保護者設定用PIN（4桁数字の文字列）。タイトルを5回タップで入力画面が出る |
+
+---
+
+## 教材追加フロー
+
+新しい学習アプリを追加するときの手順：
+
+1. **単元マップ確認** — `math/教科書PDF/単元マップ.md` でPDFファイルとページ範囲を確認
+2. **PDF → 画像変換** — `pdftoppm -png -r 150 -f <開始ページ> -l <終了ページ> <PDFパス> /tmp/unit/p`
+3. **内容把握** — 画像を読んで問題パターン・出題形式を把握
+4. **HTML作成** — このガイドラインに沿って単一HTMLファイルを `math/` 配下に作成
+5. **index.html に導線追加** — `UNITS` 配列と `MODULES` 配列に新しいエントリを追加
+6. **単元マップ更新** — 単元マップの「学習アプリ」欄を ✅ にしてファイル名を記載
 
 ---
 
