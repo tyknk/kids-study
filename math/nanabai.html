@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="なんばい もんだい">
+  <title>なんばい もんだい</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pur: #7C3AED;
+      --pur-lt: #EDE9FE;
+      --pur-dk: #5B21B6;
+      --ok: #78D98A;
+      --ng: #FF8FAA;
+      --bg: #F5F3FF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      background: var(--bg);
+      height: 100svh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .screen {
+      display: none;
+      width: min(900px, 92vw);
+      height: 100%;
+      min-height: 0;
+    }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-top: max(env(safe-area-inset-top), 10px);
+      padding-bottom: max(env(safe-area-inset-bottom), 10px);
+    }
+
+    /* ====== HOME BAR ====== */
+    .home-bar {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 12px;
+    }
+    .btn-home {
+      background: white;
+      border: 2px solid var(--pur);
+      color: var(--pur);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: clamp(0.8rem, 2.5vw, 1rem);
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .btn-home:active { transform: translateY(1px); }
+
+    /* ====== HOME POPUP ====== */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-overlay.show { display: flex; }
+    .popup-box {
+      background: white;
+      border-radius: 20px;
+      padding: 32px 24px;
+      width: min(360px, 88vw);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .popup-msg {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      font-weight: 700;
+      color: #333;
+      line-height: 1.7;
+    }
+    .popup-btns { display: flex; gap: 12px; justify-content: center; }
+    .btn-popup {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .btn-popup:active { transform: translateY(1px); }
+    .btn-popup.cancel { background: #eee; color: #555; }
+    .btn-popup.go { background: var(--pur); color: white; }
+
+    /* ====== START SCREEN ====== */
+    /* ====== VIEWPORT-FILLING WRAPPERS ====== */
+    .start-body {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: clamp(14px, 3vh, 36px);
+      overflow-y: auto; min-height: 0; width: 100%;
+    }
+    .result-body {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: clamp(8px, 2vh, 20px);
+      overflow-y: auto; min-height: 0; width: 100%;
+    }
+    .quiz-main {
+      flex: 1; display: flex; flex-direction: column;
+      gap: clamp(10px, 1.5vh, 18px); overflow-y: auto; min-height: 0;
+    }
+
+    .title-block { text-align: center; }
+    .title-icon { font-size: clamp(3rem, 8vw + 3vh, 6rem); line-height: 1.2; }
+    .title-main {
+      font-family: 'Kaisei Decol', serif;
+      font-size: clamp(2rem, 4vw + 2vh, 4.5rem);
+      color: var(--pur-dk);
+      font-weight: 700;
+      user-select: none;
+    }
+    .title-sub {
+      font-size: clamp(0.85rem, 2.4vw, 1rem);
+      color: #888;
+      margin-top: 6px;
+    }
+
+    .start-cards {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 2vh, 20px);
+      width: 100%;
+      max-width: 560px;
+    }
+    .start-card {
+      background: white;
+      border-radius: 20px;
+      padding: clamp(16px, 2.5vh, 28px) 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.12);
+      cursor: pointer;
+      border: 3px solid transparent;
+      min-height: 80px;
+    }
+    .start-card:active { border-color: var(--pur); box-shadow: 0 0 0 4px var(--pur-lt); }
+    .card-icon { font-size: 2.2rem; flex-shrink: 0; }
+    .card-text { flex: 1; }
+    .card-title {
+      font-size: clamp(1.1rem, 2vw + 1.2vh, 2rem);
+      font-weight: 700;
+      color: var(--pur-dk);
+    }
+    .card-desc {
+      font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+      color: #888;
+      margin-top: 3px;
+    }
+    .card-arrow { font-size: 1.5rem; color: var(--pur); flex-shrink: 0; }
+
+    /* ====== LESSON SCREEN ====== */
+    .lesson-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .lesson-title {
+      font-family: 'Kaisei Decol', serif;
+      font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+      color: var(--pur-dk);
+      font-weight: 700;
+    }
+    .lesson-step-ind {
+      background: var(--pur-lt);
+      color: var(--pur);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: clamp(0.8rem, 2vw, 0.95rem);
+      font-weight: 700;
+    }
+
+    .lesson-step { display: none; width: 100%; }
+    .lesson-step.active {
+      display: flex; flex-direction: column;
+      flex: 1; min-height: 0;
+    }
+
+    .lesson-card {
+      background: white;
+      border-radius: 20px;
+      padding: clamp(16px, 2.5vh, 32px) clamp(18px, 2.5vw, 28px);
+      margin-bottom: clamp(10px, 1.5vh, 16px);
+      box-shadow: 0 2px 8px rgba(124,58,237,0.1);
+      flex: 1; overflow-y: auto; min-height: 0;
+    }
+    .lesson-heading {
+      font-size: clamp(1.1rem, 2vw + 1.5vh, 2rem);
+      font-weight: 900;
+      color: var(--pur-dk);
+      margin-bottom: clamp(10px, 1.5vh, 18px);
+    }
+    .lesson-body {
+      font-size: clamp(1rem, 1.8vw + 1vh, 1.5rem);
+      color: #333;
+      line-height: 1.9;
+    }
+    .lesson-body p { margin-bottom: 4px; }
+    .lesson-body strong { color: var(--pur); }
+    .lesson-hl {
+      background: var(--pur-lt);
+      border-radius: 8px;
+      padding: clamp(6px, 1vh, 10px) 14px;
+      display: inline-block;
+      font-weight: 700;
+      color: var(--pur-dk);
+      margin: 6px 0;
+      font-size: clamp(1rem, 2vw + 1vh, 1.6rem);
+    }
+
+    /* tape diagram (lesson) */
+    .tape-wrap { margin: 16px 0; overflow-x: auto; }
+    .tape-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .tape-label {
+      font-size: clamp(0.8rem, 2.3vw, 0.95rem);
+      color: #666;
+      font-weight: 700;
+      min-width: 56px;
+      flex-shrink: 0;
+    }
+    .tape-seg {
+      border: 3px solid var(--pur);
+      border-radius: 6px;
+      background: var(--pur-lt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: clamp(0.9rem, 2.8vw, 1.2rem);
+      color: var(--pur-dk);
+      height: 50px;
+      min-width: 50px;
+      padding: 0 6px;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+    .tape-eq {
+      font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+      font-weight: 700;
+      color: #444;
+      margin-left: 8px;
+    }
+
+    /* lnav (lesson nav) */
+    .lnav-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .btn-lnav-back {
+      flex: 1;
+      max-width: 160px;
+      background: white;
+      border: 3px solid var(--pur);
+      color: var(--pur);
+      border-radius: 16px;
+      padding: 14px;
+      font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 52px;
+    }
+    .btn-lnav-back:active { transform: translateY(2px); }
+    .btn-lnav-next {
+      flex: 2;
+      max-width: 280px;
+      background: var(--pur);
+      border: none;
+      color: white;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--pur-dk);
+      min-height: 52px;
+    }
+    .btn-lnav-next:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pur-dk); }
+
+    /* ====== QUIZ SCREEN ====== */
+    .quiz-top {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .quiz-counter {
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      font-weight: 700;
+      color: var(--pur-dk);
+    }
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: #D8D4FF;
+      border-radius: 99px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--pur);
+      border-radius: 99px;
+      transition: width 0.3s;
+    }
+
+    .question-card {
+      background: white;
+      border-radius: 20px;
+      padding: clamp(16px, 2.5vh, 28px) 20px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.1);
+      flex-shrink: 0;
+    }
+    .question-icon { font-size: clamp(1.8rem, 4vw + 2vh, 4rem); margin-bottom: 4px; min-height: 1.2em; }
+    .question-badge {
+      display: inline-block;
+      background: var(--pur-lt);
+      color: var(--pur-dk);
+      border-radius: 20px;
+      padding: 3px 14px;
+      font-size: clamp(0.8rem, 1.5vw + 0.5vh, 1.1rem);
+      font-weight: 700;
+      margin-bottom: clamp(8px, 1.2vh, 16px);
+    }
+    .question-text {
+      font-size: clamp(1.5rem, 3vw + 2.5vh, 4rem);
+      font-weight: 900;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    .choices-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: clamp(8px, 1.2vh, 16px);
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+    }
+    .btn-choice {
+      background: white;
+      border: 3px solid #C4B5FD;
+      border-radius: 16px;
+      padding: clamp(12px, 2.5vh, 28px) 10px;
+      font-size: clamp(1.3rem, 2.5vw + 2.5vh, 3.5rem);
+      font-family: inherit;
+      font-weight: 900;
+      color: var(--pur-dk);
+      cursor: pointer;
+      box-shadow: 0 3px 0 #C4B5FD;
+    }
+    .btn-choice:active { transform: translateY(2px); box-shadow: 0 1px 0 #C4B5FD; }
+    .btn-choice.correct { background: var(--ok); border-color: #4CAF50; color: white; box-shadow: none; }
+    .btn-choice.wrong   { background: var(--ng); border-color: #E05B7D; color: white; box-shadow: none; }
+    .btn-choice:disabled { cursor: default; }
+
+    /* feedback */
+    .feedback-area { width: 100%; margin-bottom: 16px; }
+    .feedback-card {
+      border-radius: 20px;
+      padding: 20px 18px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .feedback-card.correct-fb { background: #F0FDF4; border: 3px solid #78D98A; }
+    .feedback-card.wrong-fb   { background: #FFF0F4; border: 3px solid #FF8FAA; }
+    .feedback-result-text {
+      font-size: clamp(1.1rem, 3.2vw, 1.4rem);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+    .feedback-card.correct-fb .feedback-result-text { color: #15803D; }
+    .feedback-card.wrong-fb   .feedback-result-text { color: #BE185D; }
+
+    /* tape in feedback */
+    .fb-tape-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 8px auto;
+    }
+    .fb-tape-seg {
+      border: 3px solid var(--pur);
+      border-radius: 7px;
+      background: var(--pur-lt);
+      width: 54px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: clamp(0.9rem, 2.8vw, 1.15rem);
+      color: var(--pur-dk);
+      flex-shrink: 0;
+    }
+    .fb-tape-total {
+      border: 3px solid #F59E0B;
+      border-radius: 7px;
+      background: #FFF3B0;
+      padding: 6px 14px;
+      font-weight: 900;
+      font-size: clamp(0.9rem, 2.8vw, 1.15rem);
+      color: #92400E;
+      margin-top: 6px;
+      display: inline-block;
+    }
+
+    /* arrow in feedback */
+    .fb-arrow-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 8px 0;
+      flex-wrap: wrap;
+    }
+    .fb-num-box {
+      border: 3px solid var(--pur);
+      border-radius: 10px;
+      background: var(--pur-lt);
+      padding: 8px 18px;
+      font-weight: 900;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      color: var(--pur-dk);
+    }
+    .fb-num-box.ans-box {
+      background: #FFF3B0;
+      border-color: #F59E0B;
+      color: #92400E;
+    }
+    .fb-arrow-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      font-weight: 700;
+      color: var(--pur);
+    }
+    .fb-arrow-sym { font-size: 1.4rem; }
+
+    .fb-formula {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: 700;
+      color: #555;
+      margin-top: 10px;
+    }
+
+    .btn-next-q {
+      width: 100%;
+      max-width: 400px;
+      background: var(--pur);
+      border: none;
+      color: white;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: clamp(1.05rem, 3vw, 1.25rem);
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--pur-dk);
+      min-height: 56px;
+    }
+    .btn-next-q:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pur-dk); }
+
+    /* ====== RESULT SCREEN ====== */
+    .result-icon { font-size: clamp(3rem, 6vw + 4vh, 7rem); }
+    .result-title {
+      font-family: 'Kaisei Decol', serif;
+      font-size: clamp(1.8rem, 3vw + 2.5vh, 4rem);
+      font-weight: 700;
+      color: var(--pur-dk);
+    }
+    .score-box {
+      background: white;
+      border-radius: 20px;
+      padding: clamp(16px, 2.5vh, 28px) 40px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.12);
+      width: 100%;
+      max-width: 400px;
+    }
+    .score-big {
+      font-family: 'Kaisei Decol', serif;
+      font-size: clamp(3rem, 5vw + 5vh, 7rem);
+      font-weight: 700;
+      color: var(--pur);
+    }
+    .score-denom {
+      font-size: clamp(1.2rem, 2vw + 1.5vh, 2.5rem);
+      color: #aaa;
+      font-weight: 700;
+    }
+    .score-label { font-size: clamp(0.85rem, 1.5vw + 0.5vh, 1.2rem); color: #999; margin-top: 2px; }
+    .result-msg {
+      font-size: clamp(1rem, 1.8vw + 1vh, 1.5rem);
+      font-weight: 700;
+      color: #555;
+      text-align: center;
+      line-height: 1.7;
+    }
+    .result-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .btn-retry {
+      background: var(--pur);
+      border: none;
+      color: white;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: clamp(1.05rem, 3vw, 1.25rem);
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--pur-dk);
+      min-height: 56px;
+    }
+    .btn-retry:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pur-dk); }
+    .btn-home-lg {
+      background: white;
+      border: 3px solid var(--pur);
+      color: var(--pur);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: clamp(1rem, 3vw, 1.15rem);
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 52px;
+    }
+    .btn-home-lg:active { transform: translateY(2px); }
+
+    /* ====== PARENT PIN MODAL ====== */
+    .pin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .pin-overlay.show { display: flex; }
+    .pin-box {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: min(340px, 88vw);
+      text-align: center;
+    }
+    .pin-title { font-size: 1.1rem; font-weight: 700; color: #333; margin-bottom: 14px; }
+    .pin-input {
+      width: 100%;
+      border: 3px solid var(--pur);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 1.5rem;
+      font-family: inherit;
+      text-align: center;
+      letter-spacing: 0.25em;
+      outline: none;
+      margin-bottom: 14px;
+    }
+    .pin-btns { display: flex; gap: 12px; }
+    .btn-pin {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 44px;
+    }
+    .btn-pin.cancel { background: #eee; color: #555; }
+    .btn-pin.go { background: var(--pur); color: white; }
+    .pin-msg { font-size: 0.9rem; color: #e05b7d; margin-top: 8px; min-height: 1.2em; }
+
+    /* ====== PC HOVER (タッチデバイスには適用しない) ====== */
+    @media (hover: hover) {
+      .btn-home:hover { background: var(--pur-lt); transition: background 0.15s; }
+      .start-card { transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+      .start-card:hover { border-color: var(--pur); box-shadow: 0 6px 20px rgba(124,58,237,0.22); transform: translateY(-2px); }
+      .btn-lnav-back { transition: background 0.15s; }
+      .btn-lnav-back:hover { background: var(--pur-lt); }
+      .btn-lnav-next { transition: background 0.15s; }
+      .btn-lnav-next:hover { background: var(--pur-dk); }
+      .btn-choice { transition: border-color 0.12s, background 0.12s; }
+      .btn-choice:hover:not(:disabled) { border-color: var(--pur); background: var(--pur-lt); }
+      .btn-next-q { transition: background 0.15s; }
+      .btn-next-q:hover { background: var(--pur-dk); }
+      .btn-retry { transition: background 0.15s; }
+      .btn-retry:hover { background: var(--pur-dk); }
+      .btn-home-lg { transition: background 0.15s; }
+      .btn-home-lg:hover { background: var(--pur-lt); }
+      .btn-popup.cancel:hover { background: #ddd; }
+      .btn-popup.go:hover { background: var(--pur-dk); }
+      .btn-pin.go:hover { background: var(--pur-dk); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HOME POPUP (クイズ中のみ表示) -->
+<div class="popup-overlay" id="homePopup">
+  <div class="popup-box">
+    <p class="popup-msg">もどると　いまの もんだいは<br>きえるよ。「まなびのへや」に もどる？</p>
+    <div class="popup-btns">
+      <button class="btn-popup cancel" onclick="closeHomePopup()">つづける</button>
+      <button class="btn-popup go" onclick="goHome()">もどる</button>
+    </div>
+  </div>
+</div>
+
+<!-- PARENT PIN MODAL -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-box">
+    <p class="pin-title">🔐 ほごしゃ せってい</p>
+    <input class="pin-input" id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="PIN">
+    <div class="pin-btns">
+      <button class="btn-pin cancel" onclick="closePinModal()">キャンセル</button>
+      <button class="btn-pin go" onclick="checkPin()">かくにん</button>
+    </div>
+    <p class="pin-msg" id="pinMsg"></p>
+  </div>
+</div>
+
+<!-- ======== START SCREEN ======== -->
+<section class="screen active" id="scrStart">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="start-body">
+    <div class="title-block">
+      <div class="title-icon">🔢</div>
+      <div class="title-main" id="startTitle" onclick="tapTitle()">なんばい もんだい</div>
+      <div class="title-sub">小学3年生・算数「何倍でしょう」</div>
+    </div>
+    <div class="start-cards">
+      <div class="start-card" onclick="startLesson()">
+        <div class="card-icon">📖</div>
+        <div class="card-text">
+          <div class="card-title">まなぶ</div>
+          <div class="card-desc">「なんばい」を いちから かくにん</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+      <div class="start-card" onclick="startQuiz()">
+        <div class="card-icon">✏️</div>
+        <div class="card-text">
+          <div class="card-title">もんだいを といてみる</div>
+          <div class="card-desc">15もん チャレンジ！</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======== LESSON SCREEN ======== -->
+<section class="screen" id="scrLesson">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="lesson-header">
+    <div class="lesson-title">📖 まなぶ</div>
+    <div class="lesson-step-ind" id="lStepInd">1 / 5</div>
+  </div>
+
+  <!-- STEP 1 : 「ばい」とは -->
+  <div class="lesson-step active" id="lstep1">
+    <div class="lesson-card">
+      <div class="lesson-heading">「ばい」って なに？</div>
+      <div class="lesson-body">
+        <p>おなじ かずを いくつか あわせたとき、<br>「<strong>なんばい</strong>」と いいます。</p>
+        <br>
+        <p>たとえば　2こ の <strong>3ばい</strong> は 6こ</p>
+        <div class="tape-wrap">
+          <div class="tape-row">
+            <div class="tape-label">2こ×3＝</div>
+            <div class="tape-seg">2こ</div>
+            <div class="tape-seg">2こ</div>
+            <div class="tape-seg">2こ</div>
+            <div class="tape-eq">＝ 6こ</div>
+          </div>
+        </div>
+        <p>2こ を 3つ あわせると → <span class="lesson-hl">6こ</span></p>
+        <br>
+        <p>「6は　2の　<strong>3ばい</strong>」と いいます。</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 : なんばい？ → わり算 -->
+  <div class="lesson-step" id="lstep2">
+    <div class="lesson-card">
+      <div class="lesson-heading">「なんばい？」 を もとめる</div>
+      <div class="lesson-body">
+        <p>「○は　△の　なんばいですか？」<br>→ <strong>わり算</strong> で もとめます。</p>
+        <br>
+        <div class="lesson-hl">○ ÷ △ ＝ なんばい</div>
+        <br>
+        <p>れい：「12は　4の　なんばいですか？」</p>
+        <div class="tape-wrap">
+          <div class="tape-row">
+            <div class="tape-label">4ずつ→</div>
+            <div class="tape-seg">4</div>
+            <div class="tape-seg">4</div>
+            <div class="tape-seg">4</div>
+            <div class="tape-eq">＝ 12</div>
+          </div>
+        </div>
+        <p>12 ÷ 4 ＝ <strong>3</strong></p>
+        <p>→ 12は　4の　<span class="lesson-hl">3ばい</span> です。</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 : ○の□ばい → かけ算 -->
+  <div class="lesson-step" id="lstep3">
+    <div class="lesson-card">
+      <div class="lesson-heading">「○の　□ばい」 を もとめる</div>
+      <div class="lesson-body">
+        <p>「○の　□ばいは　いくつですか？」<br>→ <strong>かけ算</strong> で もとめます。</p>
+        <br>
+        <div class="lesson-hl">○ × □ ＝ こたえ</div>
+        <br>
+        <p>れい：「5の　3ばいは　いくつですか？」</p>
+        <div class="tape-wrap">
+          <div class="tape-row">
+            <div class="tape-seg">5</div>
+            <div class="tape-seg">5</div>
+            <div class="tape-seg">5</div>
+            <div class="tape-eq">5 × 3 ＝ <strong>15</strong></div>
+          </div>
+        </div>
+        <p>→ 5の　3ばいは　<span class="lesson-hl">15</span> です。</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 : 文章題れんしゅう -->
+  <div class="lesson-step" id="lstep4">
+    <div class="lesson-card">
+      <div class="lesson-heading">もんだいで れんしゅう 🎀</div>
+      <div class="lesson-body">
+        <p>みどりのリボンは <strong>3cm</strong>。<br>
+        あかいリボンは　みどりの <strong>5ばい</strong>。<br>
+        あかいリボンは　なんcm？</p>
+        <br>
+        <p>テープ図で かんがえよう：</p>
+        <div class="tape-wrap">
+          <div class="tape-row">
+            <div class="tape-label">みどり→</div>
+            <div class="tape-seg">3cm</div>
+          </div>
+          <div class="tape-row">
+            <div class="tape-label">あか→</div>
+            <div class="tape-seg">3cm</div>
+            <div class="tape-seg">3cm</div>
+            <div class="tape-seg">3cm</div>
+            <div class="tape-seg">3cm</div>
+            <div class="tape-seg">3cm</div>
+          </div>
+        </div>
+        <p>3 × 5 ＝ <strong>15</strong></p>
+        <p>→ あかいリボンは　<span class="lesson-hl">15cm</span> です！</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 : まとめ -->
+  <div class="lesson-step" id="lstep5">
+    <div class="lesson-card">
+      <div class="lesson-heading">まとめ ✨</div>
+      <div class="lesson-body">
+        <p><strong>「なんばい？」</strong> を もとめるとき</p>
+        <div class="lesson-hl">○ ÷ △ ＝ なんばい</div>
+        <br>
+        <p><strong>「○の　□ばい」</strong> を もとめるとき</p>
+        <div class="lesson-hl">○ × □ ＝ こたえ</div>
+        <br>
+        <p>テープ図を かくと　わかりやすいよ！<br>もんだいを といてみよう！</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="startQuiz()">もんだいに ちょうせん！ ›</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======== QUIZ SCREEN ======== -->
+<section class="screen" id="scrQuiz">
+  <div class="home-bar">
+    <button class="btn-home" onclick="requestHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="quiz-top">
+    <div class="quiz-counter" id="qProgText">1 / 15もん</div>
+    <div class="quiz-counter" id="qScoreText">⭐ 0</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="qProgBar" style="width:0%"></div>
+  </div>
+  <div class="quiz-main">
+    <div class="question-card">
+      <div class="question-icon" id="qIcon"></div>
+      <div class="question-badge" id="qBadge"></div>
+      <div class="question-text" id="qText"></div>
+    </div>
+    <div class="choices-grid" id="choicesGrid"></div>
+    <div class="feedback-area" id="feedbackArea" style="display:none"></div>
+    <button class="btn-next-q" id="btnNextQ" onclick="nextQuestion()" style="display:none">つぎの もんだい ›</button>
+  </div>
+</section>
+
+<!-- ======== RESULT SCREEN ======== -->
+<section class="screen" id="scrResult">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="result-body">
+    <div class="result-icon" id="resultIcon">🎉</div>
+    <div class="result-title" id="resultTitle">すごい！</div>
+    <div class="score-box">
+      <div>
+        <span class="score-big" id="scoreBig">0</span><span class="score-denom"> / 15</span>
+      </div>
+      <div class="score-label">せいかい！</div>
+    </div>
+    <p class="result-msg" id="resultMsg"></p>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="startQuiz()">もういちど やる</button>
+      <button class="btn-home-lg" onclick="directHome()">🏠 まなびのへやへ もどる</button>
+    </div>
+  </div>
+</section>
+
+<script>
+'use strict';
+
+const MODULE_ID = 'math-nanabai-mondai';
+const KEY_MODULE = 'manabi_room_module_' + MODULE_ID;
+const KEY_DAYS   = 'manabi_room_days';
+const KEY_PIN    = 'manabi_room_parent_pin';
+const QUIZ_COUNT = 15;
+
+// --- LocalStorage helpers ---
+function loadJson(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function saveJson(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+// --- Visit tracking (once per load) ---
+function recordVisit() {
+  const mod = loadJson(KEY_MODULE) || { visitCount: 0, lastVisited: null };
+  mod.visitCount = (mod.visitCount || 0) + 1;
+  const today = new Date().toISOString().slice(0, 10);
+  mod.lastVisited = today;
+  saveJson(KEY_MODULE, mod);
+  const days = loadJson(KEY_DAYS) || [];
+  if (!days.includes(today)) { days.push(today); saveJson(KEY_DAYS, days); }
+}
+
+// --- Screen management ---
+const SCREEN_IDS = ['scrStart', 'scrLesson', 'scrQuiz', 'scrResult'];
+function showScreen(id) {
+  SCREEN_IDS.forEach(s => document.getElementById(s).classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// --- Home navigation ---
+let midQuiz = false;
+function directHome() { location.href = '../index.html'; }
+function requestHome() {
+  if (midQuiz) document.getElementById('homePopup').classList.add('show');
+  else directHome();
+}
+function closeHomePopup() { document.getElementById('homePopup').classList.remove('show'); }
+function goHome() { closeHomePopup(); directHome(); }
+
+// --- Title tap → parent PIN ---
+let tapCount = 0, tapTimer = null;
+function tapTitle() {
+  tapCount++;
+  clearTimeout(tapTimer);
+  if (tapCount >= 5) { tapCount = 0; openPinModal(); return; }
+  tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+}
+
+// --- Parent PIN modal ---
+function openPinModal() {
+  document.getElementById('pinInput').value = '';
+  document.getElementById('pinMsg').textContent = '';
+  document.getElementById('pinOverlay').classList.add('show');
+}
+function closePinModal() { document.getElementById('pinOverlay').classList.remove('show'); }
+function checkPin() {
+  const stored = localStorage.getItem(KEY_PIN);
+  const entered = document.getElementById('pinInput').value;
+  if (!stored) {
+    if (/^\d{4}$/.test(entered)) {
+      localStorage.setItem(KEY_PIN, entered);
+      document.getElementById('pinMsg').textContent = 'PINを とうろくしました！';
+      setTimeout(closePinModal, 1200);
+    } else {
+      document.getElementById('pinMsg').textContent = '4けたの かずを いれてね';
+    }
+  } else {
+    if (entered === stored) {
+      document.getElementById('pinMsg').textContent = '✅ せいかい！';
+      setTimeout(() => { closePinModal(); showParentSettings(); }, 800);
+    } else {
+      document.getElementById('pinMsg').textContent = '❌ ちがいます';
+    }
+  }
+}
+function showParentSettings() {
+  const mod = loadJson(KEY_MODULE) || {};
+  if (confirm('このアプリを あけた かず: ' + (mod.visitCount || 0) + 'かい\n\nデータをリセットしますか？')) {
+    Object.keys(localStorage).filter(k => k.startsWith('manabi_room')).forEach(k => localStorage.removeItem(k));
+    alert('リセットしました');
+    location.reload();
+  }
+}
+
+// --- Lesson navigation ---
+let currentLStep = 1;
+const TOTAL_LSTEPS = 5;
+
+function showLStep(n) {
+  for (let i = 1; i <= TOTAL_LSTEPS; i++) {
+    document.getElementById('lstep' + i).classList.toggle('active', i === n);
+  }
+  document.getElementById('lStepInd').textContent = n + ' / ' + TOTAL_LSTEPS;
+  currentLStep = n;
+  window.scrollTo(0, 0);
+}
+function nextLStep() { if (currentLStep < TOTAL_LSTEPS) showLStep(currentLStep + 1); }
+function prevLStep() { if (currentLStep > 1) showLStep(currentLStep - 1); }
+
+function startLesson() {
+  showLStep(1);
+  showScreen('scrLesson');
+}
+
+// --- Problem bank ---
+const PROBLEMS = [
+  // find_mult (10問)
+  { q:'6は　2の　なんばいですか？',   type:'find_mult',   base:2, ans:3, choices:[3,2,4,6],    unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'12は　4の　なんばいですか？',  type:'find_mult',   base:4, ans:3, choices:[3,4,2,8],    unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'15は　3の　なんばいですか？',  type:'find_mult',   base:3, ans:5, choices:[5,3,4,6],    unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'20は　5の　なんばいですか？',  type:'find_mult',   base:5, ans:4, choices:[4,5,3,15],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'24は　6の　なんばいですか？',  type:'find_mult',   base:6, ans:4, choices:[4,5,3,18],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'18は　3の　なんばいですか？',  type:'find_mult',   base:3, ans:6, choices:[6,5,4,15],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'16は　4の　なんばいですか？',  type:'find_mult',   base:4, ans:4, choices:[4,3,5,12],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'21は　7の　なんばいですか？',  type:'find_mult',   base:7, ans:3, choices:[3,4,2,14],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'36は　9の　なんばいですか？',  type:'find_mult',   base:9, ans:4, choices:[4,3,5,27],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'28は　7の　なんばいですか？',  type:'find_mult',   base:7, ans:4, choices:[4,3,5,21],   unit:'ばい', badge:'○÷△＝なんばい' },
+  // find_result (10問)
+  { q:'3の　4ばいは　いくつですか？', type:'find_result', base:3, mult:4, ans:12, choices:[12,7,9,15],    unit:'', badge:'△×□＝こたえ' },
+  { q:'5の　3ばいは　いくつですか？', type:'find_result', base:5, mult:3, ans:15, choices:[15,8,12,20],   unit:'', badge:'△×□＝こたえ' },
+  { q:'4の　6ばいは　いくつですか？', type:'find_result', base:4, mult:6, ans:24, choices:[24,10,20,30],  unit:'', badge:'△×□＝こたえ' },
+  { q:'6の　5ばいは　いくつですか？', type:'find_result', base:6, mult:5, ans:30, choices:[30,11,25,36],  unit:'', badge:'△×□＝こたえ' },
+  { q:'7の　3ばいは　いくつですか？', type:'find_result', base:7, mult:3, ans:21, choices:[21,10,14,24],  unit:'', badge:'△×□＝こたえ' },
+  { q:'2の　8ばいは　いくつですか？', type:'find_result', base:2, mult:8, ans:16, choices:[16,10,12,18],  unit:'', badge:'△×□＝こたえ' },
+  { q:'8の　4ばいは　いくつですか？', type:'find_result', base:8, mult:4, ans:32, choices:[32,12,24,36],  unit:'', badge:'△×□＝こたえ' },
+  { q:'9の　3ばいは　いくつですか？', type:'find_result', base:9, mult:3, ans:27, choices:[27,12,18,30],  unit:'', badge:'△×□＝こたえ' },
+  { q:'5の　7ばいは　いくつですか？', type:'find_result', base:5, mult:7, ans:35, choices:[35,12,30,40],  unit:'', badge:'△×□＝こたえ' },
+  { q:'6の　7ばいは　いくつですか？', type:'find_result', base:6, mult:7, ans:42, choices:[42,13,36,48],  unit:'', badge:'△×□＝こたえ' },
+  // word_mult (4問)
+  { q:'あおいリボンは 12cm、きいろいリボンは 4cm です。あおいリボンは　きいろいリボンの　なんばいですか？',
+    type:'word_mult', icon:'🎀', base:4, ans:3, choices:[3,4,2,8],   unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'えんぴつが 15本 あります。3本の　なんばいですか？',
+    type:'word_mult', icon:'✏️', base:3, ans:5, choices:[5,4,3,12],  unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'シールが 24まい あります。6まいの　なんばいですか？',
+    type:'word_mult', icon:'⭐', base:6, ans:4, choices:[4,3,5,18],  unit:'ばい', badge:'○÷△＝なんばい' },
+  { q:'あめが 20こ あります。4この　なんばいですか？',
+    type:'word_mult', icon:'🍬', base:4, ans:5, choices:[5,4,6,16],  unit:'ばい', badge:'○÷△＝なんばい' },
+  // word_result (4問)
+  { q:'みどりのリボンは 5cm です。6ばいに のばすと　なんcm になりますか？',
+    type:'word_result', icon:'🎀', base:5, mult:6, ans:30, choices:[30,11,25,36], unit:'cm',  badge:'△×□＝こたえ' },
+  { q:'えんぴつが 4本 あります。3ばいは　なん本ですか？',
+    type:'word_result', icon:'✏️', base:4, mult:3, ans:12, choices:[12,7,9,16],   unit:'本',  badge:'△×□＝こたえ' },
+  { q:'シールが 7まい あります。4ばいは　なんまいですか？',
+    type:'word_result', icon:'⭐', base:7, mult:4, ans:28, choices:[28,11,21,32], unit:'まい', badge:'△×□＝こたえ' },
+  { q:'カードが 8まい あります。5ばいは　なんまいですか？',
+    type:'word_result', icon:'🃏', base:8, mult:5, ans:40, choices:[40,13,32,45], unit:'まい', badge:'△×□＝こたえ' },
+];
+
+// --- Quiz state ---
+let quizProblems = [];
+let qIdx = 0;
+let score = 0;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  quizProblems = shuffle(PROBLEMS).slice(0, QUIZ_COUNT);
+  qIdx = 0;
+  score = 0;
+  midQuiz = true;
+  showScreen('scrQuiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const p = quizProblems[qIdx];
+  answered = false;
+
+  document.getElementById('qProgText').textContent = (qIdx + 1) + ' / ' + QUIZ_COUNT + 'もん';
+  document.getElementById('qScoreText').textContent = '⭐ ' + score;
+  document.getElementById('qProgBar').style.width = (qIdx / QUIZ_COUNT * 100) + '%';
+
+  document.getElementById('qIcon').textContent = p.icon || '';
+  document.getElementById('qBadge').textContent = p.badge;
+  document.getElementById('qText').textContent = p.q;
+
+  document.getElementById('feedbackArea').style.display = 'none';
+  document.getElementById('btnNextQ').style.display = 'none';
+
+  const grid = document.getElementById('choicesGrid');
+  grid.innerHTML = '';
+  shuffle(p.choices).forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-choice';
+    btn.dataset.val = val;
+    btn.textContent = val + (p.unit ? ' ' + p.unit : '');
+    btn.onclick = () => selectAnswer(val, btn, p);
+    grid.appendChild(btn);
+  });
+}
+
+function selectAnswer(val, btn, p) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = (val === p.ans);
+  if (isCorrect) score++;
+
+  document.querySelectorAll('.btn-choice').forEach(b => {
+    b.disabled = true;
+    if (Number(b.dataset.val) === p.ans) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  showFeedback(p, isCorrect);
+  document.getElementById('qScoreText').textContent = '⭐ ' + score;
+
+  const btnNext = document.getElementById('btnNextQ');
+  btnNext.style.display = 'block';
+  btnNext.textContent = (qIdx + 1 >= QUIZ_COUNT) ? 'けっかを みる →' : 'つぎの もんだい ›';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= QUIZ_COUNT) { midQuiz = false; showResult(); }
+  else renderQuestion();
+}
+
+// --- Feedback visual ---
+function buildFeedbackVisual(p) {
+  if (p.type === 'find_mult' || p.type === 'word_mult') {
+    // テープ図: ans個のbase、合計は ans×base
+    const total = p.ans * p.base;
+    let segs = '';
+    for (let i = 0; i < p.ans; i++) segs += '<div class="fb-tape-seg">' + p.base + '</div>';
+    return '<div class="fb-tape-wrap">' + segs + '</div>'
+      + '<div style="text-align:center;margin-top:6px"><span class="fb-tape-total">' + total + '</span></div>'
+      + '<div class="fb-formula">' + total + ' ÷ ' + p.base + ' ＝ ' + p.ans + 'ばい</div>';
+  } else {
+    // 矢印図: base ×mult→ ans
+    return '<div class="fb-arrow-box">'
+      + '<div class="fb-num-box">' + p.base + '</div>'
+      + '<div class="fb-arrow-label"><span>× ' + p.mult + '</span><span class="fb-arrow-sym">→</span></div>'
+      + '<div class="fb-num-box ans-box">' + p.ans + (p.unit ? ' ' + p.unit : '') + '</div>'
+      + '</div>'
+      + '<div class="fb-formula">' + p.base + ' × ' + p.mult + ' ＝ ' + p.ans + (p.unit ? ' ' + p.unit : '') + '</div>';
+  }
+}
+
+function showFeedback(p, isCorrect) {
+  const area = document.getElementById('feedbackArea');
+  area.style.display = 'block';
+  const cls = isCorrect ? 'correct-fb' : 'wrong-fb';
+  const ansDisp = p.ans + (p.unit ? ' ' + p.unit : '');
+  const resultText = isCorrect
+    ? '⭕ せいかい！ すごい！'
+    : '❌ ざんねん… こたえは「' + ansDisp + '」だよ';
+  area.innerHTML = '<div class="feedback-card ' + cls + '">'
+    + '<div class="feedback-result-text">' + resultText + '</div>'
+    + '<div>' + buildFeedbackVisual(p) + '</div>'
+    + '</div>';
+  area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// --- Result screen ---
+function showResult() {
+  document.getElementById('scoreBig').textContent = score;
+  let icon, title, msg;
+  const pct = score / QUIZ_COUNT;
+  if (pct >= 0.9)      { icon = '🎉'; title = 'かんぺき！';          msg = 'ぜんぶ できた！ すごすぎ！'; }
+  else if (pct >= 0.7) { icon = '😊'; title = 'よくできました！';    msg = 'もうすこし で かんぺき！ もういちど やってみよう！'; }
+  else if (pct >= 0.5) { icon = '💪'; title = 'がんばった！';        msg = 'まなぶ を よんでから　もういちど ちょうせんしよう！'; }
+  else                  { icon = '📖'; title = 'もういちど まなぼう！'; msg = '「まなぶ」を　もう一度 よんでみよう！'; }
+  document.getElementById('resultIcon').textContent  = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent   = msg;
+  showScreen('scrResult');
+}
+
+// --- Init ---
+recordVisit();
+</script>
+</body>
+</html>

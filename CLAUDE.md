@@ -27,10 +27,30 @@
 - `-webkit-tap-highlight-color: transparent` でタップハイライト除去
 - ボタンには `:active` 時の押し込みアニメーション（`translateY` + `box-shadow` 縮小）
 
+### PC（デスクトップ）最適化
+- **iPadメインだが、将来のPC利用を見越して最初からPC最適化も組み込む**
+- ホバー効果は `@media (hover: hover)` で囲む（タッチデバイスに誤適用しないため）
+- ボタン・カード・選択肢など全インタラクティブ要素に `:hover` スタイルを付与
+- `transition: all 0.15s` 等でアニメーションをスムーズに
+- 例：
+  ```css
+  @media (hover: hover) {
+    .btn-example:hover { background: var(--accent-dark); }
+    .card-example:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .btn-choice:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-lt); }
+  }
+  ```
+
 ### レイアウト・サイズ
-- フォントサイズはすべて `clamp(min, vw, max)` でスケーラブルに
+- **ビューポートを最大限に使う**：`body { height: 100svh; overflow: hidden; display: flex; flex-direction: column; align-items: center; }` で画面全体を埋める
+- `.screen.active { display: flex; flex-direction: column; height: 100%; overflow: hidden; }` でアクティブ画面がビューポートを占有
+- 問題カード・選択肢など主要コンテンツは `flex: 1; min-height: 0;` で残り高さを埋める
+- コンテンツが溢れる可能性のある領域（フィードバック表示後など）は `overflow-y: auto` でスクロール対応
+- スタート・結果画面は `.start-body / .result-body { flex: 1; justify-content: center; }` で縦中央揃え
+- フォントサイズは `clamp(min, Xvw + Yvh, max)` で**幅・高さ両方**に連動させる（`vw` のみ禁止）
+  - 例：問題文 `clamp(1.5rem, 3vw + 2.5vh, 4rem)`、選択肢 `clamp(1.3rem, 2.5vw + 2.5vh, 3.5rem)`
 - 最大幅は `min(900px, 92vw)` 程度を目安
-- 子ども向けアプリは大きめフォント（問題文は `clamp(2.5rem, 6vw, 7rem)` 程度）
+- 選択肢グリッドは `grid-template-rows: 1fr 1fr` で縦にも均等に埋める
 
 ### フォント
 - **Zen Maru Gothic**（本文・ボタン）— Google Fonts
@@ -41,7 +61,7 @@
 
 ```html
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>アプリ名</title>
@@ -50,7 +70,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
 ```
 
-`maximum-scale=1.0` と Apple 向け meta の2行は Safari の挙動差を防ぐために必須。省略しないこと。
+- `maximum-scale=1.0` と Apple 向け meta の2行は Safari の挙動差を防ぐために必須。省略しないこと。
+- `viewport-fit=cover` は iPhone のノッチ・ホームバー周辺の `env(safe-area-inset-*)` を有効にするために必須。
+- body の `min-height` は `100svh`（small viewport height）を使うこと。`100vh` は iOS Safari でアドレスバーを含む高さになり下部が隠れる。
+- body の `padding` は `max(env(safe-area-inset-top), 上余白)` の形式で safe-area に対応させること。
 
 ### カラー
 - 子ども向けアプリ：ラベンダー・ピンク・ミント系（明るく楽しい）
