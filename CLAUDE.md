@@ -37,6 +37,21 @@
 - **Kaisei Decol**（タイトル・見出し）— Google Fonts
 - 両フォントを `<link>` で読み込む
 
+### 共通 `<head>` テンプレート（新規アプリ必須）
+
+```html
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>アプリ名</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+```
+
+`maximum-scale=1.0` と Apple 向け meta の2行は Safari の挙動差を防ぐために必須。省略しないこと。
+
 ### カラー
 - 子ども向けアプリ：ラベンダー・ピンク・ミント系（明るく楽しい）
 - トップページ（まなびのへや）：落ち着いたパープル・グレー系

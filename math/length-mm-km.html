@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>ながさ もんだい（mm・km）</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -293,8 +295,9 @@
     .sum-txt strong { color: var(--teal-dk); font-size: clamp(1rem,2.4vw,1.2rem); }
 
     /* Lesson nav button */
+    .lnav-row { display: flex; gap: .6rem; }
     .btn-lnav {
-      width: 100%; border: none; border-radius: 999px;
+      flex: 1; width: auto; border: none; border-radius: 999px;
       padding: clamp(.85rem,2.2vw,1.15rem);
       font-family: 'Zen Maru Gothic', sans-serif; font-size: clamp(1.1rem,2.8vw,1.45rem);
       font-weight: 700; color: #fff; cursor: pointer; letter-spacing: .05em;
@@ -303,6 +306,15 @@
     }
     .btn-lnav:active { transform: translateY(4px); box-shadow: none; }
     .btn-lnav.lnav-finish { background: linear-gradient(135deg,var(--km-green),#3A8A58); box-shadow: 0 4px 0 #2A6A42; }
+    .btn-lnav-back {
+      flex-shrink: 0; border: 2.5px solid var(--amber); border-radius: 999px;
+      padding: clamp(.85rem,2.2vw,1.15rem) clamp(1rem,2.8vw,1.4rem);
+      font-family: 'Zen Maru Gothic', sans-serif; font-size: clamp(1rem,2.4vw,1.3rem);
+      font-weight: 700; color: var(--amber-dk); cursor: pointer;
+      background: #fff; box-shadow: 0 3px 0 var(--amber-lt);
+      transition: transform .1s, box-shadow .1s;
+    }
+    .btn-lnav-back:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--amber-lt); }
 
     /* ── Lesson Done ── */
     .ld-badge {
@@ -516,7 +528,10 @@
           <div class="ls-rule-text">cm の数 <em>× 10</em> = mm の数</div>
         </div>
       </div>
-      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+      <div class="lnav-row">
+        <button class="btn-lnav-back" onclick="prevLStep()">← もどる</button>
+        <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+      </div>
     </div>
 
     <!-- Step 3: cm + mm → mm -->
@@ -550,7 +565,10 @@
           <div class="ls-rule-text">cm の部分を <em>× 10</em> してから、mm をたす！</div>
         </div>
       </div>
-      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+      <div class="lnav-row">
+        <button class="btn-lnav-back" onclick="prevLStep()">← もどる</button>
+        <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+      </div>
     </div>
 
     <!-- Step 4: km intro -->
@@ -577,7 +595,10 @@
           <div class="ls-rule-text rtk">1000 m は　学校のグラウンドを <em>10 周</em> するぐらいの長さです</div>
         </div>
       </div>
-      <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+      <div class="lnav-row">
+        <button class="btn-lnav-back" onclick="prevLStep()">← もどる</button>
+        <button class="btn-lnav" onclick="nextLStep()">つぎへ →</button>
+      </div>
     </div>
 
     <!-- Step 5: km → m + summary -->
@@ -616,7 +637,10 @@
           </div>
         </div>
       </div>
-      <button class="btn-lnav lnav-finish" onclick="finishLesson()">れんしゅうへ ✨</button>
+      <div class="lnav-row">
+        <button class="btn-lnav-back" onclick="prevLStep()">← もどる</button>
+        <button class="btn-lnav lnav-finish" onclick="finishLesson()">れんしゅうへ ✨</button>
+      </div>
     </div>
   </div>
 
@@ -812,6 +836,10 @@ function showLStep(n) {
 function nextLStep() {
   if (currentLStep < TOTAL_LSTEPS) showLStep(currentLStep + 1);
   else finishLesson();
+}
+
+function prevLStep() {
+  if (currentLStep > 1) showLStep(currentLStep - 1);
 }
 
 function finishLesson() {

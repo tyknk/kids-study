@@ -1,2 +1,5 @@
 .DS_Store
 Thumbs.db
+
+# 教科書PDFはローカル専用（著作権上gitにはコミットしない）
+*.pdf

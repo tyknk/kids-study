@@ -766,8 +766,9 @@ input {
         <input class="field-input" id="setup-name-input" type="text" maxlength="20" placeholder="れいこ" autocomplete="off" autocorrect="off" spellcheck="false">
         <div class="setup-actions">
           <button class="btn btn-primary" type="button" id="setup-save-btn" disabled>はじめる</button>
+          <button class="btn btn-secondary" type="button" id="setup-skip-btn">あとでいれる</button>
         </div>
-        <div class="setup-help">なまえを入れると「はじめる」がおせるよ。</div>
+        <div class="setup-help">なまえはあとからでも入れられるよ。</div>
       </div>
     </div>
   </section>
@@ -905,6 +906,7 @@ input {
 const KEY_NAME = "manabi_room_name";
 const KEY_DAYS = "manabi_room_days";
 const KEY_PROG_PREFIX = "manabi_room_module_";
+const KEY_VISITED = "manabi_room_visited";
 
 const SUBJECTS = [
   {
@@ -1345,6 +1347,10 @@ document.getElementById("name-input").addEventListener("keydown", (event) => {
   if (event.key === "Enter") saveNameFromInput("name-input");
 });
 document.getElementById("setup-save-btn").addEventListener("click", () => saveNameFromInput("setup-name-input"));
+document.getElementById("setup-skip-btn").addEventListener("click", () => {
+  localStorage.setItem(KEY_VISITED, "1");
+  showMainScreen();
+});
 document.getElementById("setup-name-input").addEventListener("input", (event) => {
   document.getElementById("setup-save-btn").disabled = event.target.value.trim().length === 0;
 });
@@ -1364,7 +1370,7 @@ renderStats();
 renderTabs();
 renderActiveSubject();
 
-if (loadJson(KEY_NAME)) showMainScreen();
+if (loadJson(KEY_NAME) || localStorage.getItem(KEY_VISITED)) showMainScreen();
 else showSetupScreen();
 
 // ─── 保護者モーダル ───────────────────────────────────────
