@@ -550,7 +550,7 @@ body {
     <div class="title-block">
       <div class="title-icon">🔢</div>
       <div class="title-main">おおきな数 もんだい</div>
-      <div class="title-sub">小学3年生・算数「大きな数（一万を超える数）」</div>
+      <div class="title-sub">小学3年生・算数「おおきな数（一万を こえる数）」</div>
     </div>
     <div class="start-cards">
       <div class="start-card" onclick="startLesson()">
@@ -693,7 +693,7 @@ const PROBLEMS = [
   {type:'write', txt:'いちせんまん',           ans:10000000, ch:[10000000,1000000,100000000,10000]},
   {type:'write', txt:'しちまんごひゃく',       ans:70500,    ch:[70500,7500,705000,75000]},
 
-  // けいさん: 大きな数の＋－（4問）
+  // けいさん: おおきな数の＋－（4問）
   {type:'calc', q:'3まん ＋ 4まん ＝',   ans:'7まん',  ch:['7まん','34まん','12まん','8まん']},
   {type:'calc', q:'8まん － 5まん ＝',   ans:'3まん',  ch:['3まん','13まん','4まん','2まん']},
   {type:'calc', q:'20まん ＋ 30まん ＝', ans:'50まん', ch:['50まん','5まん','500まん','23まん']},
@@ -723,7 +723,7 @@ const LESSON_STEPS = [
           <div class="chain-num">10,000</div>
         </div>
       </div>
-      <p>「万（まん）」は 千より 大きな くらい。<br>
+      <p>「万（まん）」は 千より おおきな くらい。<br>
       二万(20,000)、三万(30,000)… と数えるよ。</p>
       <div class="read-box">
         <div class="read-num">10,000</div>
@@ -738,7 +738,7 @@ const LESSON_STEPS = [
     `
   },
   {
-    title: '万の 位の よみかた',
+    title: '万の くらいの よみかた',
     html: `
       <p><strong>万・千・百・十・一</strong> の くらいに わけて よもう！</p>
       ${makeKuraiTable([0,0,0,3,2,0,0,0], 3)}
@@ -757,7 +757,7 @@ const LESSON_STEPS = [
     `
   },
   {
-    title: 'もっと 大きな 数',
+    title: 'もっと おおきな 数',
     html: `
       <p>万が 10こで <strong>十万</strong>、さらに 大きくなっていくよ！</p>
       <div class="chain-wrap">
@@ -769,7 +769,7 @@ const LESSON_STEPS = [
         <div class="chain-arrow">×10</div>
         <div class="chain-item"><div class="chain-name">千万</div><div class="chain-num">10,000,000</div></div>
         <div class="chain-arrow">×10</div>
-        <div class="chain-item"><div class="chain-name" style="color:#6B21A8">一億</div><div class="chain-num">100,000,000</div></div>
+        <div class="chain-item"><div class="chain-name" style="color:#6B21A8">いちおく</div><div class="chain-num">100,000,000</div></div>
       </div>
       ${makeKuraiTable([4,5,0,0,0,0,0,0], 3)}
       <div class="read-box">
@@ -777,11 +777,11 @@ const LESSON_STEPS = [
         <div class="read-arrow">→</div>
         <div class="read-yomi">よんせんごひゃくまん</div>
       </div>
-      <p class="lesson-note">💡 千万が 10こ あつまると 「一億（いちおく）」！</p>
+      <p class="lesson-note">💡 千万が 10こ あつまると 「いちおく（100,000,000）」！</p>
     `
   },
   {
-    title: '大きな数の けいさん',
+    title: 'おおきな数の けいさん',
     html: `
       <p><strong>「まん」を 1かたまり</strong> として かんがえると かんたん！</p>
       <div class="calc-box">
@@ -890,7 +890,7 @@ function renderQuestion() {
     read:  { text:'よみかた', cls:'badge-read'  },
     write: { text:'かきかた', cls:'badge-write' },
     calc:  { text:'けいさん', cls:'badge-calc'  },
-    big:   { text:'大小比べ', cls:'badge-big'   },
+    big:   { text:'大小くらべ', cls:'badge-big'   },
   }[p.type];
   const badge = document.getElementById('q-badge');
   badge.textContent = badgeInfo.text;
