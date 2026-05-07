@@ -278,6 +278,17 @@
     .feedback-card.wrong-fb   .feedback-result-text { color: #BE185D; }
     .fb-hissan { font-size: clamp(1rem, 2.5vw + 1vh, 1.8rem); padding: 8px 12px; box-shadow: none; }
 
+    .fb-hint {
+      display: flex; align-items: flex-start; gap: 8px;
+      background: #FFF7ED; border: 2px solid #FDBA74; border-radius: 12px;
+      padding: 10px 14px; margin-top: 10px; text-align: left;
+    }
+    .fb-hint-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .fb-hint-text {
+      font-size: clamp(0.88rem, 1.8vw + 0.8vh, 1.05rem);
+      font-weight: 700; color: #92400E; line-height: 1.85;
+    }
+
     .btn-next-q {
       width: 100%; max-width: 400px; align-self: center;
       background: var(--org); border: none; color: white;
@@ -673,6 +684,80 @@ function nextLStep() { if (currentLStep < TOTAL_LSTEPS) showLStep(currentLStep +
 function prevLStep() { if (currentLStep > 1) showLStep(currentLStep - 1); }
 function startLesson() { showLStep(1); showScreen('scrLesson'); }
 
+// ── エラー分析（不正解フィードバック用） ──
+function analyzeError(type, a, b, wrongAns) {
+  function digs(n) { return [Math.floor(n/100)%10, Math.floor(n/10)%10, n%10]; }
+  const aD = digs(a), bD = digs(b);
+  const cor = type === 'add' ? a + b : a - b;
+
+  if (type === 'add') {
+    const oSum = aD[2] + bD[2], c1 = Math.floor(oSum/10);
+    const tSum = aD[1] + bD[1] + c1, c2 = Math.floor(tSum/10);
+    const hSum = aD[0] + bD[0] + c2;
+    const cp = String(cor).padStart(4,'0'), wp = String(wrongAns).padStart(4,'0');
+
+    if (cp[3] !== wp[3]) {
+      let h = `一のくらい：${aD[2]}＋${bD[2]}＝<strong>${oSum}</strong>`;
+      h += c1 ? `<br>→ <strong>${oSum%10}</strong>を書いて 1くり上げよう！`
+              : `<br>→ <strong>${oSum}</strong>を書こう！`;
+      return { col:'一のくらい', hint:h };
+    }
+    if (cp[2] !== wp[2]) {
+      let h = `十のくらい：${aD[1]}＋${bD[1]}`;
+      if (c1) h += `＋<strong>1</strong>（くり上がり）`;
+      h += `＝<strong>${tSum}</strong>`;
+      h += c2 ? `<br>→ <strong>${tSum%10}</strong>を書いて 1くり上げよう！`
+              : `<br>→ <strong>${tSum}</strong>を書こう！`;
+      return { col:'十のくらい', hint:h };
+    }
+    if (cp[1] !== wp[1]) {
+      let h = `百のくらい：${aD[0]}＋${bD[0]}`;
+      if (c2) h += `＋<strong>1</strong>（くり上がり）`;
+      h += `＝<strong>${hSum}</strong><br>→ <strong>${hSum%10}</strong>を書こう！`;
+      return { col:'百のくらい', hint:h };
+    }
+
+  } else {
+    const ob = aD[2] < bD[2] ? 1 : 0;
+    const oR = aD[2] - bD[2] + ob*10;
+    const tA = aD[1] - ob;
+    const tb = tA < bD[1] ? 1 : 0;
+    const tR = tA - bD[1] + tb*10;
+    const hA = aD[0] - tb;
+    const hR = hA - bD[0];
+    const cp = String(cor).padStart(3,'0'), wp = String(wrongAns).padStart(3,'0');
+
+    if (cp[2] !== wp[2]) {
+      const h = ob
+        ? `一のくらい：${aD[2]}から${bD[2]}はひけないので<br>十のくらいから10かりて → ${aD[2]+10}－${bD[2]}＝<strong>${oR}</strong>`
+        : `一のくらい：${aD[2]}－${bD[2]}＝<strong>${oR}</strong>`;
+      return { col:'一のくらい', hint:h };
+    }
+    if (cp[1] !== wp[1]) {
+      let h;
+      if (tA < 0) {
+        h = `十のくらいが 0 のときは、<br>百のくらいから まとめて かりてくるよ。<br>かきかきエリアで ゆっくり かいてみよう！`;
+      } else if (ob && tb) {
+        h = `十のくらい：${aD[1]}から1かしたので <strong>${tA}</strong>。<br>${tA}から${bD[1]}はひけないので 百のくらいから10かりて<br>${tA+10}－${bD[1]}＝<strong>${tR}</strong>`;
+      } else if (ob) {
+        h = `十のくらい：${aD[1]}から1かしたので <strong>${tA}</strong>。<br>${tA}－${bD[1]}＝<strong>${tR}</strong>`;
+      } else if (tb) {
+        h = `十のくらい：${aD[1]}から${bD[1]}はひけないので<br>百のくらいから10かりて → ${aD[1]+10}－${bD[1]}＝<strong>${tR}</strong>`;
+      } else {
+        h = `十のくらい：${aD[1]}－${bD[1]}＝<strong>${tR}</strong>`;
+      }
+      return { col:'十のくらい', hint:h };
+    }
+    if (cp[0] !== wp[0]) {
+      const h = tb
+        ? `百のくらい：${aD[0]}から1かしたので <strong>${hA}</strong>。<br>${hA}－${bD[0]}＝<strong>${hR}</strong>`
+        : `百のくらい：${aD[0]}－${bD[0]}＝<strong>${hR}</strong>`;
+      return { col:'百のくらい', hint:h };
+    }
+  }
+  return null;
+}
+
 // ── 筆算ビジュアル ──
 function fillHissan(el, type, a, b, showAns) {
   const op = type === 'add' ? '＋' : '－';
@@ -811,7 +896,7 @@ function selectAnswer(val, btn, p) {
     if (Number(b.dataset.val) === p.ans) b.classList.add('correct');
     else if (b === btn && !isCorrect) b.classList.add('wrong');
   });
-  showFeedback(p, isCorrect);
+  showFeedback(p, isCorrect, isCorrect ? null : val);
   document.getElementById('qScoreText').textContent = '⭐ ' + score;
   const btnNext = document.getElementById('btnNextQ');
   btnNext.style.display = 'block';
@@ -824,7 +909,7 @@ function nextQuestion() {
   else renderQuestion();
 }
 
-function showFeedback(p, isCorrect) {
+function showFeedback(p, isCorrect, wrongVal) {
   const area = document.getElementById('feedbackArea');
   area.style.display = 'block';
   const cls = isCorrect ? 'correct-fb' : 'wrong-fb';
@@ -834,9 +919,21 @@ function showFeedback(p, isCorrect) {
   fbHissan.className = 'hissan-block fb-hissan';
   fillHissan(fbHissan, p.type, p.a, p.b, true);
 
+  let hintHtml = '';
+  if (!isCorrect && wrongVal != null) {
+    const err = analyzeError(p.type, p.a, p.b, wrongVal);
+    if (err) {
+      hintHtml = `<div class="fb-hint">
+        <span class="fb-hint-icon">💡</span>
+        <div class="fb-hint-text"><strong>${err.col}</strong>を かくにんしよう！<br>${err.hint}</div>
+      </div>`;
+    }
+  }
+
   area.innerHTML = `<div class="feedback-card ${cls}">
     <div class="feedback-result-text">${txt}</div>
     <div style="text-align:center;">${fbHissan.outerHTML}</div>
+    ${hintHtml}
   </div>`;
   area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
