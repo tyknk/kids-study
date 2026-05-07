@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>おおきな数 もんだい</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ind: #4F46E5;
+  --ind-lt: #EEF2FF;
+  --ind-dk: #3730A3;
+  --ind-bar: #312E81;
+  --ind-mid: #6366F1;
+  --ok: #78D98A;
+  --ng: #FF8FAA;
+  --text: #1e293b;
+  --muted: #64748b;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: #F5F3FF;
+  color: var(--text);
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: max(env(safe-area-inset-top), 0px) env(safe-area-inset-right) max(env(safe-area-inset-bottom), 0px) env(safe-area-inset-left);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* HOME NAV */
+.home-nav {
+  width: 100%;
+  max-width: min(900px, 92vw);
+  display: flex;
+  align-items: center;
+  padding: 8px 0 4px;
+  flex-shrink: 0;
+}
+.home-btn {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: clamp(0.82rem, 1.5vw + 0.5vh, 1rem);
+  color: var(--ind);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s;
+}
+@media (hover: hover) {
+  .home-btn:hover { background: var(--ind-lt); }
+}
+
+/* SCREENS */
+.screen { display: none; width: 100%; max-width: min(900px, 92vw); flex: 1; min-height: 0; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* START SCREEN */
+.start-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vh, 28px);
+  padding: 16px;
+  text-align: center;
+}
+.start-icon { font-size: clamp(3rem, 6vw + 4vh, 5rem); }
+.start-title {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.8rem, 4vw + 2.5vh, 3.2rem);
+  font-weight: 700;
+  color: var(--ind);
+  line-height: 1.2;
+}
+.start-sub {
+  font-size: clamp(0.9rem, 1.8vw + 1vh, 1.2rem);
+  color: var(--muted);
+  line-height: 1.7;
+}
+.btn-start {
+  background: var(--ind);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: clamp(14px, 2.5vh, 20px) clamp(32px, 6vw, 56px);
+  font-family: inherit;
+  font-size: clamp(1.1rem, 2.2vw + 1.5vh, 1.6rem);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(79,70,229,0.38);
+  transition: all 0.15s;
+}
+.btn-start:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(79,70,229,0.25); }
+@media (hover: hover) {
+  .btn-start:hover { background: var(--ind-dk); box-shadow: 0 6px 18px rgba(79,70,229,0.45); }
+}
+
+/* LESSON SCREEN */
+.lesson-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 6px;
+  flex-shrink: 0;
+}
+.lesson-step-label {
+  font-size: clamp(0.8rem, 1.5vw + 0.5vh, 1rem);
+  color: var(--muted);
+  font-weight: 700;
+}
+.lesson-step-dots { display: flex; gap: 8px; }
+.lesson-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #C7D2FE;
+  transition: background 0.2s;
+}
+.lesson-dot.active { background: var(--ind); }
+.lesson-dot.done { background: var(--ind-dk); }
+
+.lesson-title {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.2rem, 2.5vw + 1.5vh, 2rem);
+  font-weight: 700;
+  color: var(--ind-dk);
+  text-align: center;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+.lesson-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vh, 18px);
+}
+.lesson-content p {
+  font-size: clamp(0.95rem, 1.8vw + 1vh, 1.25rem);
+  line-height: 1.85;
+}
+.lesson-content strong { color: var(--ind-dk); }
+
+/* Kurai table */
+.kurai-wrap { overflow-x: auto; border-radius: 12px; }
+.kurai-table {
+  display: grid;
+  border: 2px solid var(--ind);
+  border-radius: 12px;
+  overflow: hidden;
+  min-width: max-content;
+}
+.kt-head, .kt-cell {
+  padding: clamp(5px, 1vh, 9px) clamp(6px, 1.2vw, 12px);
+  text-align: center;
+  border-right: 1px solid rgba(99,102,241,0.2);
+}
+.kt-head:last-child, .kt-cell:last-child { border-right: none; }
+.kt-head {
+  background: var(--ind-mid);
+  color: white;
+  font-weight: 700;
+  font-size: clamp(0.72rem, 1.2vw + 0.5vh, 0.95rem);
+}
+.kt-cell {
+  background: var(--ind-lt);
+  font-weight: 700;
+  font-size: clamp(1rem, 1.8vw + 0.9vh, 1.35rem);
+  min-width: 38px;
+  color: #C7D2FE;
+}
+.kt-head.key { background: var(--ind-dk); }
+.kt-cell.key { background: #E0E7FF; }
+.kt-cell.filled { color: var(--ind-bar); }
+.kt-cell.key.filled { color: var(--ind-dk); font-size: clamp(1.1rem, 2vw + 1vh, 1.5rem); }
+
+/* read-box */
+.read-box {
+  background: white;
+  border: 2px solid var(--ind-mid);
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.read-num {
+  font-size: clamp(1.3rem, 2.8vw + 1.8vh, 2.2rem);
+  font-weight: 900;
+  color: var(--ind-dk);
+  font-variant-numeric: tabular-nums;
+}
+.read-arrow { font-size: 1.4rem; color: var(--muted); }
+.read-yomi {
+  font-size: clamp(1rem, 1.8vw + 1vh, 1.45rem);
+  font-weight: 700;
+  color: var(--ind);
+}
+
+/* chain */
+.chain-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: var(--ind-lt);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.chain-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.chain-name {
+  font-size: clamp(0.88rem, 1.5vw + 0.7vh, 1.15rem);
+  font-weight: 700;
+  color: var(--ind-dk);
+}
+.chain-num {
+  font-size: clamp(0.68rem, 1.1vw + 0.45vh, 0.85rem);
+  color: var(--muted);
+}
+.chain-arrow { font-size: 1.1rem; color: var(--ind-mid); padding-top: 8px; }
+
+/* calc-box */
+.calc-box {
+  background: white;
+  border: 2px solid #C7D2FE;
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+.calc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(1.05rem, 1.8vw + 1.1vh, 1.5rem);
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+.calc-ans { color: var(--ind-dk); }
+.calc-note {
+  font-size: clamp(0.78rem, 1.3vw + 0.55vh, 0.95rem);
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* lesson-note */
+.lesson-note {
+  background: #FEF9C3;
+  border-left: 4px solid #FDE047;
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px;
+  font-size: clamp(0.85rem, 1.5vw + 0.7vh, 1.05rem);
+  color: #713F12;
+}
+
+.lesson-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0 4px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.btn-prev, .btn-next-lesson {
+  border: none;
+  border-radius: 12px;
+  padding: clamp(10px, 2vh, 14px) clamp(16px, 3vw, 26px);
+  font-family: inherit;
+  font-size: clamp(0.95rem, 1.8vw + 1vh, 1.25rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-prev { background: #E2E8F0; color: var(--muted); }
+.btn-prev:active { transform: translateY(1px); }
+@media (hover: hover) { .btn-prev:hover { background: #CBD5E1; } }
+.btn-next-lesson {
+  background: var(--ind);
+  color: white;
+  box-shadow: 0 3px 10px rgba(79,70,229,0.32);
+  flex: 1;
+}
+.btn-next-lesson:active { transform: translateY(1px); box-shadow: 0 1px 4px rgba(79,70,229,0.2); }
+@media (hover: hover) { .btn-next-lesson:hover { background: var(--ind-dk); } }
+
+/* QUIZ SCREEN */
+.quiz-header { padding: 10px 0 6px; flex-shrink: 0; }
+.progress-bar-wrap { height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--ind); border-radius: 4px; transition: width 0.3s; }
+.quiz-counter {
+  text-align: right;
+  font-size: clamp(0.8rem, 1.4vw + 0.5vh, 0.95rem);
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.quiz-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vh, 14px);
+  overflow-y: auto;
+}
+
+.q-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: clamp(0.75rem, 1.2vw + 0.5vh, 0.9rem);
+  font-weight: 700;
+  align-self: flex-start;
+}
+.badge-read  { background: #DBEAFE; color: #1D4ED8; }
+.badge-write { background: #D1FAE5; color: #065F46; }
+.badge-calc  { background: #FEF3C7; color: #92400E; }
+.badge-big   { background: #F3E8FF; color: #6B21A8; }
+
+.q-card {
+  background: white;
+  border-radius: 18px;
+  padding: clamp(14px, 2.5vh, 22px) clamp(16px, 3vw, 24px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.q-label { font-size: clamp(0.9rem, 1.6vw + 0.8vh, 1.15rem); color: var(--muted); }
+.q-bignum {
+  font-size: clamp(1.6rem, 3.5vw + 2.5vh, 3rem);
+  font-weight: 900;
+  color: var(--ind-dk);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+.q-text-big {
+  font-size: clamp(1.2rem, 2.4vw + 1.6vh, 2rem);
+  font-weight: 900;
+  color: var(--ind-bar);
+  text-align: center;
+}
+.q-yomi-big {
+  font-size: clamp(1.3rem, 2.5vw + 1.8vh, 2.2rem);
+  font-weight: 900;
+  color: var(--ind);
+  text-align: center;
+}
+
+/* Choices */
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: clamp(8px, 1.5vw, 14px);
+  flex: 1;
+  min-height: 0;
+}
+.choice-btn {
+  background: white;
+  border: 2.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: clamp(0.95rem, 1.7vw + 1.1vh, 1.4rem);
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.35;
+  word-break: break-all;
+}
+.choice-btn:active { transform: translateY(1px); }
+@media (hover: hover) {
+  .choice-btn:hover:not(:disabled) { border-color: var(--ind); background: var(--ind-lt); }
+}
+.choice-btn:disabled { cursor: default; }
+.choice-btn.correct { border-color: var(--ok); background: #F0FFF4; color: #166534; }
+.choice-btn.wrong   { border-color: var(--ng); background: #FFF0F4; color: #9F1239; }
+
+/* Feedback */
+.fb-area {
+  flex-shrink: 0;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fb-result {
+  font-size: clamp(1.1rem, 2vw + 1.2vh, 1.5rem);
+  font-weight: 900;
+  text-align: center;
+}
+.fb-result.ok { color: #166534; }
+.fb-result.ng { color: #9F1239; }
+.fb-correct-ans {
+  font-size: clamp(0.88rem, 1.6vw + 0.8vh, 1.05rem);
+  color: var(--muted);
+  text-align: center;
+}
+.btn-next-quiz {
+  display: none;
+  background: var(--ind);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: clamp(10px, 2vh, 14px);
+  font-family: inherit;
+  font-size: clamp(1rem, 1.8vw + 1vh, 1.3rem);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(79,70,229,0.3);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.btn-next-quiz.visible { display: block; }
+.btn-next-quiz:active { transform: translateY(1px); }
+@media (hover: hover) { .btn-next-quiz:hover { background: var(--ind-dk); } }
+
+/* RESULT SCREEN */
+.result-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2.5vh, 24px);
+  padding: 16px;
+  text-align: center;
+}
+.result-icon { font-size: clamp(3rem, 6vw + 4vh, 5rem); }
+.result-title {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.4rem, 2.8vw + 2vh, 2.4rem);
+  font-weight: 700;
+  color: var(--ind-dk);
+}
+.result-score {
+  font-size: clamp(2rem, 4vw + 3vh, 3.5rem);
+  font-weight: 900;
+  color: var(--ind-bar);
+}
+.result-msg { font-size: clamp(0.95rem, 1.8vw + 1vh, 1.2rem); color: var(--muted); }
+.result-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+.btn-retry, .btn-home-result {
+  border: none;
+  border-radius: 14px;
+  padding: clamp(12px, 2.2vh, 17px);
+  font-family: inherit;
+  font-size: clamp(1rem, 1.8vw + 1vh, 1.3rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-retry { background: var(--ind); color: white; box-shadow: 0 3px 10px rgba(79,70,229,0.3); }
+.btn-retry:active { transform: translateY(1px); }
+@media (hover: hover) { .btn-retry:hover { background: var(--ind-dk); } }
+.btn-home-result { background: #E2E8F0; color: var(--muted); }
+@media (hover: hover) { .btn-home-result:hover { background: #CBD5E1; } }
+
+/* OVERLAY */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.active { display: flex; }
+.overlay-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 24px;
+  width: min(340px, 88vw);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.overlay-title {
+  font-size: clamp(1rem, 2vw + 1vh, 1.3rem);
+  font-weight: 700;
+  line-height: 1.6;
+}
+.overlay-btns { display: flex; gap: 10px; }
+.overlay-btns button {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: clamp(0.9rem, 1.6vw + 0.8vh, 1.1rem);
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-ov-cancel { background: #E2E8F0; color: var(--muted); }
+.btn-ov-ok { background: var(--ind); color: white; }
+</style>
+</head>
+<body>
+
+<nav class="home-nav">
+  <button class="home-btn" onclick="tryGoHome()">🏠 まなびのへや</button>
+</nav>
+
+<!-- START SCREEN -->
+<div id="screen-start" class="screen active">
+  <div class="start-body">
+    <div class="start-icon">🔢</div>
+    <div class="start-title">おおきな数<br>もんだい</div>
+    <div class="start-sub">まず レッスンで かくにんして、<br>れんしゅうもんだいに ちょうせん！</div>
+    <button class="btn-start" onclick="startLesson()">はじめる</button>
+  </div>
+</div>
+
+<!-- LESSON SCREEN -->
+<div id="screen-lesson" class="screen">
+  <div class="lesson-header">
+    <div class="lesson-step-label" id="lesson-step-label">レッスン 1/4</div>
+    <div class="lesson-step-dots" id="lesson-step-dots"></div>
+  </div>
+  <div class="lesson-title" id="lesson-title"></div>
+  <div class="lesson-content" id="lesson-content"></div>
+  <div class="lesson-footer">
+    <button class="btn-prev" id="btn-lesson-prev" onclick="lessonPrev()">◀ もどる</button>
+    <button class="btn-next-lesson" id="btn-lesson-next" onclick="lessonNext()">つぎへ ▶</button>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div class="quiz-counter" id="quiz-counter"></div>
+  </div>
+  <div class="quiz-body">
+    <span class="q-badge" id="q-badge"></span>
+    <div class="q-card" id="q-card"></div>
+    <div class="choices-grid" id="choices-grid"></div>
+    <div class="fb-area" id="fb-area"></div>
+    <button class="btn-next-quiz" id="btn-next-quiz" onclick="nextQuestion()">つぎの もんだい ▶</button>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="screen-result" class="screen">
+  <div class="result-body">
+    <div class="result-icon" id="result-icon"></div>
+    <div class="result-title" id="result-title"></div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="startQuiz()">もう一かい ちょうせん</button>
+      <button class="btn-home-result" onclick="window.location.href='../index.html'">🏠 まなびのへやへ</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME CONFIRM OVERLAY -->
+<div id="overlay-home" class="overlay">
+  <div class="overlay-card">
+    <div class="overlay-title">もどると 今の もんだいは<br>きえるよ。<br>まなびのへやへ もどる？</div>
+    <div class="overlay-btns">
+      <button class="btn-ov-cancel" onclick="closeOverlay()">つづける</button>
+      <button class="btn-ov-ok" onclick="window.location.href='../index.html'">もどる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODULE_ID = 'math-ooki-na-kazu-mondai';
+const SESSION_COUNT = 12;
+
+// ===== Helpers (hoisted as function declarations) =====
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function fmtNum(n) {
+  return n.toLocaleString('ja-JP');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// digits8: [千万, 百万, 十万, 万, 千, 百, 十, 一]
+// keyCol: index of the highlighted "万" boundary column
+function makeKuraiTable(digits8, keyCol) {
+  const labels = ['千万','百万','十万','万','千','百','十','一'];
+  const heads = labels.map((l, i) =>
+    `<div class="kt-head${i === keyCol ? ' key' : ''}">${l}</div>`
+  ).join('');
+  const cells = digits8.map((d, i) =>
+    `<div class="kt-cell${i === keyCol ? ' key' : ''}${d > 0 ? ' filled' : ''}">${d > 0 ? d : ''}</div>`
+  ).join('');
+  return `<div class="kurai-wrap"><div class="kurai-table" style="grid-template-columns:repeat(8,1fr)">${heads}${cells}</div></div>`;
+}
+
+// ===== Problem bank =====
+const PROBLEMS = [
+  // よみかた: 数字 → よみかた（8問）
+  {type:'read', num:10000,    ans:'いちまん',         ch:['いちまん','じゅうせん','ひゃくせん','せんせん']},
+  {type:'read', num:40000,    ans:'よんまん',         ch:['よんまん','しまん','よんせん','よんじゅうせん']},
+  {type:'read', num:25000,    ans:'にまんごせん',     ch:['にまんごせん','ごまんにせん','にせんごひゃく','にまんごひゃく']},
+  {type:'read', num:73000,    ans:'ななまんさんぜん', ch:['ななまんさんぜん','しちまんさんびゃく','ろくまんさんぜん','ななせんさんびゃく']},
+  {type:'read', num:100000,   ans:'じゅうまん',       ch:['じゅうまん','ひゃくせん','いちまんせん','じゅうせん']},
+  {type:'read', num:450000,   ans:'よんじゅうごまん', ch:['よんじゅうごまん','よんまんごせん','よんひゃくごまん','しじゅうごまん']},
+  {type:'read', num:3000000,  ans:'さんびゃくまん',   ch:['さんびゃくまん','さんじゅうまん','さんせんまん','さんまんまん']},
+  {type:'read', num:80000,    ans:'はちまん',         ch:['はちまん','はちせん','はちひゃく','じゅうはちまん']},
+
+  // かきかた: よみかた → 数字（8問）
+  {type:'write', txt:'ごまん',                 ans:50000,    ch:[50000,5000,500000,500]},
+  {type:'write', txt:'にまんさんぜん',         ans:23000,    ch:[23000,2300,230000,203000]},
+  {type:'write', txt:'ろくまんはっぴゃく',     ans:60800,    ch:[60800,6800,68000,608000]},
+  {type:'write', txt:'きゅうじゅうまん',       ans:900000,   ch:[900000,90000,9000000,9000]},
+  {type:'write', txt:'ひゃくまん',             ans:1000000,  ch:[1000000,100000,10000000,10000]},
+  {type:'write', txt:'さんびゃくごじゅうまん', ans:3500000,  ch:[3500000,350000,35000000,305000]},
+  {type:'write', txt:'いちせんまん',           ans:10000000, ch:[10000000,1000000,100000000,10000]},
+  {type:'write', txt:'しちまんごひゃく',       ans:70500,    ch:[70500,7500,705000,75000]},
+
+  // けいさん: 大きな数の＋－（4問）
+  {type:'calc', q:'3まん ＋ 4まん ＝',   ans:'7まん',  ch:['7まん','34まん','12まん','8まん']},
+  {type:'calc', q:'8まん － 5まん ＝',   ans:'3まん',  ch:['3まん','13まん','4まん','2まん']},
+  {type:'calc', q:'20まん ＋ 30まん ＝', ans:'50まん', ch:['50まん','5まん','500まん','23まん']},
+  {type:'calc', q:'70まん － 40まん ＝', ans:'30まん', ch:['30まん','110まん','3まん','34まん']},
+
+  // 大小比べ: いちばん大きい／小さい数（4問）
+  {type:'big', q:'いちばん 大きい 数は どれ？', ans:84000,    ch:[48000,84000,40800,80400]},
+  {type:'big', q:'いちばん 小さい 数は どれ？', ans:125000,   ch:[125000,152000,215000,251000]},
+  {type:'big', q:'いちばん 大きい 数は どれ？', ans:50000000, ch:[5000000,500000,50000000,50000]},
+  {type:'big', q:'いちばん 小さい 数は どれ？', ans:303000,   ch:[3300000,303000,330000,3030000]},
+];
+
+// ===== Lesson steps =====
+const LESSON_STEPS = [
+  {
+    title: '一万の しくみ',
+    html: `
+      <p>千が <strong>10こ</strong> あつまると<br>→ <strong>一万（10,000）</strong> になるよ！</p>
+      <div class="chain-wrap">
+        <div class="chain-item">
+          <div class="chain-name">千</div>
+          <div class="chain-num">1,000</div>
+        </div>
+        <div class="chain-arrow">×10</div>
+        <div class="chain-item">
+          <div class="chain-name" style="color:#3730A3">一万</div>
+          <div class="chain-num">10,000</div>
+        </div>
+      </div>
+      <p>「万（まん）」は 千より 大きな くらい。<br>
+      二万(20,000)、三万(30,000)… と数えるよ。</p>
+      <div class="read-box">
+        <div class="read-num">10,000</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">いちまん</div>
+      </div>
+      <div class="read-box">
+        <div class="read-num">30,000</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">さんまん</div>
+      </div>
+    `
+  },
+  {
+    title: '万の 位の よみかた',
+    html: `
+      <p><strong>万・千・百・十・一</strong> の くらいに わけて よもう！</p>
+      ${makeKuraiTable([0,0,0,3,2,0,0,0], 3)}
+      <div class="read-box">
+        <div class="read-num">32,000</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">さんまんにせん</div>
+      </div>
+      ${makeKuraiTable([0,0,0,7,4,5,0,0], 3)}
+      <div class="read-box">
+        <div class="read-num">74,500</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">ななまんよんせんごひゃく</div>
+      </div>
+      <p class="lesson-note">💡 0のくらいは よまないよ！</p>
+    `
+  },
+  {
+    title: 'もっと 大きな 数',
+    html: `
+      <p>万が 10こで <strong>十万</strong>、さらに 大きくなっていくよ！</p>
+      <div class="chain-wrap">
+        <div class="chain-item"><div class="chain-name">一万</div><div class="chain-num">10,000</div></div>
+        <div class="chain-arrow">×10</div>
+        <div class="chain-item"><div class="chain-name">十万</div><div class="chain-num">100,000</div></div>
+        <div class="chain-arrow">×10</div>
+        <div class="chain-item"><div class="chain-name">百万</div><div class="chain-num">1,000,000</div></div>
+        <div class="chain-arrow">×10</div>
+        <div class="chain-item"><div class="chain-name">千万</div><div class="chain-num">10,000,000</div></div>
+        <div class="chain-arrow">×10</div>
+        <div class="chain-item"><div class="chain-name" style="color:#6B21A8">一億</div><div class="chain-num">100,000,000</div></div>
+      </div>
+      ${makeKuraiTable([4,5,0,0,0,0,0,0], 3)}
+      <div class="read-box">
+        <div class="read-num">45,000,000</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">よんせんごひゃくまん</div>
+      </div>
+      <p class="lesson-note">💡 千万が 10こ あつまると 「一億（いちおく）」！</p>
+    `
+  },
+  {
+    title: '大きな数の けいさん',
+    html: `
+      <p><strong>「まん」を 1かたまり</strong> として かんがえると かんたん！</p>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>3まん ＋ 4まん</span>
+          <span class="calc-ans">＝ 7まん</span>
+        </div>
+        <div class="calc-note">（3＋4＝7 と おなじ！）</div>
+      </div>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>8まん － 5まん</span>
+          <span class="calc-ans">＝ 3まん</span>
+        </div>
+        <div class="calc-note">（8－5＝3 と おなじ！）</div>
+      </div>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>20まん ＋ 30まん</span>
+          <span class="calc-ans">＝ 50まん</span>
+        </div>
+        <div class="calc-note">（20＋30＝50 と おなじ！）</div>
+      </div>
+    `
+  }
+];
+
+// ===== State =====
+let lessonStep = 0;
+let sessionProblems = [];
+let currentIdx = 0;
+let correctCount = 0;
+let answered = false;
+let currentShuffled = [];
+let isQuizActive = false;
+
+// ===== Home navigation =====
+function tryGoHome() {
+  if (isQuizActive) {
+    document.getElementById('overlay-home').classList.add('active');
+  } else {
+    window.location.href = '../index.html';
+  }
+}
+function closeOverlay() {
+  document.getElementById('overlay-home').classList.remove('active');
+}
+
+// ===== LocalStorage =====
+function recordVisit() {
+  try {
+    const key = `manabi_room_module_${MODULE_ID}`;
+    const data = JSON.parse(localStorage.getItem(key) || '{}');
+    data.visitCount = (data.visitCount || 0) + 1;
+    data.lastVisited = new Date().toISOString().split('T')[0];
+    localStorage.setItem(key, JSON.stringify(data));
+    const days = JSON.parse(localStorage.getItem('manabi_room_days') || '[]');
+    if (!days.includes(data.lastVisited)) {
+      days.push(data.lastVisited);
+      localStorage.setItem('manabi_room_days', JSON.stringify(days));
+    }
+  } catch(e) {}
+}
+
+// ===== Lesson =====
+function startLesson() {
+  lessonStep = 0;
+  renderLesson();
+  showScreen('screen-lesson');
+}
+
+function renderLesson() {
+  const step = LESSON_STEPS[lessonStep];
+  document.getElementById('lesson-step-label').textContent = `レッスン ${lessonStep + 1}/${LESSON_STEPS.length}`;
+  document.getElementById('lesson-title').textContent = step.title;
+  document.getElementById('lesson-content').innerHTML = step.html;
+
+  document.getElementById('lesson-step-dots').innerHTML = LESSON_STEPS.map((_, i) =>
+    `<div class="lesson-dot ${i < lessonStep ? 'done' : i === lessonStep ? 'active' : ''}"></div>`
+  ).join('');
+
+  document.getElementById('btn-lesson-prev').style.display = lessonStep === 0 ? 'none' : '';
+  document.getElementById('btn-lesson-next').textContent =
+    lessonStep === LESSON_STEPS.length - 1 ? 'れんしゅう スタート！' : 'つぎへ ▶';
+}
+
+function lessonPrev() {
+  if (lessonStep > 0) { lessonStep--; renderLesson(); }
+}
+function lessonNext() {
+  if (lessonStep < LESSON_STEPS.length - 1) { lessonStep++; renderLesson(); }
+  else startQuiz();
+}
+
+// ===== Quiz =====
+function startQuiz() {
+  sessionProblems = shuffle([...PROBLEMS]).slice(0, SESSION_COUNT);
+  currentIdx = 0;
+  correctCount = 0;
+  isQuizActive = true;
+  recordVisit();
+  renderQuestion();
+  showScreen('screen-quiz');
+}
+
+function renderQuestion() {
+  answered = false;
+  const p = sessionProblems[currentIdx];
+  const total = sessionProblems.length;
+
+  document.getElementById('progress-fill').style.width = `${(currentIdx / total) * 100}%`;
+  document.getElementById('quiz-counter').textContent = `${currentIdx + 1} / ${total}`;
+
+  const badgeInfo = {
+    read:  { text:'よみかた', cls:'badge-read'  },
+    write: { text:'かきかた', cls:'badge-write' },
+    calc:  { text:'けいさん', cls:'badge-calc'  },
+    big:   { text:'大小比べ', cls:'badge-big'   },
+  }[p.type];
+  const badge = document.getElementById('q-badge');
+  badge.textContent = badgeInfo.text;
+  badge.className = `q-badge ${badgeInfo.cls}`;
+
+  const card = document.getElementById('q-card');
+  if (p.type === 'read') {
+    card.innerHTML = `
+      <div class="q-label">この数の よみかたは？</div>
+      <div class="q-bignum">${fmtNum(p.num)}</div>
+    `;
+  } else if (p.type === 'write') {
+    card.innerHTML = `
+      <div class="q-label">この よみかたは どんな数？</div>
+      <div class="q-yomi-big">「${p.txt}」</div>
+    `;
+  } else if (p.type === 'calc') {
+    card.innerHTML = `
+      <div class="q-label">こたえは どれ？</div>
+      <div class="q-bignum">${p.q}</div>
+    `;
+  } else {
+    card.innerHTML = `<div class="q-text-big">${p.q}</div>`;
+  }
+
+  currentShuffled = shuffle(p.ch.map(v => ({ v })));
+  document.getElementById('choices-grid').innerHTML = currentShuffled.map((item, i) => {
+    const label = (p.type === 'write' || p.type === 'big') ? fmtNum(item.v) : item.v;
+    return `<button class="choice-btn" onclick="checkAns(${i})">${label}</button>`;
+  }).join('');
+
+  document.getElementById('fb-area').innerHTML = '';
+  const nextBtn = document.getElementById('btn-next-quiz');
+  nextBtn.classList.remove('visible');
+  nextBtn.textContent = currentIdx + 1 < total ? 'つぎの もんだい ▶' : 'けっかを みる ▶';
+}
+
+function checkAns(i) {
+  if (answered) return;
+  answered = true;
+  const p = sessionProblems[currentIdx];
+  const chosen = currentShuffled[i].v;
+  const correct = chosen === p.ans;
+  if (correct) correctCount++;
+
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(btn => btn.disabled = true);
+  btns[i].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) {
+    currentShuffled.forEach((item, j) => {
+      if (item.v === p.ans) btns[j].classList.add('correct');
+    });
+  }
+
+  const fbArea = document.getElementById('fb-area');
+  if (correct) {
+    fbArea.innerHTML = `<div class="fb-result ok">🎉 せいかい！</div>`;
+  } else {
+    const correctLabel = (p.type === 'write' || p.type === 'big') ? fmtNum(p.ans) : p.ans;
+    fbArea.innerHTML = `
+      <div class="fb-result ng">もう一かい！</div>
+      <div class="fb-correct-ans">こたえ：<strong>${correctLabel}</strong></div>
+    `;
+  }
+  document.getElementById('btn-next-quiz').classList.add('visible');
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= sessionProblems.length) showResult();
+  else renderQuestion();
+}
+
+// ===== Result =====
+function showResult() {
+  isQuizActive = false;
+  const total = sessionProblems.length;
+  const pct = Math.round((correctCount / total) * 100);
+  document.getElementById('result-icon').textContent  = pct >= 80 ? '🌟' : pct >= 50 ? '😊' : '😅';
+  document.getElementById('result-title').textContent = pct >= 80 ? 'すごい！ よくできました！' : pct >= 50 ? 'よくがんばりました！' : 'もう一かい チャレンジ！';
+  document.getElementById('result-score').textContent = `${correctCount} / ${total}`;
+  document.getElementById('result-msg').textContent   = `せいかいりつ ${pct}%`;
+  showScreen('screen-result');
+}
+</script>
+</body>
+</html>

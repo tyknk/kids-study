@@ -913,9 +913,9 @@ const SUBJECTS = [
     id: "math",
     label: "さんすう",
     emoji: "🧮",
-    note: "5つのべんきょう",
+    note: "6つのべんきょう",
     available: true,
-    description: "かけ算・わり算・ながさ・なんばい・ひっさんを、レッスンとれんしゅうで学べます。"
+    description: "かけ算・わり算・ながさ・なんばい・ひっさん・おおきな数を、レッスンとれんしゅうで学べます。"
   },
   {
     id: "japanese",
@@ -975,6 +975,12 @@ const UNITS = [
     subjectId: "math",
     title: "たし算とひき算の筆算",
     description: "くり上がり・くり下がりのある筆算をレッスンで学んで、かきかきエリアで手書きしながら練習するたんげんです。"
+  },
+  {
+    id: "math-ooki-na-kazu",
+    subjectId: "math",
+    title: "おおきな数（一万を超える数）",
+    description: "万・十万・百万・千万・億のしくみを学んで、よみかた・かきかた・大小比べ・けいさんをれんしゅうするたんげんです。"
   }
 ];
 
@@ -1028,6 +1034,16 @@ const MODULES = [
     learningType: "レッスン + れんしゅう",
     level: "きほん",
     href: "./math/hissan.html"
+  },
+  {
+    id: "math-ooki-na-kazu-mondai",
+    subjectId: "math",
+    unitId: "math-ooki-na-kazu",
+    title: "おおきな数 もんだい",
+    description: "万・十万・百万の読み書き、大小比べ、大きな数の計算をれんしゅうしよう。",
+    learningType: "レッスン + れんしゅう",
+    level: "きほん",
+    href: "./math/ooki-na-kazu.html"
   }
 ];
 
