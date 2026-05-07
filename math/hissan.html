@@ -446,10 +446,10 @@
         <div style="text-align:center; margin:12px 0;">
           <div class="hissan-block" id="lesson-h1"></div>
         </div>
-        <p>① 一のくらい：7＋8＝<strong>15</strong><br>
-        　→ <strong>5</strong> を書いて、<strong>1</strong> をとなりへわたす（くり上げる）</p>
-        <p>② 十のくらい：4＋3＋<strong>1</strong>（わたされた）＝<strong>8</strong></p>
-        <p>こたえ → <span class="lesson-hl">85</span></p>
+        <p>① 一のくらい：6＋7＝<strong>13</strong><br>
+        　→ <strong>3</strong> を書いて、<strong>1</strong> をとなりへわたす（くり上げる）</p>
+        <p>② 十のくらい：3＋4＋<strong>1</strong>（わたされた）＝<strong>8</strong></p>
+        <p>こたえ → <span class="lesson-hl">83</span></p>
       </div>
     </div>
     <div class="lnav-row">
@@ -470,10 +470,10 @@
         <div style="text-align:center; margin:10px 0;">
           <div class="hissan-block" id="lesson-h2"></div>
         </div>
-        <p>① 一のくらい：4＋9＝<strong>13</strong> → 3を書いて1くり上げ</p>
-        <p>② 十のくらい：3＋8＋<strong>1</strong>＝<strong>12</strong> → 2を書いて1くり上げ</p>
-        <p>③ 百のくらい：2＋1＋<strong>1</strong>＝<strong>4</strong></p>
-        <p>こたえ → <span class="lesson-hl">423</span></p>
+        <p>① 一のくらい：7＋5＝<strong>12</strong> → 2を書いて1くり上げ</p>
+        <p>② 十のくらい：4＋6＋<strong>1</strong>＝<strong>11</strong> → 1を書いて1くり上げ</p>
+        <p>③ 百のくらい：1＋2＋<strong>1</strong>＝<strong>4</strong></p>
+        <p>こたえ → <span class="lesson-hl">412</span></p>
       </div>
     </div>
     <div class="lnav-row">
@@ -492,10 +492,10 @@
         <div style="text-align:center; margin:10px 0;">
           <div class="hissan-block" id="lesson-h3"></div>
         </div>
-        <p>① 一のくらい：2から7はひけない！<br>
-        　十のくらいから <strong>10かりて</strong> → 12－7＝<strong>5</strong></p>
-        <p>② 十のくらい：8から1かしたので <strong>7</strong>。　7－4＝<strong>3</strong></p>
-        <p>こたえ → <span class="lesson-hl">35</span></p>
+        <p>① 一のくらい：3から6はひけない！<br>
+        　十のくらいから <strong>10かりて</strong> → 13－6＝<strong>7</strong></p>
+        <p>② 十のくらい：7から1かしたので <strong>6</strong>。　6－3＝<strong>3</strong></p>
+        <p>こたえ → <span class="lesson-hl">37</span></p>
       </div>
     </div>
     <div class="lnav-row">
@@ -713,9 +713,9 @@ function fillHissan(el, type, a, b, showAns) {
 }
 
 function buildLessonHissan() {
-  fillHissan(document.getElementById('lesson-h1'), 'add', 47,  38,  true);
-  fillHissan(document.getElementById('lesson-h2'), 'add', 234, 189, true);
-  fillHissan(document.getElementById('lesson-h3'), 'sub', 82,  47,  true);
+  fillHissan(document.getElementById('lesson-h1'), 'add', 36,  47,  true);
+  fillHissan(document.getElementById('lesson-h2'), 'add', 147, 265, true);
+  fillHissan(document.getElementById('lesson-h3'), 'sub', 73,  36,  true);
 }
 
 // ── Problem bank (8 add + 8 sub + 4 word-add + 4 word-sub = 24) ──
@@ -727,8 +727,8 @@ const PROBLEMS = [
   { type:'add', a:234, b:189, ans:423, choices:[423,413,433,424], badge:'たし算' },
   { type:'add', a:315, b:246, ans:561, choices:[561,551,571,562], badge:'たし算' },
   { type:'add', a:408, b:175, ans:583, choices:[583,573,593,584], badge:'たし算' },
-  { type:'add', a:267, b:354, ans:621, choices:[621,611,631,622], badge:'たし算' },
-  { type:'add', a:185, b:236, ans:421, choices:[421,411,431,422], badge:'たし算' },
+  { type:'add', a:58,  b:35,  ans:93,  choices:[93,83,103,92],   badge:'たし算' },
+  { type:'add', a:76,  b:48,  ans:124, choices:[124,114,134,125], badge:'たし算' },
   // sub
   { type:'sub', a:82,  b:47,  ans:35,  choices:[35,25,45,34],    badge:'ひき算' },
   { type:'sub', a:134, b:78,  ans:56,  choices:[56,46,66,55],    badge:'ひき算' },
@@ -736,8 +736,8 @@ const PROBLEMS = [
   { type:'sub', a:423, b:186, ans:237, choices:[237,227,247,236], badge:'ひき算' },
   { type:'sub', a:500, b:237, ans:263, choices:[263,253,273,264], badge:'ひき算' },
   { type:'sub', a:342, b:175, ans:167, choices:[167,157,177,168], badge:'ひき算' },
-  { type:'sub', a:614, b:358, ans:256, choices:[256,246,266,255], badge:'ひき算' },
-  { type:'sub', a:723, b:465, ans:258, choices:[258,248,268,257], badge:'ひき算' },
+  { type:'sub', a:71,  b:34,  ans:37,  choices:[37,27,47,36],    badge:'ひき算' },
+  { type:'sub', a:84,  b:37,  ans:47,  choices:[47,37,57,46],    badge:'ひき算' },
   // word add
   { type:'add', a:53,  b:29,  ans:82,  choices:[82,72,92,83],
     q:'えんぴつが 53本 と 29本 あります。あわせて なん本ですか？',    badge:'ぶんしょうもんだい' },
