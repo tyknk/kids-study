@@ -850,7 +850,7 @@ function startLesson() {
 function renderLesson() {
   const step = LESSON_STEPS[lessonStep];
   document.getElementById('lesson-step-label').textContent = `レッスン ${lessonStep + 1}/${LESSON_STEPS.length}`;
-  document.getElementById('lesson-title').textContent = step.title;
+  document.getElementById('lesson-title').innerHTML = step.title;
   document.getElementById('lesson-content').innerHTML = step.html;
 
   document.getElementById('lesson-step-dots').innerHTML = LESSON_STEPS.map((_, i) =>
