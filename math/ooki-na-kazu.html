@@ -32,42 +32,43 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: max(env(safe-area-inset-top), 0px) env(safe-area-inset-right) max(env(safe-area-inset-bottom), 0px) env(safe-area-inset-left);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* HOME NAV */
-.home-nav {
-  width: 100%;
-  max-width: min(900px, 92vw);
-  display: flex;
-  align-items: center;
-  padding: 8px 0 4px;
-  flex-shrink: 0;
-}
-.home-btn {
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: clamp(0.82rem, 1.5vw + 0.5vh, 1rem);
+/* HOME BAR */
+.home-bar { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 10px; }
+.btn-home {
+  background: white;
+  border: 2px solid var(--ind);
   color: var(--ind);
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  font-family: inherit;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: background 0.15s;
+  cursor: pointer;
+  min-height: 44px;
 }
+.btn-home:active { transform: translateY(1px); }
 @media (hover: hover) {
-  .home-btn:hover { background: var(--ind-lt); }
+  .btn-home:hover { background: var(--ind-lt); transition: background 0.15s; }
 }
 
 /* SCREENS */
-.screen { display: none; width: 100%; max-width: min(900px, 92vw); flex: 1; min-height: 0; flex-direction: column; }
-.screen.active { display: flex; }
+.screen {
+  display: none;
+  width: min(900px, 92vw);
+  height: 100%;
+  min-height: 0;
+}
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: max(env(safe-area-inset-top), 10px);
+  padding-bottom: max(env(safe-area-inset-bottom), 10px);
+}
 
 /* START SCREEN */
 .start-body {
@@ -76,40 +77,49 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(16px, 3vh, 28px);
-  padding: 16px;
-  text-align: center;
+  gap: clamp(14px, 3vh, 36px);
+  overflow-y: auto;
+  min-height: 0;
+  width: 100%;
 }
-.start-icon { font-size: clamp(3rem, 6vw + 4vh, 5rem); }
-.start-title {
+.title-block { text-align: center; }
+.title-icon { font-size: clamp(3rem, 8vw + 3vh, 6rem); line-height: 1.2; }
+.title-main {
   font-family: 'Kaisei Decol', serif;
-  font-size: clamp(1.8rem, 4vw + 2.5vh, 3.2rem);
+  font-size: clamp(2rem, 4vw + 2vh, 4.5rem);
+  color: var(--ind-dk);
   font-weight: 700;
-  color: var(--ind);
-  line-height: 1.2;
 }
-.start-sub {
-  font-size: clamp(0.9rem, 1.8vw + 1vh, 1.2rem);
-  color: var(--muted);
-  line-height: 1.7;
+.title-sub { font-size: clamp(0.85rem, 2.4vw, 1rem); color: #888; margin-top: 6px; }
+.start-cards {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vh, 20px);
+  width: 100%;
+  max-width: 560px;
 }
-.btn-start {
-  background: var(--ind);
-  color: white;
-  border: none;
-  border-radius: 16px;
-  padding: clamp(14px, 2.5vh, 20px) clamp(32px, 6vw, 56px);
-  font-family: inherit;
-  font-size: clamp(1.1rem, 2.2vw + 1.5vh, 1.6rem);
-  font-weight: 700;
+.start-card {
+  background: white;
+  border-radius: 20px;
+  padding: clamp(16px, 2.5vh, 28px) 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(79,70,229,0.12);
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(79,70,229,0.38);
-  transition: all 0.15s;
+  border: 3px solid transparent;
+  min-height: 80px;
 }
-.btn-start:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(79,70,229,0.25); }
+.start-card:active { border-color: var(--ind); box-shadow: 0 0 0 4px var(--ind-lt); }
 @media (hover: hover) {
-  .btn-start:hover { background: var(--ind-dk); box-shadow: 0 6px 18px rgba(79,70,229,0.45); }
+  .start-card { transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+  .start-card:hover { border-color: var(--ind); box-shadow: 0 6px 20px rgba(79,70,229,0.22); transform: translateY(-2px); }
 }
+.card-icon { font-size: 2.2rem; flex-shrink: 0; }
+.card-text { flex: 1; }
+.card-title { font-size: clamp(1.1rem, 2vw + 1.2vh, 2rem); font-weight: 700; color: var(--ind-dk); }
+.card-desc { font-size: clamp(0.8rem, 2.2vw, 0.9rem); color: #888; margin-top: 3px; }
+.card-arrow { font-size: 1.5rem; color: var(--ind); flex-shrink: 0; }
 
 /* LESSON SCREEN */
 .lesson-header {
@@ -490,65 +500,84 @@ body {
 .btn-home-result { background: #E2E8F0; color: var(--muted); }
 @media (hover: hover) { .btn-home-result:hover { background: #CBD5E1; } }
 
-/* OVERLAY */
-.overlay {
+/* POPUP */
+.popup-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.5);
   z-index: 100;
   align-items: center;
   justify-content: center;
 }
-.overlay.active { display: flex; }
-.overlay-card {
+.popup-overlay.show { display: flex; }
+.popup-box {
   background: white;
   border-radius: 20px;
-  padding: 28px 24px;
-  width: min(340px, 88vw);
+  padding: 28px 22px;
+  width: min(360px, 88vw);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
-.overlay-title {
-  font-size: clamp(1rem, 2vw + 1vh, 1.3rem);
-  font-weight: 700;
-  line-height: 1.6;
-}
-.overlay-btns { display: flex; gap: 10px; }
-.overlay-btns button {
+.popup-msg { font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 700; color: #333; line-height: 1.7; }
+.popup-btns { display: flex; gap: 12px; justify-content: center; }
+.btn-popup {
   flex: 1;
-  border: none;
+  padding: 14px;
   border-radius: 12px;
-  padding: 12px;
+  border: none;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   font-family: inherit;
-  font-size: clamp(0.9rem, 1.6vw + 0.8vh, 1.1rem);
   font-weight: 700;
   cursor: pointer;
+  min-height: 44px;
 }
-.btn-ov-cancel { background: #E2E8F0; color: var(--muted); }
-.btn-ov-ok { background: var(--ind); color: white; }
+.btn-popup:active { transform: translateY(1px); }
+.btn-popup.cancel { background: #eee; color: #555; }
+.btn-popup.go { background: var(--ind); color: white; }
 </style>
 </head>
 <body>
 
-<nav class="home-nav">
-  <button class="home-btn" onclick="tryGoHome()">🏠 まなびのへや</button>
-</nav>
-
 <!-- START SCREEN -->
 <div id="screen-start" class="screen active">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
   <div class="start-body">
-    <div class="start-icon">🔢</div>
-    <div class="start-title">おおきな数<br>もんだい</div>
-    <div class="start-sub">まず レッスンで かくにんして、<br>れんしゅうもんだいに ちょうせん！</div>
-    <button class="btn-start" onclick="startLesson()">はじめる</button>
+    <div class="title-block">
+      <div class="title-icon">🔢</div>
+      <div class="title-main">おおきな数 もんだい</div>
+      <div class="title-sub">小学3年生・算数「大きな数（一万を超える数）」</div>
+    </div>
+    <div class="start-cards">
+      <div class="start-card" onclick="startLesson()">
+        <div class="card-icon">📖</div>
+        <div class="card-text">
+          <div class="card-title">まなぶ</div>
+          <div class="card-desc">万・十万・百万・けいさんを かくにん</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+      <div class="start-card" onclick="startQuiz()">
+        <div class="card-icon">✏️</div>
+        <div class="card-text">
+          <div class="card-title">もんだいを といてみる</div>
+          <div class="card-desc">12もん チャレンジ！</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+    </div>
   </div>
 </div>
 
 <!-- LESSON SCREEN -->
 <div id="screen-lesson" class="screen">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
   <div class="lesson-header">
     <div class="lesson-step-label" id="lesson-step-label">レッスン 1/4</div>
     <div class="lesson-step-dots" id="lesson-step-dots"></div>
@@ -563,6 +592,9 @@ body {
 
 <!-- QUIZ SCREEN -->
 <div id="screen-quiz" class="screen">
+  <div class="home-bar">
+    <button class="btn-home" onclick="requestHome()">🏠 まなびのへや</button>
+  </div>
   <div class="quiz-header">
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
     <div class="quiz-counter" id="quiz-counter"></div>
@@ -578,6 +610,9 @@ body {
 
 <!-- RESULT SCREEN -->
 <div id="screen-result" class="screen">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
   <div class="result-body">
     <div class="result-icon" id="result-icon"></div>
     <div class="result-title" id="result-title"></div>
@@ -585,18 +620,18 @@ body {
     <div class="result-msg" id="result-msg"></div>
     <div class="result-btns">
       <button class="btn-retry" onclick="startQuiz()">もう一かい ちょうせん</button>
-      <button class="btn-home-result" onclick="window.location.href='../index.html'">🏠 まなびのへやへ</button>
+      <button class="btn-home-result" onclick="directHome()">🏠 まなびのへやへ</button>
     </div>
   </div>
 </div>
 
-<!-- HOME CONFIRM OVERLAY -->
-<div id="overlay-home" class="overlay">
-  <div class="overlay-card">
-    <div class="overlay-title">もどると 今の もんだいは<br>きえるよ。<br>まなびのへやへ もどる？</div>
-    <div class="overlay-btns">
-      <button class="btn-ov-cancel" onclick="closeOverlay()">つづける</button>
-      <button class="btn-ov-ok" onclick="window.location.href='../index.html'">もどる</button>
+<!-- HOME CONFIRM POPUP -->
+<div class="popup-overlay" id="popup-home">
+  <div class="popup-box">
+    <div class="popup-msg">もどると　いまの もんだいは<br>きえるよ。「まなびのへや」に もどる？</div>
+    <div class="popup-btns">
+      <button class="btn-popup cancel" onclick="closeHomePopup()">つづける</button>
+      <button class="btn-popup go" onclick="directHome()">もどる</button>
     </div>
   </div>
 </div>
@@ -781,19 +816,11 @@ let currentIdx = 0;
 let correctCount = 0;
 let answered = false;
 let currentShuffled = [];
-let isQuizActive = false;
 
 // ===== Home navigation =====
-function tryGoHome() {
-  if (isQuizActive) {
-    document.getElementById('overlay-home').classList.add('active');
-  } else {
-    window.location.href = '../index.html';
-  }
-}
-function closeOverlay() {
-  document.getElementById('overlay-home').classList.remove('active');
-}
+function directHome() { location.href = '../index.html'; }
+function requestHome() { document.getElementById('popup-home').classList.add('show'); }
+function closeHomePopup() { document.getElementById('popup-home').classList.remove('show'); }
 
 // ===== LocalStorage =====
 function recordVisit() {
@@ -846,7 +873,6 @@ function startQuiz() {
   sessionProblems = shuffle([...PROBLEMS]).slice(0, SESSION_COUNT);
   currentIdx = 0;
   correctCount = 0;
-  isQuizActive = true;
   recordVisit();
   renderQuestion();
   showScreen('screen-quiz');
@@ -940,7 +966,6 @@ function nextQuestion() {
 
 // ===== Result =====
 function showResult() {
-  isQuizActive = false;
   const total = sessionProblems.length;
   const pct = Math.round((correctCount / total) * 100);
   document.getElementById('result-icon').textContent  = pct >= 80 ? '🌟' : pct >= 50 ? '😊' : '😅';
