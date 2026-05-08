@@ -378,6 +378,20 @@
       .btn-pin.go:hover { background: var(--org-dk); }
       .btn-scratch-clear:hover { background: var(--org-lt); transition: background 0.15s; }
     }
+    /* === 正解エフェクト === */
+    .btn-choice.correct { animation: btn-correct 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    @keyframes btn-correct {
+      0%   { transform: scale(1); box-shadow: 0 3px 0 #FED7AA; }
+      45%  { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(120,217,138,0.35); }
+      75%  { transform: scale(0.97); }
+      100% { transform: scale(1.04); box-shadow: 0 0 0 3px rgba(120,217,138,0.2); }
+    }
+    .feedback-card.correct-fb .feedback-result-text { animation: fb-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .feedback-card.wrong-fb   .feedback-result-text { animation: fb-shake 0.4s ease-out forwards; }
+    @keyframes fb-pop   { 0%{transform:scale(0.4);opacity:0;} 65%{transform:scale(1.2);opacity:1;} 100%{transform:scale(1);opacity:1;} }
+    @keyframes fb-shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 50%{transform:translateX(6px);} 75%{transform:translateX(-4px);} }
+    .confetti-piece { position:fixed; pointer-events:none; z-index:300; animation:confetti-fly linear forwards; }
+    @keyframes confetti-fly { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;transform:translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot));} }
   </style>
 </head>
 <body>
@@ -592,6 +606,31 @@
 
 <script>
 'use strict';
+
+function launchConfetti() {
+  const colors = ['#FFD700','#FF6B6B','#4ECDC4','#A78BFA','#F472B6','#34D399','#FBBF24','#60A5FA'];
+  const cx = window.innerWidth / 2, cy = window.innerHeight * 0.55;
+  for (let i = 0; i < 32; i++) {
+    const el = document.createElement('div');
+    const size = 6 + Math.random() * 8;
+    const angle = (Math.random() * 260 - 130) * (Math.PI / 180);
+    const dist = 120 + Math.random() * 160;
+    el.className = 'confetti-piece';
+    el.style.cssText = [
+      `left:${cx + (Math.random()-0.5)*60}px`, `top:${cy}px`,
+      `width:${size}px`, `height:${size}px`,
+      `background:${colors[i % colors.length]}`,
+      `border-radius:${Math.random()>0.4?'50%':'3px'}`,
+      `--dx:${(Math.sin(angle)*dist).toFixed(0)}px`,
+      `--dy:${(-Math.abs(Math.cos(angle))*dist-40).toFixed(0)}px`,
+      `--rot:${(Math.random()*720-360).toFixed(0)}deg`,
+      `animation-duration:${(0.7+Math.random()*0.5).toFixed(2)}s`,
+      `animation-delay:${(Math.random()*0.15).toFixed(2)}s`,
+    ].join(';');
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }
+}
 
 const MODULE_ID = 'math-hissan-mondai';
 const KEY_MODULE = 'manabi_room_module_' + MODULE_ID;
@@ -890,7 +929,7 @@ function selectAnswer(val, btn, p) {
   if (answered) return;
   answered = true;
   const isCorrect = (val === p.ans);
-  if (isCorrect) score++;
+  if (isCorrect) { score++; launchConfetti(); }
   document.querySelectorAll('.btn-choice').forEach(b => {
     b.disabled = true;
     if (Number(b.dataset.val) === p.ans) b.classList.add('correct');
