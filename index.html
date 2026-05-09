@@ -2,667 +2,438 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>まなびのへや</title>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f7f3ec;
-  --surface: #ffffff;
-  --surface-soft: #fcfaf6;
-  --text: #2f2a3a;
-  --sub: #756f86;
-  --hint: #a7a0b6;
-  --line: rgba(58, 48, 86, 0.10);
-  --line-md: rgba(58, 48, 86, 0.18);
-  --green: #5f9429;
-  --green-soft: #e8f3db;
-  --amber: #b87419;
-  --amber-soft: #f9ecd9;
-  --blue: #1c63aa;
-  --blue-soft: #e7f1fb;
-  --purple: #5a4fc0;
-  --purple-soft: #efedff;
-  --pink: #bc628c;
-  --pink-soft: #fcebf4;
-  --shadow: 0 6px 24px rgba(46, 36, 76, 0.07);
-  --shadow-sm: 0 2px 12px rgba(46, 36, 76, 0.05);
-  --r-lg: 18px;
-  --r-md: 12px;
-  --r-sm: 9px;
-  --r-pill: 999px;
-  --max: min(760px, 94vw);
+  --pink: #FF6B9D;
+  --pink-lt: #FFEEF6;
+  --pink-md: #FFB3D1;
+  --pink-dk: #D81B70;
+  --lav: #9B72E0;
+  --lav-lt: #F0EBFF;
+  --lav-md: #C9B0F0;
+  --lav-dk: #7C3AED;
+  --mint: #4ECDC4;
+  --mint-lt: #E0FAF8;
+  --amber: #F59E0B;
+  --amber-lt: #FFF8E1;
+  --green: #22C55E;
+  --green-lt: #DCFCE7;
+  --text: #2D1B50;
+  --sub: #6B4E8A;
+  --hint: #B0A0C0;
+  --surface: #FFFFFF;
+  --line: rgba(155, 114, 224, 0.18);
+  --shadow: 0 6px 24px rgba(120, 60, 160, 0.10);
+  --shadow-sm: 0 2px 10px rgba(120, 60, 160, 0.07);
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --max: min(720px, 94vw);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; }
 * { -webkit-tap-highlight-color: transparent; }
+
 body {
-  min-height: 100vh;
+  min-height: 100svh;
   font-family: 'Zen Maru Gothic', sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at top left, rgba(239, 237, 255, 0.95), transparent 26%),
-    radial-gradient(circle at 85% 8%, rgba(252, 235, 244, 0.85), transparent 22%),
-    linear-gradient(180deg, #f8f5ef 0%, #f6f7fb 100%);
+    radial-gradient(ellipse at 8% 0%, rgba(255, 180, 215, 0.55) 0%, transparent 38%),
+    radial-gradient(ellipse at 92% 4%, rgba(195, 170, 255, 0.50) 0%, transparent 34%),
+    radial-gradient(ellipse at 50% 98%, rgba(165, 245, 240, 0.40) 0%, transparent 46%),
+    #FBF4FF;
   display: flex;
   justify-content: center;
-  padding: clamp(14px, 3vw, 24px) clamp(12px, 3vw, 20px) 48px;
+  padding: max(env(safe-area-inset-top), 16px) max(env(safe-area-inset-right), 14px) max(env(safe-area-inset-bottom), 40px) max(env(safe-area-inset-left), 14px);
+  touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
 }
 
-button,
-a,
-input {
-  font: inherit;
-}
+button, a, input { font: inherit; }
 
-.page {
-  width: 100%;
-  max-width: var(--max);
-}
+.page { width: 100%; max-width: var(--max); }
+.screen[hidden] { display: none !important; }
 
-.screen[hidden] {
-  display: none !important;
-}
-
+/* ── セットアップ画面 ── */
 .setup-screen {
-  min-height: calc(100vh - 48px);
+  min-height: calc(100svh - 56px);
   display: flex;
   align-items: center;
 }
 
 .setup-card {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid var(--line);
-  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-xl);
   box-shadow: var(--shadow);
-  padding: clamp(24px, 5vw, 36px);
+  padding: clamp(24px, 5vw, 40px);
   width: 100%;
   text-align: center;
 }
 
-.setup-illo {
-  display: block;
-  font-size: clamp(3rem, 8vw, 5rem);
-  line-height: 1;
-  margin-bottom: 14px;
-}
+.setup-illo { display: block; font-size: clamp(3.5rem, 9vw, 5.5rem); line-height: 1; margin-bottom: 16px; }
 
 .setup-title {
   font-family: 'Kaisei Decol', serif;
-  font-size: clamp(1.55rem, 4vw, 2.2rem);
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  background: linear-gradient(135deg, var(--pink), var(--lav));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.setup-copy {
-  margin-top: 10px;
-  color: var(--sub);
-  line-height: 1.9;
-  font-size: clamp(0.92rem, 1.8vw, 1rem);
+.setup-copy { margin-top: 10px; color: var(--sub); line-height: 1.9; font-size: clamp(0.9rem, 1.8vw, 1rem); }
+.setup-form { margin-top: 20px; text-align: left; }
+.setup-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.setup-help { margin-top: 12px; color: var(--hint); font-size: 0.76rem; text-align: center; line-height: 1.7; }
+
+/* ── ボタン ── */
+.btn {
+  border: none;
+  border-radius: var(--r-xl);
+  min-height: 48px;
+  padding: 0 22px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+  touch-action: manipulation;
+}
+.btn:active { transform: translateY(2px); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--pink), var(--lav));
+  color: #fff;
+  box-shadow: 0 4px 0 rgba(120, 60, 160, 0.3), 0 6px 20px rgba(180, 80, 160, 0.2);
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--lav-dk);
+  border: 2px solid var(--lav-md);
+}
+.btn:disabled { opacity: 0.4; pointer-events: none; }
+
+@media (hover: hover) {
+  .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn-secondary:hover { background: var(--lav-lt); }
 }
 
-.setup-form {
-  margin-top: 18px;
-  text-align: left;
+/* ── フォーム ── */
+.field-label { display: block; margin-bottom: 6px; color: var(--sub); font-size: 0.8rem; font-weight: 700; }
+.field-input {
+  width: 100%;
+  min-height: 48px;
+  border-radius: var(--r-md);
+  border: 2px solid var(--line);
+  background: #fff;
+  padding: 0 14px;
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color 0.15s;
 }
+.field-input:focus { outline: none; border-color: var(--lav); }
 
-.setup-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.setup-help {
-  margin-top: 12px;
-  color: var(--hint);
-  line-height: 1.7;
-  font-size: 0.76rem;
-  text-align: center;
-}
-
-.shell {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+/* ── シェル（メイン画面コンテナ） ── */
+.shell { display: flex; flex-direction: column; gap: 12px; }
 
 .card {
   background: rgba(255, 255, 255, 0.92);
-  border: 1px solid var(--line);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow);
 }
 
-.hero {
-  padding: clamp(18px, 4vw, 28px);
-  position: relative;
-  overflow: hidden;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  right: -32px;
-  top: -36px;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(90, 79, 192, 0.12), rgba(90, 79, 192, 0));
-}
-
-.hero-top {
+/* ── ページヘッダー ── */
+.page-header {
   display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.hero-badge,
-.mini-badge,
-.status-badge,
-.coming-tag,
-.progress-chip {
-  display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  border-radius: var(--r-pill);
-  padding: 0 12px;
-  font-size: clamp(0.72rem, 1.5vw, 0.8rem);
-  font-weight: 700;
-}
-
-.hero-badge { background: var(--purple-soft); color: var(--purple); }
-.mini-badge { background: var(--green-soft); color: var(--green); }
-.status-badge { background: var(--amber-soft); color: var(--amber); }
-.coming-tag { background: #f3f0f8; color: var(--hint); border: 1px solid var(--line); }
-.progress-chip { background: var(--pink-soft); color: var(--pink); }
-
-.hero-title {
-  margin-top: 12px;
-  font-family: 'Kaisei Decol', serif;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  line-height: 1.2;
-}
-
-.hero-copy {
-  margin-top: 10px;
-  color: var(--sub);
-  line-height: 1.85;
-  max-width: 34em;
-  font-size: clamp(0.94rem, 1.9vw, 1.02rem);
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.btn {
-  border: none;
-  border-radius: var(--r-pill);
-  min-height: 46px;
-  padding: 0 18px;
-  cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
-}
-
-.btn:active {
-  transform: translateY(2px);
-}
-
-.btn-primary {
-  background: var(--purple);
-  color: #fff;
-  box-shadow: 0 4px 0 #4036a1;
-}
-
-.btn-secondary {
-  background: #fff;
-  color: var(--purple);
-  border: 1px solid var(--line-md);
-}
-
-.hero-date {
-  text-align: right;
-  color: var(--hint);
-  font-size: clamp(0.72rem, 1.5vw, 0.8rem);
-  line-height: 1.8;
-  white-space: nowrap;
-}
-
-.welcome {
-  display: grid;
-  grid-template-columns: auto 1fr;
   gap: 12px;
-  padding: 14px 16px;
-  align-items: center;
+  padding: 16px 18px;
 }
+
+.ph-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.ph-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
 
 .avatar {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--lav));
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.3rem;
   display: grid;
   place-items: center;
-  background: var(--purple-soft);
-  color: var(--purple);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.welcome-name {
-  font-size: clamp(1rem, 2vw, 1.12rem);
-  font-weight: 700;
-}
-
-.welcome-msg {
-  margin-top: 2px;
-  color: var(--sub);
-  line-height: 1.7;
-  font-size: clamp(0.82rem, 1.6vw, 0.92rem);
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.stat {
-  padding: 14px 10px;
-  text-align: center;
-  border-radius: var(--r-md);
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-num {
-  font-family: 'Kaisei Decol', serif;
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-  line-height: 1.2;
-}
-
-.stat-lbl {
-  margin-top: 3px;
-  color: var(--sub);
-  line-height: 1.35;
-  font-size: clamp(0.68rem, 1.25vw, 0.76rem);
-}
-
-.section-label {
-  margin-top: 6px;
-  margin-bottom: -2px;
-  color: var(--hint);
-  font-size: clamp(0.72rem, 1.4vw, 0.78rem);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tab {
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--sub);
-  border-radius: 14px;
-  padding: 10px 12px;
-  min-height: 52px;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.tab.active {
-  background: var(--purple-soft);
-  border-color: rgba(90, 79, 192, 0.24);
-  color: var(--text);
-}
-
-.tab-emoji {
-  font-size: 1.2rem;
-}
-
-.tab-label {
-  display: block;
-  font-size: clamp(0.86rem, 1.7vw, 0.94rem);
-  font-weight: 700;
-}
-
-.tab-note {
-  display: block;
-  font-size: clamp(0.68rem, 1.25vw, 0.76rem);
-  color: var(--hint);
-}
-
-.subject-panel,
-.placeholder-panel,
-.name-panel {
-  padding: 16px;
-}
-
-.subject-top {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.subject-title {
-  margin-top: 10px;
-  font-size: clamp(1.15rem, 2.6vw, 1.35rem);
-  font-weight: 700;
-}
-
-.subject-copy,
-.placeholder-copy {
-  margin-top: 8px;
-  color: var(--sub);
-  line-height: 1.8;
-  max-width: 34em;
-  font-size: clamp(0.84rem, 1.7vw, 0.93rem);
-}
-
-.subject-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.summary-pill {
-  min-width: 112px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: #fff;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-sm);
-}
-
-.summary-label {
-  display: block;
-  color: var(--hint);
-  font-size: 0.7rem;
-}
-
-.summary-value {
-  display: block;
-  margin-top: 3px;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.subject-progress {
-  margin-top: 14px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.86);
-}
-
-.progress-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 0.8rem;
-  color: var(--sub);
-}
-
-.progress-track {
-  width: 100%;
-  height: 10px;
-  border-radius: 999px;
-  background: #eee8f8;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--purple), var(--pink));
-  transition: width 0.2s ease;
-}
-
-.progress-note {
-  margin-top: 8px;
-  color: var(--hint);
-  line-height: 1.6;
-  font-size: 0.74rem;
-}
-
-.unit-sections {
-  margin-top: 16px;
-  display: grid;
-  gap: 12px;
-}
-
-.unit-card {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: linear-gradient(180deg, #fff, #fcfbff);
-  overflow: hidden;
-}
-
-.unit-head {
-  padding: 14px 14px 12px;
-  border-bottom: 1px solid var(--line);
-}
-
-.unit-title {
-  font-size: clamp(0.95rem, 2vw, 1.02rem);
-  font-weight: 700;
-}
-
-.unit-desc {
-  margin-top: 5px;
-  color: var(--sub);
-  line-height: 1.7;
-  font-size: clamp(0.76rem, 1.45vw, 0.84rem);
-}
-
-.module-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.module-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  text-decoration: none;
-  color: inherit;
-  border-top: 1px solid var(--line);
-}
-
-.module-row:first-child {
-  border-top: none;
-}
-
-.module-row:hover {
-  background: #faf7ff;
-}
-
-.module-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(180, 80, 160, 0.28);
 }
 
-.dot-new { background: var(--hint); }
-.dot-opened { background: var(--amber); }
-.dot-frequent { background: var(--green); }
-
-.module-main {
-  flex: 1;
-  min-width: 0;
-}
-
-.module-name {
-  font-size: clamp(0.86rem, 1.7vw, 0.94rem);
-  font-weight: 500;
+.ph-name {
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.module-sub {
-  margin-top: 2px;
+.ph-msg {
+  margin-top: 3px;
+  color: var(--sub);
+  font-size: clamp(0.74rem, 1.5vw, 0.82rem);
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-date {
+  font-size: clamp(0.66rem, 1.3vw, 0.74rem);
   color: var(--hint);
-  line-height: 1.55;
-  font-size: clamp(0.68rem, 1.25vw, 0.76rem);
+  text-align: right;
+  line-height: 1.7;
+  white-space: nowrap;
 }
 
-.module-tags {
+.btn-name {
+  background: var(--pink-lt);
+  border: 1.5px solid var(--pink-md);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--pink-dk);
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+}
+.btn-name:active { transform: scale(0.95); }
+
+@media (hover: hover) {
+  .btn-name:hover { background: var(--pink-md); color: #fff; }
+}
+
+/* ── 統計ピル ── */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+.stat-pill {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 14px 6px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: transform 0.15s;
 }
 
-.tag {
+.stat-pill.sp-pink { background: linear-gradient(145deg, #FFF0F8, #FFE4F2); border-color: var(--pink-md); }
+.stat-pill.sp-yellow { background: linear-gradient(145deg, #FFFDE7, #FFF3B0); border-color: #FFD54F; }
+.stat-pill.sp-lav { background: linear-gradient(145deg, #F5EEFF, var(--lav-lt)); border-color: var(--lav-md); }
+
+.stat-pill.streak-active { background: linear-gradient(145deg, #FFF3E0, #FFE082) !important; border-color: var(--amber) !important; }
+.stat-pill.streak-active .sp-num { color: var(--amber); }
+
+.sp-icon { font-size: 1.3rem; line-height: 1; }
+.sp-num {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+}
+.sp-lbl {
+  font-size: clamp(0.60rem, 1.1vw, 0.68rem);
+  color: var(--hint);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ── セクション見出し ── */
+.section-hd {
+  font-size: clamp(0.78rem, 1.6vw, 0.86rem);
+  font-weight: 700;
+  color: var(--sub);
+  letter-spacing: 0.04em;
+  padding-left: 4px;
+}
+
+/* ── きょうかタブ ── */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tab {
+  border: 2px solid rgba(200, 170, 240, 0.3);
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 10px 18px;
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  border-radius: var(--r-pill);
-  padding: 0 9px;
-  background: #f7f4fc;
-  color: var(--sub);
-  font-size: 0.68rem;
+  gap: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.15s;
+  min-height: 52px;
+}
+.tab.active {
+  background: linear-gradient(135deg, var(--pink-lt), var(--lav-lt));
+  border-color: var(--lav-md);
+}
+@media (hover: hover) {
+  .tab:hover:not(.active) { background: var(--lav-lt); border-color: var(--lav-md); }
+}
+
+.tab-emoji { font-size: 1.3rem; }
+.tab-label { display: block; font-size: clamp(0.9rem, 1.9vw, 1rem); font-weight: 700; }
+.tab-note { display: block; font-size: clamp(0.64rem, 1.2vw, 0.72rem); color: var(--hint); }
+
+/* ── 科目パネル ── */
+.subject-panel { display: flex; flex-direction: column; gap: 10px; }
+
+.subj-header {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 18px;
+}
+
+.subj-top { display: flex; align-items: flex-start; gap: 12px; }
+.subj-emoji { font-size: 2.4rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+.subj-info { flex: 1; min-width: 0; }
+.subj-title { font-size: clamp(1rem, 2.2vw, 1.15rem); font-weight: 700; }
+.subj-copy { margin-top: 4px; color: var(--sub); font-size: clamp(0.75rem, 1.5vw, 0.84rem); line-height: 1.75; }
+
+.progress-strip { margin-top: 12px; display: flex; align-items: center; gap: 10px; }
+.progress-bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(180, 140, 220, 0.15);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pink), var(--lav));
+  transition: width 0.4s ease;
+}
+.progress-txt { font-size: 0.72rem; font-weight: 700; color: var(--sub); white-space: nowrap; }
+
+/* ── モジュールグリッド ── */
+.modules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.module-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  color: var(--text);
+  min-height: 168px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  touch-action: manipulation;
+}
+
+@media (hover: hover) {
+  .module-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12); }
+}
+.module-card:active { transform: scale(0.96); }
+
+.mc-emoji { font-size: 2.1rem; line-height: 1; margin-bottom: 8px; }
+.mc-unit {
+  font-size: 0.63rem;
+  font-weight: 700;
+  color: var(--ca, var(--lav-dk));
+  opacity: 0.85;
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.mc-title {
+  font-size: clamp(0.80rem, 1.9vw, 0.96rem);
+  font-weight: 700;
+  line-height: 1.5;
+  flex: 1;
+}
+.mc-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 4px;
+}
+
+.mc-badge {
+  font-size: 0.63rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
+.mc-badge.mc-dot-new { color: #888; }
+.mc-badge.mc-dot-opened { color: #B45309; background: rgba(255, 243, 200, 0.9); }
+.mc-badge.mc-dot-frequent { color: #15803D; background: rgba(220, 252, 231, 0.9); }
+
+.mc-go { font-size: 0.78rem; font-weight: 700; color: var(--ca, var(--lav-dk)); white-space: nowrap; }
+
+/* ── プレースホルダーパネル ── */
+.placeholder-panel { padding: 18px; }
+
+.mini-badge, .status-badge, .coming-tag, .progress-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border-radius: 999px;
+  padding: 0 12px;
+  font-size: clamp(0.68rem, 1.4vw, 0.76rem);
   font-weight: 700;
 }
+.mini-badge { background: linear-gradient(135deg, #E8F5E9, #F1F8E9); color: #15803D; }
+.status-badge { background: var(--amber-lt); color: #B45309; }
+.coming-tag { background: var(--lav-lt); color: var(--lav-dk); }
+.progress-chip { background: var(--pink-lt); color: var(--pink-dk); }
 
-.module-state {
-  flex-shrink: 0;
-  text-align: right;
-}
+.subject-title { font-size: clamp(1.05rem, 2.2vw, 1.2rem); font-weight: 700; margin-top: 8px; }
+.placeholder-copy { margin-top: 8px; color: var(--sub); line-height: 1.8; font-size: clamp(0.82rem, 1.7vw, 0.93rem); }
 
-.module-arrow {
-  color: var(--hint);
-  font-size: 0.92rem;
-  margin-left: 8px;
-}
-
-.coming-list {
-  margin-top: 14px;
-  display: grid;
-  gap: 10px;
-}
-
+.coming-list { margin-top: 14px; display: grid; gap: 10px; }
 .coming-card {
-  border: 1px dashed var(--line-md);
+  border: 1.5px dashed var(--lav-md);
   border-radius: 14px;
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.78);
 }
+.coming-name { font-size: 0.92rem; font-weight: 700; }
+.coming-copy { margin-top: 5px; color: var(--hint); line-height: 1.7; font-size: 0.78rem; }
 
-.coming-name {
-  font-size: 0.92rem;
-  font-weight: 700;
-}
+/* ── なまえパネル ── */
+.name-panel { padding: 18px; display: none; }
+.name-panel.open { display: block; }
+.name-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.name-panel .placeholder-copy { margin-bottom: 14px; }
 
-.coming-copy {
-  margin-top: 5px;
-  color: var(--hint);
-  line-height: 1.7;
-  font-size: 0.78rem;
-}
-
-.field-label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--sub);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.field-input {
-  width: 100%;
-  min-height: 46px;
-  border-radius: 12px;
-  border: 1.5px solid var(--line-md);
-  background: var(--surface-soft);
-  padding: 0 14px;
-  color: var(--text);
-  font-size: 1rem;
-}
-
-.field-input:focus {
-  outline: none;
-  border-color: var(--purple);
-}
-
-.name-panel {
-  display: none;
-}
-
-.name-panel.open {
-  display: block;
-}
-
-.name-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.stat.streak-active .stat-num {
-  color: var(--amber);
-}
-
-.stat.streak-active .stat-lbl {
-  color: var(--amber);
-}
-
-.footer-note {
-  padding: 4px 4px 0;
-  text-align: center;
-  color: var(--hint);
-  line-height: 1.7;
-  font-size: 0.74rem;
-}
-
-@media (max-width: 640px) {
-  .stats {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .subject-top,
-  .hero-top {
-    flex-direction: column;
-  }
-
-  .subject-summary {
-    justify-content: flex-start;
-  }
-
-  .summary-pill {
-    min-width: 0;
-  }
-
-  .hero-date {
-    text-align: left;
-  }
-}
+/* ── フッター ── */
+.footer-note { padding: 4px; text-align: center; color: var(--hint); font-size: 0.72rem; line-height: 1.8; }
 
 /* ── 保護者モーダル ── */
 .parent-overlay {
   position: fixed; inset: 0;
-  background: rgba(30, 20, 60, 0.6);
+  background: rgba(30, 20, 60, 0.62);
   display: flex; align-items: center; justify-content: center;
   z-index: 9000; padding: 20px;
 }
@@ -672,91 +443,69 @@ input {
   border-radius: var(--r-lg);
   padding: 28px 22px 20px;
   width: 100%; max-width: 300px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
 }
-.parent-modal h2 {
-  font-size: 1.05rem; font-weight: 700;
-  text-align: center; margin-bottom: 6px;
-}
-.parent-sub {
-  font-size: 0.82rem; color: var(--sub);
-  text-align: center; margin-bottom: 18px; line-height: 1.6;
-}
-.pin-dots {
-  display: flex; gap: 14px; justify-content: center;
-  margin-bottom: 18px;
-}
+.parent-modal h2 { font-size: 1.05rem; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.parent-sub { font-size: 0.82rem; color: var(--sub); text-align: center; margin-bottom: 18px; line-height: 1.6; }
+.pin-dots { display: flex; gap: 14px; justify-content: center; margin-bottom: 18px; }
 .pin-dot {
   width: 15px; height: 15px; border-radius: 50%;
-  border: 2px solid var(--purple);
+  border: 2px solid var(--lav);
   background: transparent;
   transition: background 0.12s;
 }
-.pin-dot.filled { background: var(--purple); }
+.pin-dot.filled { background: var(--lav); }
 .pin-dot.error  { border-color: #c0304d; background: #c0304d; }
-.pin-keypad {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 8px; margin-bottom: 10px;
-}
+.pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
 .pin-key {
-  height: 52px; border-radius: var(--r-md);
-  border: 1.5px solid var(--line-md);
-  background: var(--surface-soft);
+  height: 52px; border-radius: var(--r-sm);
+  border: 1.5px solid var(--line);
+  background: #faf8ff;
   font-size: 1.25rem; font-weight: 700;
   cursor: pointer; touch-action: manipulation;
   font-family: inherit; color: var(--text);
   transition: background 0.1s, transform 0.08s;
 }
-.pin-key:active { background: var(--purple-soft); transform: scale(0.93); }
+.pin-key:active { background: var(--lav-lt); transform: scale(0.93); }
 .pin-key.pin-del { font-size: 1rem; }
-.pin-err {
-  text-align: center; color: #c0304d;
-  font-size: 0.8rem; min-height: 1.1em;
-  margin-bottom: 6px;
-}
-.parent-menu-list {
-  display: flex; flex-direction: column; gap: 9px;
-  margin-bottom: 4px;
-}
+.pin-err { text-align: center; color: #c0304d; font-size: 0.8rem; min-height: 1.1em; margin-bottom: 6px; }
+.parent-menu-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 4px; }
 .pmenu-btn {
   width: 100%; padding: 13px 14px;
-  border-radius: var(--r-md); border: none;
+  border-radius: var(--r-sm); border: none;
   cursor: pointer; font-family: inherit;
   font-size: 0.92rem; font-weight: 700;
   text-align: left; touch-action: manipulation;
   transition: opacity 0.1s;
 }
 .pmenu-btn:active { opacity: 0.75; }
-.pmenu-btn.danger   { background: #fdedf0; color: #c0304d; }
-.pmenu-btn.neutral  { background: var(--surface-soft); color: var(--text);
-                      border: 1.5px solid var(--line-md); }
+.pmenu-btn.danger  { background: #fdedf0; color: #c0304d; }
+.pmenu-btn.neutral { background: #f8f5ff; color: var(--text); border: 1.5px solid var(--line); }
 .parent-cancel {
   width: 100%; padding: 11px; margin-top: 6px;
   background: none; border: none;
   color: var(--hint); font-size: 0.82rem;
-  cursor: pointer; font-family: inherit;
-  touch-action: manipulation;
+  cursor: pointer; font-family: inherit; touch-action: manipulation;
 }
-.confirm-btns {
-  display: flex; gap: 9px; margin-top: 16px;
-}
+.confirm-btns { display: flex; gap: 9px; margin-top: 16px; }
 .confirm-btns button {
   flex: 1; padding: 13px;
-  border-radius: var(--r-md); border: none;
+  border-radius: var(--r-sm); border: none;
   font-family: inherit; font-size: 0.92rem; font-weight: 700;
   cursor: pointer; touch-action: manipulation;
 }
-.cbtn-cancel { background: var(--surface-soft); color: var(--text);
-               border: 1.5px solid var(--line-md); }
+.cbtn-cancel { background: #f8f5ff; color: var(--text); border: 1.5px solid var(--line); }
 .cbtn-danger { background: #c0304d; color: #fff; }
 </style>
 </head>
 <body>
 <main class="page">
+
+  <!-- ── セットアップ画面 ── -->
   <section class="screen setup-screen" id="setup-screen" hidden>
     <div class="setup-card">
-      <span class="setup-illo">📚</span>
-      <h1 class="setup-title">まなびのへやへようこそ</h1>
+      <span class="setup-illo">🌸</span>
+      <h1 class="setup-title">まなびのへやへようこそ！</h1>
       <p class="setup-copy">
         はじめに、なまえをおしえてね。<br>
         入れておくと、ここがあなたの学びのいりぐちになるよ。
@@ -765,7 +514,7 @@ input {
         <label class="field-label" for="setup-name-input">なまえ</label>
         <input class="field-input" id="setup-name-input" type="text" maxlength="20" placeholder="れいこ" autocomplete="off" autocorrect="off" spellcheck="false">
         <div class="setup-actions">
-          <button class="btn btn-primary" type="button" id="setup-save-btn" disabled>はじめる</button>
+          <button class="btn btn-primary" type="button" id="setup-save-btn" disabled>はじめる ✨</button>
           <button class="btn btn-secondary" type="button" id="setup-skip-btn">あとでいれる</button>
         </div>
         <div class="setup-help">なまえはあとからでも入れられるよ。</div>
@@ -773,54 +522,53 @@ input {
     </div>
   </section>
 
+  <!-- ── メイン画面 ── -->
   <div class="shell screen" id="main-screen" hidden>
-    <section class="card hero">
-      <div class="hero-top">
+
+    <!-- ヘッダー -->
+    <header class="card page-header">
+      <div class="ph-left">
+        <div class="avatar" id="avatar">ま</div>
         <div>
-          <span class="hero-badge">📚 まいにちの学びのいりぐち</span>
-          <h1 class="hero-title">まなびのへや</h1>
-          <p class="hero-copy">
-            きょうかごとに学べるべんきょうをまとめた、おうちの学びホームです。
-            まずはやりたいたんげんをえらんで、すぐにはじめよう。
-          </p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" type="button" id="start-math-btn">さんすうをみる</button>
-            <button class="btn btn-secondary" type="button" id="toggle-name-btn">なまえをいれる</button>
-          </div>
+          <div class="ph-name hero-title" id="welcome-name">まなびのへやへようこそ</div>
+          <div class="ph-msg" id="welcome-msg">きょうの学びをえらぼう。</div>
         </div>
+      </div>
+      <div class="ph-right">
         <div class="hero-date" id="hero-date"></div>
+        <button class="btn-name" id="toggle-name-btn">✏️ なまえをいれる</button>
       </div>
-    </section>
+    </header>
+    <button id="start-math-btn" style="display:none" type="button" aria-hidden="true"></button>
 
-    <section class="card welcome">
-      <div class="avatar" id="avatar">ま</div>
-      <div>
-        <div class="welcome-name" id="welcome-name">まなびのへやへようこそ</div>
-        <div class="welcome-msg" id="welcome-msg">なまえはあとからでも入れられるよ。きょうの学びをえらぼう。</div>
+    <!-- 統計 -->
+    <div class="stats-row">
+      <div class="stat-pill sp-pink">
+        <span class="sp-icon">📖</span>
+        <span class="sp-num" id="stat-opened">0</span>
+        <span class="sp-lbl">ひらいた</span>
       </div>
-    </section>
+      <div class="stat-pill sp-yellow">
+        <span class="sp-icon">☀️</span>
+        <span class="sp-num" id="stat-days">0</span>
+        <span class="sp-lbl">べんきょうした日</span>
+      </div>
+      <div class="stat-pill sp-lav" id="streak-stat">
+        <span class="sp-icon">🔥</span>
+        <span class="sp-num" id="stat-streak">0</span>
+        <span class="sp-lbl">れんぞく日かず</span>
+      </div>
+    </div>
 
-    <section class="stats" aria-label="学びのまとめ">
-      <div class="stat">
-        <div class="stat-num" id="stat-opened">0</div>
-        <div class="stat-lbl">ひらいた<br>べんきょう</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="stat-days">0</div>
-        <div class="stat-lbl">べんきょうした<br>日のかず</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="stat-streak">0</div>
-        <div class="stat-lbl">つづけてべんきょうした<br>日かず</div>
-      </div>
-    </section>
-
-    <div class="section-label">きょうかをえらぶ</div>
+    <!-- きょうかタブ -->
+    <div class="section-hd">きょうかをえらぼう ✨</div>
     <section class="tabs" id="subject-tabs" aria-label="きょうかタブ"></section>
 
-    <section class="card subject-panel" id="subject-panel"></section>
+    <!-- 科目コンテンツ -->
+    <section class="subject-panel" id="subject-panel"></section>
     <section class="card placeholder-panel" id="placeholder-panel" hidden></section>
 
+    <!-- なまえ設定 -->
     <section class="card name-panel" id="name-panel">
       <span class="mini-badge">✏️ なまえのせってい</span>
       <div class="placeholder-copy">
@@ -838,14 +586,14 @@ input {
       このページはきょうかやべんきょうをあとからふやせるように作ってあります。<br>
       いまはさんすうのべんきょうができます。
     </div>
-  </div>
+  </div><!-- /.shell -->
 </main>
 
-<!-- 保護者モーダル -->
+<!-- ── 保護者モーダル ── -->
 <div class="parent-overlay" id="parent-overlay" hidden>
   <div class="parent-modal">
 
-    <!-- PIN入力画面 -->
+    <!-- PIN入力 -->
     <div id="pscreen-pin">
       <h2>🔒 保護者メニュー</h2>
       <p class="parent-sub">PINを入力してください<br><small style="font-size:0.75em;color:var(--hint)">（初期値：0000）</small></p>
@@ -858,7 +606,7 @@ input {
       <button class="parent-cancel" type="button" onclick="closeParentModal()">キャンセル</button>
     </div>
 
-    <!-- 保護者メニュー画面 -->
+    <!-- 保護者メニュー -->
     <div id="pscreen-menu" hidden>
       <h2>🔒 保護者メニュー</h2>
       <p class="parent-sub">学習きろくのかんりができます</p>
@@ -869,7 +617,7 @@ input {
       <button class="parent-cancel" type="button" onclick="closeParentModal()">とじる</button>
     </div>
 
-    <!-- リセット確認画面 -->
+    <!-- リセット確認 -->
     <div id="pscreen-reset-confirm" hidden>
       <h2>⚠️ きろくをけす</h2>
       <p class="parent-sub">なまえ・学習きろくをすべてけします。<br>この操作はもとにもどせません。<br>本当によろしいですか？</p>
@@ -879,7 +627,7 @@ input {
       </div>
     </div>
 
-    <!-- PIN変更画面 -->
+    <!-- PIN変更 -->
     <div id="pscreen-pin-change" hidden>
       <h2>🔑 PINを変える</h2>
       <p class="parent-sub" id="pin-change-label">あたらしいPINを入力してください</p>
@@ -892,7 +640,7 @@ input {
       <button class="parent-cancel" type="button" onclick="showPScreen('menu')">もどる</button>
     </div>
 
-    <!-- PIN変更完了画面 -->
+    <!-- PIN変更完了 -->
     <div id="pscreen-pin-done" hidden>
       <h2>✅ PINを変えました</h2>
       <p class="parent-sub">あたらしいPINがほぞんされました。</p>
@@ -903,11 +651,12 @@ input {
 </div>
 
 <script>
-const KEY_NAME = "manabi_room_name";
-const KEY_DAYS = "manabi_room_days";
+const KEY_NAME        = "manabi_room_name";
+const KEY_DAYS        = "manabi_room_days";
 const KEY_PROG_PREFIX = "manabi_room_module_";
-const KEY_VISITED = "manabi_room_visited";
+const KEY_VISITED     = "manabi_room_visited";
 
+/* ── データ ── */
 const SUBJECTS = [
   {
     id: "math",
@@ -968,7 +717,7 @@ const UNITS = [
     id: "math-nanabai",
     subjectId: "math",
     title: "なんばい（何倍でしょう）",
-    description: "「なんばい」のいみをテープ図でりかいして、わり算・かけ算で もとめるれんしゅうをするたんげんです。"
+    description: "「なんばい」のいみをテープ図でりかいして、わり算・かけ算でもとめるれんしゅうをするたんげんです。"
   },
   {
     id: "math-hissan",
@@ -1047,102 +796,105 @@ const MODULES = [
   }
 ];
 
+/* カードのビジュアル設定 */
+const MODULE_META = {
+  "math-kake-wari": {
+    emoji: "⭐",
+    bg: "linear-gradient(145deg,#FFFDE7,#FFE082)",
+    accent: "#D97706"
+  },
+  "math-amari": {
+    emoji: "🍑",
+    bg: "linear-gradient(145deg,#FFF0E6,#FFCBA0)",
+    accent: "#C2410C"
+  },
+  "math-length-mm-km": {
+    emoji: "📏",
+    bg: "linear-gradient(145deg,#E0F4FF,#BAE6FD)",
+    accent: "#0369A1"
+  },
+  "math-nanabai-mondai": {
+    emoji: "🌈",
+    bg: "linear-gradient(145deg,#DCFCE7,#BBF7D0)",
+    accent: "#15803D"
+  },
+  "math-hissan-mondai": {
+    emoji: "✏️",
+    bg: "linear-gradient(145deg,#F5F0FF,#DDD6FE)",
+    accent: "#6D28D9"
+  },
+  "math-ooki-na-kazu-mondai": {
+    emoji: "🔢",
+    bg: "linear-gradient(145deg,#EFF6FF,#BFDBFE)",
+    accent: "#1D4ED8"
+  }
+};
+
 let activeSubjectId = "math";
 
+/* ── LocalStorage ユーティリティ ── */
 function loadJson(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key));
-  } catch (error) {
-    return null;
-  }
+  try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
 }
-
 function saveJson(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {}
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
-
-function moduleKey(id) {
-  return KEY_PROG_PREFIX + id;
-}
-
+function moduleKey(id) { return KEY_PROG_PREFIX + id; }
 function getModuleProgress(id) {
   return loadJson(moduleKey(id)) || { visitCount: 0, lastVisited: null };
 }
 
+/* ── 日付ユーティリティ ── */
 function makeDayKey(date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 }
-
-function parseDayKey(dayKey) {
-  const [year, month, day] = dayKey.split("-").map(Number);
-  return new Date(year, month - 1, day);
+function parseDayKey(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m-1, d);
 }
-
-function getStudyDays() {
-  return (loadJson(KEY_DAYS) || []).slice().sort();
-}
-
+function getStudyDays() { return (loadJson(KEY_DAYS) || []).slice().sort(); }
 function recordStudyDay() {
-  const dayKey = makeDayKey(new Date());
+  const key = makeDayKey(new Date());
   const days = getStudyDays();
-  if (!days.includes(dayKey)) {
-    days.push(dayKey);
-    saveJson(KEY_DAYS, days.sort());
-  }
+  if (!days.includes(key)) { days.push(key); saveJson(KEY_DAYS, days.sort()); }
 }
-
 function recordModuleVisit(id) {
-  const progress = getModuleProgress(id);
-  progress.visitCount += 1;
-  progress.lastVisited = Date.now();
-  saveJson(moduleKey(id), progress);
+  const p = getModuleProgress(id);
+  p.visitCount += 1;
+  p.lastVisited = Date.now();
+  saveJson(moduleKey(id), p);
   recordStudyDay();
 }
 
+/* ── 表示フォーマット ── */
 function formatDate(date) {
-  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日<br>${weekdays[date.getDay()]}よう日`;
+  const days = ["日","月","火","水","木","金","土"];
+  return `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日<br>${days[date.getDay()]}よう日`;
+}
+function formatLastVisited(ts) {
+  if (!ts) return "まだひらいていないよ";
+  const d = new Date(ts), today = new Date(), yest = new Date(today);
+  today.setHours(0,0,0,0); yest.setDate(yest.getDate()-1); yest.setHours(0,0,0,0);
+  const t = new Date(d); t.setHours(0,0,0,0);
+  if (t.getTime() === today.getTime()) return "きょうひらいた";
+  if (t.getTime() === yest.getTime())  return "きのうひらいた";
+  return `${d.getMonth()+1}月${d.getDate()}日にひらいた`;
 }
 
-function formatLastVisited(timestamp) {
-  if (!timestamp) return "まだひらいていないよ";
-  const date = new Date(timestamp);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const target = new Date(date);
-  target.setHours(0, 0, 0, 0);
-  if (target.getTime() === today.getTime()) return "きょうひらいた";
-  if (target.getTime() === yesterday.getTime()) return "きのうひらいた";
-  return `${date.getMonth() + 1}月${date.getDate()}日にひらいた`;
-}
-
+/* ── ストリーク計算 ── */
 function getStreakCount() {
   const days = getStudyDays();
-  if (days.length === 0) return 0;
-  let streak = 0;
-  let cursor = new Date();
-  cursor.setHours(0, 0, 0, 0);
-
+  if (!days.length) return 0;
+  let streak = 0, cursor = new Date(); cursor.setHours(0,0,0,0);
   for (let i = days.length - 1; i >= 0; i--) {
-    const current = parseDayKey(days[i]);
-    current.setHours(0, 0, 0, 0);
-    if (current.getTime() === cursor.getTime()) {
-      streak += 1;
-      cursor.setDate(cursor.getDate() - 1);
-      continue;
+    const cur = parseDayKey(days[i]); cur.setHours(0,0,0,0);
+    if (cur.getTime() === cursor.getTime()) {
+      streak++; cursor.setDate(cursor.getDate()-1); continue;
     }
     if (i === days.length - 1) {
-      const yesterday = new Date(cursor);
-      yesterday.setDate(yesterday.getDate() - 1);
-      if (current.getTime() === yesterday.getTime()) {
-        streak += 1;
-        cursor = new Date(yesterday);
-        cursor.setDate(cursor.getDate() - 1);
-        continue;
+      const y = new Date(cursor); y.setDate(y.getDate()-1);
+      if (cur.getTime() === y.getTime()) {
+        streak++; cursor = new Date(y); cursor.setDate(cursor.getDate()-1); continue;
       }
     }
     break;
@@ -1150,161 +902,127 @@ function getStreakCount() {
   return streak;
 }
 
+/* ── モジュール状態 ── */
 function getModuleState(progress) {
-  if (!progress.lastVisited) {
-    return { dot: "dot-new", badge: "まだ", note: "まだひらいていないよ" };
-  }
-  if (progress.visitCount >= 3) {
-    return { dot: "dot-frequent", badge: "よくやってる！", note: formatLastVisited(progress.lastVisited) };
-  }
-  return { dot: "dot-opened", badge: "ひらいたことがある", note: formatLastVisited(progress.lastVisited) };
+  if (!progress.lastVisited) return { dot:"dot-new",   badge:"まだ",          note:"まだひらいていないよ" };
+  if (progress.visitCount >= 3) return { dot:"dot-frequent", badge:"よくやってる！", note: formatLastVisited(progress.lastVisited) };
+  return { dot:"dot-opened", badge:"ひらいたことがある", note: formatLastVisited(progress.lastVisited) };
 }
 
+/* ── あいさつ ── */
 function getGreeting(name) {
-  const hour = new Date().getHours();
+  const h = new Date().getHours();
   let base;
-  if (hour < 11) base = "おはよう。きょうの学びをえらぼう。";
-  else if (hour < 15) base = "きょうのべんきょう、ここからはじめよう。";
-  else if (hour < 19) base = "よくきたね。少しずつ進めていこう。";
-  else base = "きょうもえらいね。できるところからやってみよう。";
+  if (h < 11)      base = "おはよう。きょうの学びをえらぼう。";
+  else if (h < 15) base = "きょうのべんきょう、ここからはじめよう。";
+  else if (h < 19) base = "よくきたね。少しずつ進めていこう。";
+  else             base = "きょうもえらいね。できるところからやってみよう。";
   return name ? `${name}さん、${base}` : base;
 }
 
+/* ── レンダー関数 ── */
 function renderHero() {
   document.getElementById("hero-date").innerHTML = formatDate(new Date());
 }
 
 function renderWelcome() {
-  const name = loadJson(KEY_NAME) || "";
+  const name   = loadJson(KEY_NAME) || "";
   const avatar = document.getElementById("avatar");
-  const title = document.getElementById("welcome-name");
-  const msg = document.getElementById("welcome-msg");
+  const title  = document.getElementById("welcome-name");
+  const msg    = document.getElementById("welcome-msg");
   const toggle = document.getElementById("toggle-name-btn");
-
   if (name) {
     avatar.textContent = name.charAt(0);
-    title.textContent = `${name}さんの まなびのへや`;
-    toggle.textContent = "なまえをかえる";
+    title.textContent  = `${name}さんの まなびのへや`;
+    toggle.innerHTML   = "✏️ なまえをかえる";
   } else {
     avatar.textContent = "ま";
-    title.textContent = "まなびのへやへようこそ";
-    toggle.textContent = "なまえをいれる";
+    title.textContent  = "まなびのへやへようこそ";
+    toggle.innerHTML   = "✏️ なまえをいれる";
   }
   msg.textContent = getGreeting(name);
 }
 
 function renderStats() {
-  const openedModules = MODULES.filter((module) => getModuleProgress(module.id).lastVisited).length;
-  document.getElementById("stat-opened").textContent = String(openedModules);
-  document.getElementById("stat-days").textContent = String(getStudyDays().length);
+  const opened = MODULES.filter(m => getModuleProgress(m.id).lastVisited).length;
+  document.getElementById("stat-opened").textContent = String(opened);
+  document.getElementById("stat-days").textContent   = String(getStudyDays().length);
   const streak = getStreakCount();
   document.getElementById("stat-streak").textContent = String(streak);
-  const streakStat = document.getElementById("stat-streak").closest(".stat");
-  if (streakStat) streakStat.classList.toggle("streak-active", streak > 0);
+  const streakPill = document.getElementById("streak-stat");
+  if (streakPill) streakPill.classList.toggle("streak-active", streak > 0);
 }
 
 function renderTabs() {
   const tabs = document.getElementById("subject-tabs");
   tabs.innerHTML = "";
-  SUBJECTS.forEach((subject) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "tab" + (subject.id === activeSubjectId ? " active" : "");
-    button.innerHTML = `
-      <span class="tab-emoji">${subject.emoji}</span>
+  SUBJECTS.forEach(subj => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "tab" + (subj.id === activeSubjectId ? " active" : "");
+    btn.innerHTML = `
+      <span class="tab-emoji">${subj.emoji}</span>
       <span>
-        <span class="tab-label">${subject.label}</span>
-        <span class="tab-note">${subject.note}</span>
+        <span class="tab-label">${subj.label}</span>
+        <span class="tab-note">${subj.note}</span>
       </span>
     `;
-    button.addEventListener("click", () => {
-      activeSubjectId = subject.id;
+    btn.addEventListener("click", () => {
+      activeSubjectId = subj.id;
       renderTabs();
       renderActiveSubject();
     });
-    tabs.appendChild(button);
+    tabs.appendChild(btn);
   });
 }
 
 function renderSubjectPanel(subject) {
   const panel = document.getElementById("subject-panel");
-  const modules = MODULES.filter((module) => module.subjectId === subject.id);
-  const units = UNITS.filter((unit) => unit.subjectId === subject.id);
-  const openedModules = modules.filter((module) => getModuleProgress(module.id).lastVisited).length;
-  const progressPercent = modules.length === 0 ? 0 : Math.round((openedModules / modules.length) * 100);
+  const modules = MODULES.filter(m => m.subjectId === subject.id);
+  const opened  = modules.filter(m => getModuleProgress(m.id).lastVisited).length;
+  const pct     = modules.length === 0 ? 0 : Math.round(opened / modules.length * 100);
 
   panel.hidden = false;
   panel.innerHTML = `
-    <div class="subject-top">
-      <div>
-        <span class="mini-badge">${subject.emoji} ${subject.label}</span>
-        <div class="subject-title">${subject.label}のべんきょう</div>
-        <div class="subject-copy">${subject.description}</div>
-      </div>
-      <div class="subject-summary">
-        <div class="summary-pill">
-          <span class="summary-label">つかえるべんきょう</span>
-          <span class="summary-value">${modules.length}こ</span>
-        </div>
-        <div class="summary-pill">
-          <span class="summary-label">たんげん</span>
-          <span class="summary-value">${units.length}つ</span>
+    <div class="subj-header">
+      <div class="subj-top">
+        <span class="subj-emoji">${subject.emoji}</span>
+        <div class="subj-info">
+          <div class="subj-title">${subject.label}のべんきょう</div>
+          <div class="subj-copy">${subject.description}</div>
         </div>
       </div>
-    </div>
-    <div class="subject-progress">
-      <div class="progress-top">
-        <span>このきょうかの進みぐあい</span>
-        <span class="progress-chip">${openedModules} / ${modules.length} ひらいた</span>
-      </div>
-      <div class="progress-track" aria-hidden="true">
-        <div class="progress-fill" style="width:${progressPercent}%"></div>
-      </div>
-      <div class="progress-note">
-        まずはべんきょうをひらいてみよう。ひらいたべんきょうがふえると、ここにすすみぐあいが見えるよ。
+      <div class="progress-strip">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pct}%"></div>
+        </div>
+        <span class="progress-txt">${opened} / ${modules.length} ひらいた</span>
       </div>
     </div>
-    <div class="unit-sections">
-      ${units.map((unit) => {
-        const unitModules = modules.filter((module) => module.unitId === unit.id);
+    <div class="modules-grid">
+      ${modules.map(m => {
+        const state = getModuleState(getModuleProgress(m.id));
+        const meta  = MODULE_META[m.id] || { emoji:"📚", bg:"linear-gradient(145deg,#F3E8FF,#E9D5FF)", accent:"#7C3AED" };
+        const unit  = UNITS.find(u => u.id === m.unitId);
         return `
-          <section class="unit-card">
-            <div class="unit-head">
-              <div class="unit-title">${unit.title}</div>
-              <div class="unit-desc">${unit.description}</div>
+          <a class="module-card" href="${m.href}" data-module-id="${m.id}"
+             style="background:${meta.bg};--ca:${meta.accent}">
+            <div class="mc-emoji">${meta.emoji}</div>
+            <div class="mc-unit">${unit ? unit.title : ""}</div>
+            <div class="mc-title">${m.title}</div>
+            <div class="mc-foot">
+              <span class="mc-badge mc-${state.dot}">${state.badge}</span>
+              <span class="mc-go">はじめる ›</span>
             </div>
-            <div class="module-list">
-              ${unitModules.map((module) => {
-                const state = getModuleState(getModuleProgress(module.id));
-                return `
-                  <a class="module-row" href="${module.href}" data-module-id="${module.id}">
-                    <span class="module-dot ${state.dot}"></span>
-                    <div class="module-main">
-                      <div class="module-name">${module.title}</div>
-                      <div class="module-sub">${state.note}</div>
-                      <div class="module-tags">
-                        <span class="tag">${module.learningType}</span>
-                        <span class="tag">${module.level}</span>
-                      </div>
-                    </div>
-                    <div class="module-state">
-                      <span class="status-badge">${state.badge}</span>
-                      <span class="module-arrow">›</span>
-                    </div>
-                  </a>
-                `;
-              }).join("")}
-            </div>
-          </section>
+          </a>
         `;
       }).join("")}
     </div>
   `;
 
-  panel.querySelectorAll("[data-module-id]").forEach((link) => {
-    link.addEventListener("click", (event) => {
-      const id = event.currentTarget.getAttribute("data-module-id");
-      recordModuleVisit(id);
+  panel.querySelectorAll("[data-module-id]").forEach(link => {
+    link.addEventListener("click", e => {
+      recordModuleVisit(e.currentTarget.getAttribute("data-module-id"));
     });
   });
 }
@@ -1317,9 +1035,9 @@ function renderPlaceholder(subject) {
     <div class="subject-title">${subject.title}</div>
     <div class="placeholder-copy">${subject.description}</div>
     <div class="coming-list">
-      ${subject.ideas.map((idea) => `
+      ${subject.ideas.map(idea => `
         <div class="coming-card">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
             <div class="coming-name">${idea.name}</div>
             <span class="coming-tag">もうすぐ</span>
           </div>
@@ -1331,18 +1049,19 @@ function renderPlaceholder(subject) {
 }
 
 function renderActiveSubject() {
-  const subject = SUBJECTS.find((item) => item.id === activeSubjectId);
-  const subjectPanel = document.getElementById("subject-panel");
+  const subj = SUBJECTS.find(s => s.id === activeSubjectId);
+  const subjectPanel     = document.getElementById("subject-panel");
   const placeholderPanel = document.getElementById("placeholder-panel");
-  if (subject.available) {
+  if (subj.available) {
     placeholderPanel.hidden = true;
-    renderSubjectPanel(subject);
+    renderSubjectPanel(subj);
   } else {
     subjectPanel.hidden = true;
-    renderPlaceholder(subject);
+    renderPlaceholder(subj);
   }
 }
 
+/* ── なまえパネル ── */
 function toggleNamePanel(forceOpen) {
   const panel = document.getElementById("name-panel");
   const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !panel.classList.contains("open");
@@ -1350,16 +1069,13 @@ function toggleNamePanel(forceOpen) {
   if (shouldOpen) {
     const input = document.getElementById("name-input");
     input.value = loadJson(KEY_NAME) || "";
-    setTimeout(() => {
-      input.focus();
-      input.select();
-    }, 80);
+    setTimeout(() => { input.focus(); input.select(); }, 80);
   }
 }
 
 function showSetupScreen() {
   document.getElementById("setup-screen").hidden = false;
-  document.getElementById("main-screen").hidden = true;
+  document.getElementById("main-screen").hidden  = true;
   const input = document.getElementById("setup-name-input");
   input.value = loadJson(KEY_NAME) || "";
   setTimeout(() => input.focus(), 80);
@@ -1367,7 +1083,7 @@ function showSetupScreen() {
 
 function showMainScreen() {
   document.getElementById("setup-screen").hidden = true;
-  document.getElementById("main-screen").hidden = false;
+  document.getElementById("main-screen").hidden  = false;
 }
 
 function saveNameFromInput(inputId) {
@@ -1388,30 +1104,32 @@ function clearName() {
   toggleNamePanel(false);
 }
 
+/* ── イベントリスナー ── */
 document.getElementById("toggle-name-btn").addEventListener("click", () => toggleNamePanel());
 document.getElementById("save-name-btn").addEventListener("click", () => saveNameFromInput("name-input"));
 document.getElementById("clear-name-btn").addEventListener("click", clearName);
-document.getElementById("name-input").addEventListener("keydown", (event) => {
-  if (event.key === "Enter") saveNameFromInput("name-input");
+document.getElementById("name-input").addEventListener("keydown", e => {
+  if (e.key === "Enter") saveNameFromInput("name-input");
 });
 document.getElementById("setup-save-btn").addEventListener("click", () => saveNameFromInput("setup-name-input"));
 document.getElementById("setup-skip-btn").addEventListener("click", () => {
   localStorage.setItem(KEY_VISITED, "1");
   showMainScreen();
 });
-document.getElementById("setup-name-input").addEventListener("input", (event) => {
-  document.getElementById("setup-save-btn").disabled = event.target.value.trim().length === 0;
+document.getElementById("setup-name-input").addEventListener("input", e => {
+  document.getElementById("setup-save-btn").disabled = e.target.value.trim().length === 0;
 });
-document.getElementById("setup-name-input").addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && event.target.value.trim().length > 0) saveNameFromInput("setup-name-input");
+document.getElementById("setup-name-input").addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.target.value.trim().length > 0) saveNameFromInput("setup-name-input");
 });
 document.getElementById("start-math-btn").addEventListener("click", () => {
   activeSubjectId = "math";
   renderTabs();
   renderActiveSubject();
-  document.getElementById("subject-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById("subject-panel").scrollIntoView({ behavior:"smooth", block:"start" });
 });
 
+/* ── 初期レンダー ── */
 renderHero();
 renderWelcome();
 renderStats();
@@ -1421,51 +1139,43 @@ renderActiveSubject();
 if (loadJson(KEY_NAME) || localStorage.getItem(KEY_VISITED)) showMainScreen();
 else showSetupScreen();
 
-// ─── 保護者モーダル ───────────────────────────────────────
+/* ───────────────────────────────────────────
+   保護者モーダル
+─────────────────────────────────────────── */
 const KEY_PARENT_PIN = "manabi_room_parent_pin";
-
-function getParentPin() {
-  return localStorage.getItem(KEY_PARENT_PIN) || "0000";
-}
+function getParentPin() { return localStorage.getItem(KEY_PARENT_PIN) || "0000"; }
 
 const PSCREENS = ["pin", "menu", "reset-confirm", "pin-change", "pin-done"];
-
 function showPScreen(name) {
   PSCREENS.forEach(s => { document.getElementById("pscreen-" + s).hidden = s !== name; });
   if (name === "pin-change") initPinChange();
 }
-
 function openParentModal() {
   document.getElementById("parent-overlay").hidden = false;
   showPScreen("pin");
   resetPinLogin();
 }
-
 function closeParentModal() {
   document.getElementById("parent-overlay").hidden = true;
 }
 
-// ── ログインPIN ──
+/* ── ログインPIN ── */
 let pinLoginBuf = "";
-
 function resetPinLogin() {
   pinLoginBuf = "";
   setDots("pin-dots", "");
   document.getElementById("pin-err").textContent = "";
 }
-
 function setDots(id, value) {
   document.querySelectorAll("#" + id + " .pin-dot").forEach((d, i) => {
     d.classList.toggle("filled", i < value.length);
     d.classList.remove("error");
   });
 }
-
 function shakeDots(dotsId, errId, msg) {
   document.querySelectorAll("#" + dotsId + " .pin-dot").forEach(d => d.classList.add("error"));
   document.getElementById(errId).textContent = msg;
 }
-
 function handleLoginKey(key) {
   if (key === "del") { pinLoginBuf = pinLoginBuf.slice(0, -1); setDots("pin-dots", pinLoginBuf); return; }
   if (pinLoginBuf.length >= 4) return;
@@ -1483,16 +1193,14 @@ function handleLoginKey(key) {
   }
 }
 
-// ── PIN変更 ──
+/* ── PIN変更 ── */
 let pinChangeBuf = "", pinChangePhase = "new", pinNewTemp = "";
-
 function initPinChange() {
   pinChangeBuf = ""; pinChangePhase = "new"; pinNewTemp = "";
   setDots("pin-change-dots", "");
   document.getElementById("pin-change-label").textContent = "あたらしいPINを入力してください";
-  document.getElementById("pin-change-err").textContent = "";
+  document.getElementById("pin-change-err").textContent   = "";
 }
-
 function handleChangeKey(key) {
   if (key === "del") { pinChangeBuf = pinChangeBuf.slice(0, -1); setDots("pin-change-dots", pinChangeBuf); return; }
   if (pinChangeBuf.length >= 4) return;
@@ -1501,10 +1209,8 @@ function handleChangeKey(key) {
   if (pinChangeBuf.length === 4) {
     setTimeout(() => {
       if (pinChangePhase === "new") {
-        pinNewTemp = pinChangeBuf;
-        pinChangePhase = "confirm";
-        pinChangeBuf = "";
-        setDots("pin-change-dots", "");
+        pinNewTemp = pinChangeBuf; pinChangePhase = "confirm";
+        pinChangeBuf = ""; setDots("pin-change-dots", "");
         document.getElementById("pin-change-label").textContent = "もういちど入力してください";
       } else {
         if (pinChangeBuf === pinNewTemp) {
@@ -1519,13 +1225,13 @@ function handleChangeKey(key) {
   }
 }
 
-// ── キーパッド生成 ──
+/* ── キーパッド生成 ── */
 function buildKeypad(containerId, handler) {
   const keys = ["1","2","3","4","5","6","7","8","9","","0","del"];
-  const wrap = document.getElementById(containerId);
+  const wrap  = document.getElementById(containerId);
   keys.forEach(k => {
     const btn = document.createElement("button");
-    btn.type = "button";
+    btn.type      = "button";
     btn.className = "pin-key" + (k === "del" ? " pin-del" : "");
     btn.textContent = k === "del" ? "⌫" : k;
     if (!k) { btn.disabled = true; btn.style.visibility = "hidden"; }
@@ -1533,10 +1239,10 @@ function buildKeypad(containerId, handler) {
     wrap.appendChild(btn);
   });
 }
-buildKeypad("pin-keypad", handleLoginKey);
+buildKeypad("pin-keypad",        handleLoginKey);
 buildKeypad("pin-change-keypad", handleChangeKey);
 
-// ── リセット実行 ──
+/* ── リセット実行 ── */
 function doParentReset() {
   Object.keys(localStorage)
     .filter(k => k.startsWith("manabi_room") && k !== KEY_PARENT_PIN)
@@ -1545,17 +1251,13 @@ function doParentReset() {
   location.reload();
 }
 
-// ── トリガー：ヒーロータイトルを5回素早くタップ ──
+/* ── トリガー：ヒーロータイトルを5回タップ ── */
 let heroTaps = 0, heroTimer = null;
 document.querySelector(".hero-title").addEventListener("click", () => {
   heroTaps++;
   clearTimeout(heroTimer);
   heroTimer = setTimeout(() => { heroTaps = 0; }, 2000);
-  if (heroTaps >= 5) {
-    heroTaps = 0;
-    clearTimeout(heroTimer);
-    openParentModal();
-  }
+  if (heroTaps >= 5) { heroTaps = 0; clearTimeout(heroTimer); openParentModal(); }
 });
 </script>
 </body>
