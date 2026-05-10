@@ -461,7 +461,7 @@ function showScreen(id) {
 // ── Datasets ──
 const GRAPHS = {
   asobi: {
-    title: '好きなあそびしらべ', unit: '人',
+    title: 'すきなあそびしらべ', unit: '人',
     data: [
       {label:'おにごっこ', val:9},
       {label:'ドッジボール', val:12},
@@ -472,11 +472,11 @@ const GRAPHS = {
     maxScale: 15
   },
   kyushoku: {
-    title: '好きなきゅうしょくしらべ', unit: '人',
+    title: 'すきなきゅうしょくしらべ', unit: '人',
     data: [
       {label:'カレー', val:15},
       {label:'ラーメン', val:8},
-      {label:'から揚げ', val:12},
+      {label:'からあげ', val:12},
       {label:'スパゲッティ', val:5},
       {label:'やきそば', val:10},
     ],
@@ -519,7 +519,7 @@ const PROBLEMS = [
   // ── きゅうしょくグラフ (5問) ──
   {type:'bar_read',  gk:'kyushoku', q:'カレーは　なん人すきですか？',                ans:15, ch:[15,12,10,8],  hl:['カレー']},
   {type:'bar_read',  gk:'kyushoku', q:'スパゲッティは　なん人すきですか？',          ans:5,  ch:[5,8,10,12],   hl:['スパゲッティ']},
-  {type:'bar_which', gk:'kyushoku', q:'いちばん多いのは　どれですか？',              ans:'カレー', ch:['カレー','から揚げ','やきそば','ラーメン'], hl:[]},
+  {type:'bar_which', gk:'kyushoku', q:'いちばん多いのは　どれですか？',              ans:'カレー', ch:['カレー','からあげ','やきそば','ラーメン'], hl:[]},
   {type:'bar_diff',  gk:'kyushoku', q:'カレーは　ラーメンより　なん人多い？',        ans:7,  ch:[7,5,3,10],    hl:['カレー','ラーメン'], v1:'カレー', v2:'ラーメン'},
   {type:'bar_total', gk:'kyushoku', q:'みんな合わせると　なん人ですか？',            ans:50, ch:[50,48,45,52], hl:[]},
 
@@ -531,9 +531,9 @@ const PROBLEMS = [
   {type:'bar_total', gk:'zoo',     q:'ぜんぶで　なん頭ですか？',                    ans:26, ch:[26,24,28,22], hl:[]},
 
   // ── 表 (6問) ──
-  {type:'table_read',  q:'男の子で　スポーツが 好きな人は　なん人？', ans:8,  ch:[8,3,11,6],  hlr:'男の子', hlc:'スポーツ'},
-  {type:'table_read',  q:'本が 好きな人は　合計　なん人？',           ans:10, ch:[10,4,6,8],  hlr:'合計',   hlc:'本'},
-  {type:'table_read',  q:'音楽が 好きな　女の子は　なん人？',         ans:5,  ch:[5,3,8,4],   hlr:'女の子', hlc:'音楽'},
+  {type:'table_read',  q:'男の子で　スポーツが すきな人は　なん人？', ans:8,  ch:[8,3,11,6],  hlr:'男の子', hlc:'スポーツ'},
+  {type:'table_read',  q:'本が すきな人は　合計　なん人？',           ans:10, ch:[10,4,6,8],  hlr:'合計',   hlc:'本'},
+  {type:'table_read',  q:'音楽が すきな　女の子は　なん人？',         ans:5,  ch:[5,3,8,4],   hlr:'女の子', hlc:'音楽'},
   {type:'table_total', q:'女の子は　ぜんぶで　なん人？',              ans:18, ch:[18,17,35,16], hlr:'女の子', hlc:'合計'},
   {type:'table_total', q:'男の子は　ぜんぶで　なん人？',              ans:17, ch:[17,18,35,16], hlr:'男の子', hlc:'合計'},
   {type:'table_total', q:'クラス ぜんいんは　なん人？',               ans:35, ch:[35,34,36,33], hlr:'合計',   hlc:'合計'},
@@ -625,11 +625,11 @@ const LESSON_STEPS = [
   {
     title: '<ruby>棒<rt>ぼう</rt></ruby>グラフの よみかた',
     html: `
-      <p><ruby>棒<rt>ぼう</rt></ruby>グラフは、数を <strong>ぼうの長さ</strong> で 表したグラフだよ。</p>
+      <p><ruby>棒<rt>ぼう</rt></ruby>グラフは、数を <strong>ぼうの長さ</strong> で <ruby>表<rt>あらわ</rt></ruby>したグラフだよ。</p>
       <p>目もりを よんで、ぼうの先が どこを 指しているか 見よう！</p>
       ${renderBarGraph('asobi', ['ドッジボール'], 'lesson')}
       <div class="lesson-note">💡 「ドッジボール」のぼうは 目もりの <strong>12</strong> を さしているよ！<br>
-      → ドッジボールが好きな人は <strong>12人</strong> だよ。</div>
+      → ドッジボールがすきな人は <strong>12人</strong> だよ。</div>
     `
   },
   {
@@ -637,17 +637,17 @@ const LESSON_STEPS = [
     html: `
       <p>ぼうが <strong>長いほど 数が多い</strong>、ぼうが <strong>みじかいほど 数が少ない</strong> よ。</p>
       ${renderBarGraph('asobi', ['ドッジボール','なわとび'], 'lesson')}
-      <p>2本の ぼうの <strong>差（ちがい）</strong> を もとめるときは <strong>ひき算</strong>！</p>
+      <p>2本の ぼうの <strong>ちがい（さ）</strong> を もとめるときは <strong>ひき算</strong>！</p>
       <div class="lesson-note">💡 ドッジボール12人 － なわとび7人 ＝ <strong>5人</strong> ちがう！</div>
     `
   },
   {
     title: '<ruby>表<rt>ひょう</rt></ruby>の よみかた',
     html: `
-      <p><ruby>表<rt>ひょう</rt></ruby>は、データを <strong>行（横）と列（縦）</strong> で 整理したものだよ。</p>
-      <p>知りたい数は、行と列が <strong>まじわるところ</strong> を見よう！</p>
+      <p><ruby>表<rt>ひょう</rt></ruby>は、データを <strong>行（<ruby>横<rt>よこ</rt></ruby>）と<ruby>列<rt>れつ</rt></ruby>（たて）</strong> で まとめたものだよ。</p>
+      <p>知りたい数は、行と列が <strong>かさなるところ</strong> を見よう！</p>
       ${renderLessonTable('男の子','スポーツ')}
-      <div class="lesson-note">💡 「男の子」の行と「スポーツ」の列が 交わるところ → <strong>8人</strong>！</div>
+      <div class="lesson-note">💡 「男の子」の行と「スポーツ」の列が かさなるところ → <strong>8人</strong>！</div>
     `
   },
   {
@@ -656,8 +656,8 @@ const LESSON_STEPS = [
       <p><strong>合計の行・列</strong> は、それぞれ たした 数が 入っているよ。</p>
       ${renderLessonTable('合計','合計')}
       <div class="lesson-note">
-        💡 横の合計：4＋8＋3＋2 ＝ <strong>17</strong>（男の子 ぜんぶ）<br>
-        💡 縦の合計：4＋6 ＝ <strong>10</strong>（本が好きな人 ぜんぶ）<br>
+        💡 よこの合計：4＋8＋3＋2 ＝ <strong>17</strong>（男の子 ぜんぶ）<br>
+        💡 たての合計：4＋6 ＝ <strong>10</strong>（本がすきな人 ぜんぶ）<br>
         💡 右下の合計 ＝ クラス <strong>ぜんいん</strong> の数！
       </div>
     `
@@ -791,8 +791,8 @@ function getExplanation(q) {
     const G = GRAPHS[q.gk];
     const d1 = G.data.find(r => r.label === q.v1);
     const d2 = G.data.find(r => r.label === q.v2);
-    return `<strong>差のもとめかた：</strong><br>
-2本のぼうの <strong>差（ちがい）</strong> は ひき算！<br>
+    return `<strong>ちがいのもとめかた：</strong><br>
+2本のぼうの <strong>ちがい（さ）</strong> は ひき算！<br>
 ${q.v1}（${d1.val}） － ${q.v2}（${d2.val}） ＝ <strong>${q.ans}</strong> だよ！`;
   }
   if (q.type === 'bar_total') {
@@ -805,7 +805,7 @@ ${expr} ＝ <strong>${q.ans}</strong> だよ！`;
   }
   if (q.type === 'table_read') {
     return `<strong>表のよみかた：</strong><br>
-「${q.hlr}」の行と 「${q.hlc}」の列が まじわるところを 見よう！<br>
+「${q.hlr}」の行と 「${q.hlc}」の列が かさなるところを 見よう！<br>
 黄色のマスを かくにんして → <strong>${q.ans}人</strong> だよ！`;
   }
   if (q.type === 'table_total') {
