@@ -146,8 +146,9 @@ body {
 }
 .lg-row { display: flex; align-items: center; height: 26px; margin-bottom: 3px; }
 .lg-label {
-  width: 64px; text-align: right; padding-right: 6px; flex-shrink: 0;
+  flex-shrink: 0; text-align: right; padding-right: 6px;
   font-size: clamp(0.62rem,1.1vw,0.75rem); font-weight: 700;
+  white-space: nowrap;
 }
 .lg-track {
   flex: 1; height: 20px; border-radius: 3px; position: relative; overflow: visible;
@@ -217,8 +218,9 @@ body {
 }
 .qbg-row { display: flex; align-items: center; height: 24px; margin-bottom: 2px; }
 .qbg-label {
-  width: 60px; text-align: right; padding-right: 5px; flex-shrink: 0;
+  flex-shrink: 0; text-align: right; padding-right: 5px;
   font-size: clamp(0.58rem,1vw,0.72rem); font-weight: 700;
+  white-space: nowrap;
 }
 .qbg-track {
   flex: 1; height: 18px; position: relative;
@@ -539,44 +541,42 @@ const PROBLEMS = [
 
 // ── Bar graph renderer ──
 function renderBarGraph(gk, hlList, mode) {
-  // mode: 'lesson' or 'quiz'
   const G = GRAPHS[gk];
   const prefix = mode === 'lesson' ? 'lg' : 'qbg';
-  const labelW = mode === 'lesson' ? 64 : 60;
+  const labelW = mode === 'lesson' ? 86 : 78;  // 折り返し防止のため広め
   const maxS = G.maxScale;
 
-  // Ticks
   const tickStep = maxS <= 10 ? 2 : 5;
   const ticks = [];
   for (let t = 0; t <= maxS; t += tickStep) ticks.push(t);
-
-  // --tw: tick spacing as % of bar track
   const twPct = (tickStep / maxS * 100).toFixed(2) + '%';
 
   let html = `<div class="${prefix}">`;
   html += `<div class="${prefix}-title">${G.title}</div>`;
 
-  // Scale row
-  html += `<div class="${prefix}-scale" style="padding-left:${labelW}px;">`;
+  // 目盛り行：スペーサー＋バー領域に対して絶対配置
+  html += `<div style="display:flex;margin-bottom:3px;">`;
+  html += `<div style="width:${labelW}px;flex-shrink:0;"></div>`;
+  html += `<div style="flex:1;position:relative;height:16px;">`;
   ticks.forEach(t => {
     const pct = (t / maxS * 100).toFixed(2);
-    html += `<span class="${prefix}-tick" style="left:${pct}%">${t}</span>`;
+    html += `<span style="position:absolute;left:${pct}%;transform:translateX(-50%);font-size:0.6rem;color:#888;bottom:0;white-space:nowrap;">${t}</span>`;
   });
-  html += '</div>';
+  html += '</div></div>';
 
-  // Bars
+  // バー行
   G.data.forEach(d => {
     const pct = (d.val / maxS * 100).toFixed(2);
     const isHl = hlList && hlList.includes(d.label);
     html += `<div class="${prefix}-row">
-      <div class="${prefix}-label">${d.label}</div>
+      <div class="${prefix}-label" style="width:${labelW}px">${d.label}</div>
       <div class="${prefix}-track" style="--${mode==='lesson'?'t-w':'tw'}:${twPct}">
         <div class="${prefix}-bar${isHl?' '+prefix+'-hl':''}" style="width:${pct}%"></div>
       </div>
     </div>`;
   });
 
-  html += `<div class="${prefix}-unit">(${G.unit})</div></div>`;
+  html += `<div class="${prefix}-unit" style="padding-left:${labelW}px;">(${G.unit})</div></div>`;
   return html;
 }
 
