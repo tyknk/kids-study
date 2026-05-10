@@ -581,6 +581,18 @@ body {
 .btn-popup:active { transform: translateY(1px); }
 .btn-popup.cancel { background: #eee; color: #555; }
 .btn-popup.go { background: var(--ind); color: white; }
+
+/* Explanation panel (wrong answer) */
+.exp-panel {
+  background: #FFFBEB;
+  border-left: 4px solid #FCD34D;
+  border-radius: 0 12px 12px 0;
+  padding: 10px 14px;
+  font-size: clamp(0.82rem, 1.5vw + 0.7vh, 1rem);
+  color: #78350F;
+  line-height: 1.75;
+}
+.exp-panel strong { color: #92400E; }
 </style>
 </head>
 <body>
@@ -1007,6 +1019,32 @@ function renderQuestion() {
   nextBtn.textContent = currentIdx + 1 < total ? 'つぎの もんだい ▶' : 'けっかを みる ▶';
 }
 
+function getExplanation(p) {
+  if (p.type === 'read') {
+    return `<strong>大きな数の よみかた：</strong><br>
+「万・千・百・十・一」の くらいに 分けて よもう！<br>
+<strong>${fmtNum(p.num)}</strong> → <strong>「${p.ans}」</strong> だよ！`;
+  }
+  if (p.type === 'write') {
+    return `<strong>大きな数の かきかた：</strong><br>
+「まん」「せん」「ひゃく」「じゅう」「いち」の くらいに 分けて かこう！<br>
+「${p.txt}」→ <strong>${fmtNum(p.ans)}</strong> だよ！`;
+  }
+  if (p.type === 'calc') {
+    return `<strong>大きな数の けいさん：</strong><br>
+「まん」を 1かたまりとして かんがえよう！<br>
+${p.q} <strong>${p.ans}</strong><br>
+（「まん」を とって けいさんしてから、また「まん」を つけるよ！）`;
+  }
+  if (p.type === 'big') {
+    return `<strong>大きさくらべのコツ：</strong><br>
+くらいの 数が 多いほうが 大きい！<br>
+くらいが おなじときは 上のくらいから じゅんばんに くらべよう。<br>
+こたえは <strong>${fmtNum(p.ans)}</strong> だよ！`;
+  }
+  return `こたえは <strong>${fmtNum(p.ans)}</strong> だよ。もう一かい かんがえてみよう！`;
+}
+
 function checkAns(i) {
   if (answered) return;
   answered = true;
@@ -1032,6 +1070,7 @@ function checkAns(i) {
     fbArea.innerHTML = `
       <div class="fb-result ng">もう一かい！</div>
       <div class="fb-correct-ans">こたえ：<strong>${correctLabel}</strong></div>
+      <div class="exp-panel">${getExplanation(p)}</div>
     `;
   }
   document.getElementById('btn-next-quiz').classList.add('visible');

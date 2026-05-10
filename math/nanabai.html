@@ -659,6 +659,18 @@
     @keyframes fb-shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 50%{transform:translateX(6px);} 75%{transform:translateX(-4px);} }
     .confetti-piece { position:fixed; pointer-events:none; z-index:300; animation:confetti-fly linear forwards; }
     @keyframes confetti-fly { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;transform:translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot));} }
+    .exp-panel {
+      margin-top: 8px;
+      background: #FFFBEB;
+      border-left: 4px solid #FCD34D;
+      border-radius: 0 12px 12px 0;
+      padding: 10px 14px;
+      font-size: clamp(0.82rem, 1.5vw + 0.7vh, 1rem);
+      color: #78350F;
+      line-height: 1.75;
+      text-align: left;
+    }
+    .exp-panel strong { color: #92400E; }
   </style>
 </head>
 <body>
@@ -1188,6 +1200,22 @@ function buildFeedbackVisual(p) {
   }
 }
 
+function getExplanation(p) {
+  if (p.type === 'find_mult' || p.type === 'word_mult') {
+    var total = p.ans * p.base;
+    return '<strong>なんばいか もとめかた：</strong><br>'
+      + '「' + p.base + ' × なんばい ＝ ' + total + '」の なんばいを さがそう！<br>'
+      + total + ' ÷ ' + p.base + ' ＝ <strong>' + p.ans + '</strong><br>'
+      + 'だから <strong>' + p.ans + 'ばい</strong> だよ！';
+  } else {
+    var unit = p.unit ? ' ' + p.unit : '';
+    return '<strong>なんばいかの もとめかた：</strong><br>'
+      + 'もとにする数 × なんばい ＝ もとめたい数 だよ！<br>'
+      + p.base + ' × ' + p.mult + ' ＝ <strong>' + p.ans + unit + '</strong><br>'
+      + 'だから こたえは <strong>' + p.ans + unit + '</strong> だよ！';
+  }
+}
+
 function showFeedback(p, isCorrect) {
   const area = document.getElementById('feedbackArea');
   area.style.display = 'block';
@@ -1196,9 +1224,11 @@ function showFeedback(p, isCorrect) {
   const resultText = isCorrect
     ? '⭕ せいかい！ すごい！'
     : '❌ ざんねん… こたえは「' + ansDisp + '」だよ';
+  const expHtml = isCorrect ? '' : '<div class="exp-panel">' + getExplanation(p) + '</div>';
   area.innerHTML = '<div class="feedback-card ' + cls + '">'
     + '<div class="feedback-result-text">' + resultText + '</div>'
     + '<div>' + buildFeedbackVisual(p) + '</div>'
+    + expHtml
     + '</div>';
   area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

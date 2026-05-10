@@ -392,6 +392,18 @@
     @keyframes fb-shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 50%{transform:translateX(6px);} 75%{transform:translateX(-4px);} }
     .confetti-piece { position:fixed; pointer-events:none; z-index:300; animation:confetti-fly linear forwards; }
     @keyframes confetti-fly { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;transform:translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot));} }
+    .exp-panel {
+      margin-top: 8px;
+      background: #FFFBEB;
+      border-left: 4px solid #FCD34D;
+      border-radius: 0 12px 12px 0;
+      padding: 10px 14px;
+      font-size: clamp(0.82rem, 1.5vw + 0.7vh, 1rem);
+      color: #78350F;
+      line-height: 1.75;
+      text-align: left;
+    }
+    .exp-panel strong { color: #92400E; }
   </style>
 </head>
 <body>
@@ -969,10 +981,21 @@ function showFeedback(p, isCorrect, wrongVal) {
     }
   }
 
+  let conceptHtml = '';
+  if (!isCorrect) {
+    const isAdd = p.type === 'add';
+    const conceptTitle = isAdd ? 'たし算の ひっさんの やりかた' : 'ひき算の ひっさんの やりかた';
+    const conceptBody = isAdd
+      ? '一のくらい から じゅんばんに たしていこう。<br>10いじょうになったら 上のくらいへ 1くり上げよう！'
+      : '一のくらい から じゅんばんに ひいていこう。<br>ひけないときは 上のくらいから 10かりてくるよ（くり下げ）！';
+    conceptHtml = `<div class="exp-panel"><strong>${conceptTitle}：</strong><br>${conceptBody}</div>`;
+  }
+
   area.innerHTML = `<div class="feedback-card ${cls}">
     <div class="feedback-result-text">${txt}</div>
     <div style="text-align:center;">${fbHissan.outerHTML}</div>
     ${hintHtml}
+    ${conceptHtml}
   </div>`;
   area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

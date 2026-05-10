@@ -583,6 +583,18 @@ body {
 .btn-popup:active { transform: translateY(1px); }
 .btn-popup.cancel { background: #eee; color: #555; }
 .btn-popup.go { background: var(--teal); color: white; }
+
+/* Explanation panel (wrong answer) */
+.exp-panel {
+  background: #FFFBEB;
+  border-left: 4px solid #FCD34D;
+  border-radius: 0 12px 12px 0;
+  padding: 10px 14px;
+  font-size: clamp(0.82rem, 1.5vw + 0.7vh, 1rem);
+  color: #78350F;
+  line-height: 1.75;
+}
+.exp-panel strong { color: #92400E; }
 </style>
 </head>
 <body>
@@ -1026,6 +1038,50 @@ function renderQuestion() {
   answered = false;
 }
 
+function getExplanation(q) {
+  if (q.type === 'read') {
+    const [int, dec] = q.num.split('.');
+    return `<strong>よみかたのルール：</strong><br>
+「.」（しょうすうてん）の 左が 一のくらい、右が 十分の一のくらい。<br>
+<strong>${q.num}</strong> → 一のくらい「${int}」・十分の一のくらい「${dec}」<br>
+だから <strong>「${q.ans}」</strong> と よむよ！`;
+  }
+  if (q.type === 'write') {
+    return `<strong>かきかたのルール：</strong><br>
+「てん」の 前が 一のくらい、後が 十分の一のくらい。<br>
+「${q.txt}」→ 数で かくと <strong>${q.ans}</strong> だよ！`;
+  }
+  if (q.type === 'big') {
+    return `<strong>大きさくらべのコツ：</strong><br>
+まず「.」の 左（一のくらい）を くらべよう。<br>
+おなじときは「.」の 右（十分の一のくらい）を くらべよう。<br>
+こたえは <strong>${q.ans}</strong> だよ！`;
+  }
+  if (q.type === 'add') {
+    const nums = q.q.match(/[\d.]+/g);
+    if (nums && nums.length >= 2) {
+      const [a, b] = [Number(nums[0]), Number(nums[1])];
+      const ac = Math.round(a * 10), bc = Math.round(b * 10);
+      return `<strong>たし算のコツ：</strong><br>
+0.1 が いくつ分かで かんがえよう！<br>
+<strong>${a}</strong> ＝ 0.1 が ${ac}こ、<strong>${b}</strong> ＝ 0.1 が ${bc}こ<br>
+${ac} ＋ ${bc} ＝ ${ac + bc}こ → <strong>${q.ans}</strong>！`;
+    }
+  }
+  if (q.type === 'sub') {
+    const nums = q.q.match(/[\d.]+/g);
+    if (nums && nums.length >= 2) {
+      const [a, b] = [Number(nums[0]), Number(nums[1])];
+      const ac = Math.round(a * 10), bc = Math.round(b * 10);
+      return `<strong>ひき算のコツ：</strong><br>
+0.1 が いくつ分かで かんがえよう！<br>
+<strong>${a}</strong> ＝ 0.1 が ${ac}こ、<strong>${b}</strong> ＝ 0.1 が ${bc}こ<br>
+${ac} － ${bc} ＝ ${ac - bc}こ → <strong>${q.ans}</strong>！`;
+    }
+  }
+  return `こたえは <strong>${q.ans}</strong> だよ。レッスンを もういちど みてみよう！`;
+}
+
 function checkAnswer(chosen) {
   if (answered) return;
   answered = true;
@@ -1051,6 +1107,7 @@ function checkAnswer(chosen) {
     fb.innerHTML = `
       <div class="fb-result ng">💦 もういちど！</div>
       <div class="fb-correct-ans">こたえは「${q.ans}」だよ</div>
+      <div class="exp-panel">${getExplanation(q)}</div>
     `;
   }
 

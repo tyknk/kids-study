@@ -384,6 +384,19 @@
     .fb-box.fb-ng { background: #FFE0EA; }
     .fb-main { font-size: clamp(1.1rem,2.8vw,1.5rem); font-weight: 900; margin-bottom: .5rem; }
     .fb-visual { margin-top: .1rem; }
+    .fb-explain {
+      display: none;
+      margin-top: .6rem;
+      background: #FFFBEB;
+      border-left: 4px solid #FCD34D;
+      border-radius: 0 8px 8px 0;
+      padding: 8px 12px;
+      font-size: clamp(0.82rem, 1.5vw + 0.7vh, 1rem);
+      color: #78350F;
+      line-height: 1.75;
+      text-align: left;
+    }
+    .fb-explain strong { color: #92400E; }
 
     /* feedback visual: shared */
     .fv-conv { display: flex; align-items: center; justify-content: center; gap: clamp(.4rem,1.5vw,.9rem); margin-bottom: .45rem; flex-wrap: wrap; }
@@ -741,6 +754,7 @@
       <div class="fb-box" id="fb-box">
         <div class="fb-main" id="fb-main"></div>
         <div class="fb-visual" id="fb-visual"></div>
+        <div class="fb-explain" id="fb-explain"></div>
       </div>
 
       <button class="btn btn-primary" id="next-btn" style="display:none" onclick="nextQuestion()">
@@ -1032,6 +1046,16 @@ function buildFeedbackVisual(p) {
   return '';
 }
 
+function getExplanation(p) {
+  if (p.type === 'cm2mm') return '💡 <strong>1 cm ＝ 10 mm</strong> だよ！<br>cm の数に 10を かけると mm になるよ。';
+  if (p.type === 'mm2cm') return '💡 <strong>10 mm ＝ 1 cm</strong> だよ！<br>mm の数を 10で わると cm になるよ。';
+  if (p.type === 'mix2mm') return '💡 まず cm を mm に なおしてから たし算しよう！<br><strong>cm × 10</strong> で mm に なるよ。';
+  if (p.type === 'km2m') return '💡 <strong>1 km ＝ 1000 m</strong> だよ！<br>km の数に 1000を かけると m になるよ。';
+  if (p.type === 'm2km') return '💡 <strong>1000 m ＝ 1 km</strong> だよ！<br>m の数を 1000で わると km になるよ。';
+  if (p.type === 'mm_add') return '💡 mm どうしは そのまま たし算するよ！';
+  return '';
+}
+
 function checkAnswer(chosen, p) {
   if (answered) return;
   answered = true;
@@ -1049,8 +1073,16 @@ function checkAnswer(chosen, p) {
   const fb = document.getElementById('fb-box');
   document.getElementById('fb-main').textContent = ok ? '⭕ せいかい！' : '❌ こたえは ' + p.ans + ' ' + p.unit + ' だよ！';
   document.getElementById('fb-visual').innerHTML = buildFeedbackVisual(p);
-  fb.className = 'fb-box show ' + (ok ? 'fb-ok' : 'fb-ng');
 
+  const expEl = document.getElementById('fb-explain');
+  if (!ok) {
+    expEl.innerHTML = getExplanation(p);
+    expEl.style.display = 'block';
+  } else {
+    expEl.style.display = 'none';
+  }
+
+  fb.className = 'fb-box show ' + (ok ? 'fb-ok' : 'fb-ng');
   document.getElementById('next-btn').style.display = 'block';
 }
 
