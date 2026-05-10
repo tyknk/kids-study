@@ -662,9 +662,9 @@ const SUBJECTS = [
     id: "math",
     label: "さんすう",
     emoji: "🧮",
-    note: "6つのべんきょう",
+    note: "7つのべんきょう",
     available: true,
-    description: "かけ算・わり算・ながさ・なんばい・ひっさん・おおきな数を、レッスンとれんしゅうで学べます。"
+    description: "かけ算・わり算・ながさ・なんばい・ひっさん・おおきな数・小数を、レッスンとれんしゅうで学べます。"
   },
   {
     id: "japanese",
@@ -730,6 +730,12 @@ const UNITS = [
     subjectId: "math",
     title: "おおきな数（一万を超える数）",
     description: "万・十万・百万・千万・億のしくみを学んで、よみかた・かきかた・大小比べ・けいさんをれんしゅうするたんげんです。"
+  },
+  {
+    id: "math-shosuu",
+    subjectId: "math",
+    title: "小数（しょうすう）",
+    description: "0.1のいみを学んで、小数のよみかた・かきかた・大小くらべ・たし算ひき算をれんしゅうするたんげんです。"
   }
 ];
 
@@ -793,6 +799,16 @@ const MODULES = [
     learningType: "レッスン + れんしゅう",
     level: "きほん",
     href: "./math/ooki-na-kazu.html"
+  },
+  {
+    id: "math-shosuu-mondai",
+    subjectId: "math",
+    unitId: "math-shosuu",
+    title: "小数 もんだい",
+    description: "0.1のいみ・よみかた・かきかた・大小くらべ・たし算ひき算をれんしゅうしよう。",
+    learningType: "レッスン + れんしゅう",
+    level: "きほん",
+    href: "./math/shosuu.html"
   }
 ];
 
@@ -827,6 +843,11 @@ const MODULE_META = {
     emoji: "🔢",
     bg: "linear-gradient(145deg,#EFF6FF,#BFDBFE)",
     accent: "#1D4ED8"
+  },
+  "math-shosuu-mondai": {
+    emoji: "🌊",
+    bg: "linear-gradient(145deg,#F0FFFE,#CCFBF1)",
+    accent: "#0F766E"
   }
 };
 

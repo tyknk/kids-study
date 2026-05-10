@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>小数 もんだい</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0D9488;
+  --teal-lt: #CCFBF1;
+  --teal-dk: #0F766E;
+  --teal-mid: #14B8A6;
+  --teal-bar: #134E4A;
+  --ok: #78D98A;
+  --ng: #FF8FAA;
+  --text: #1e293b;
+  --muted: #64748b;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+ruby { ruby-align: center; }
+rt { font-size: 0.55em; font-weight: 400; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: #F0FFFE;
+  color: var(--text);
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* HOME BAR */
+.home-bar { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 10px; }
+.btn-home {
+  background: white;
+  border: 2px solid var(--teal);
+  color: var(--teal-dk);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+.btn-home:active { transform: translateY(1px); }
+@media (hover: hover) {
+  .btn-home:hover { background: var(--teal-lt); transition: background 0.15s; }
+}
+
+/* SCREENS */
+.screen {
+  display: none;
+  width: min(900px, 92vw);
+  height: 100%;
+  min-height: 0;
+}
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: max(env(safe-area-inset-top), 10px);
+  padding-bottom: max(env(safe-area-inset-bottom), 10px);
+}
+
+/* START SCREEN */
+.start-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 3vh, 36px);
+  overflow-y: auto;
+  min-height: 0;
+  width: 100%;
+}
+.title-block { text-align: center; }
+.title-icon { font-size: clamp(3rem, 8vw + 3vh, 6rem); line-height: 1.2; }
+.title-main {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(2rem, 4vw + 2vh, 4.5rem);
+  color: var(--teal-dk);
+  font-weight: 700;
+}
+.title-sub { font-size: clamp(0.85rem, 2.4vw, 1rem); color: #888; margin-top: 6px; }
+.start-cards {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vh, 20px);
+  width: 100%;
+  max-width: 560px;
+}
+.start-card {
+  background: white;
+  border-radius: 20px;
+  padding: clamp(16px, 2.5vh, 28px) 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.12);
+  cursor: pointer;
+  border: 3px solid transparent;
+  min-height: 80px;
+}
+.start-card:active { border-color: var(--teal); box-shadow: 0 0 0 4px var(--teal-lt); }
+@media (hover: hover) {
+  .start-card { transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; }
+  .start-card:hover { border-color: var(--teal); box-shadow: 0 6px 20px rgba(13,148,136,0.22); transform: translateY(-2px); }
+}
+.card-icon { font-size: 2.2rem; flex-shrink: 0; }
+.card-text { flex: 1; }
+.card-title { font-size: clamp(1.1rem, 2vw + 1.2vh, 2rem); font-weight: 700; color: var(--teal-dk); }
+.card-desc { font-size: clamp(0.8rem, 2.2vw, 0.9rem); color: #888; margin-top: 3px; }
+.card-arrow { font-size: 1.5rem; color: var(--teal); flex-shrink: 0; }
+
+/* LESSON SCREEN */
+.lesson-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 6px;
+  flex-shrink: 0;
+}
+.lesson-step-label { font-size: clamp(0.8rem, 1.5vw + 0.5vh, 1rem); color: var(--muted); font-weight: 700; }
+.lesson-step-dots { display: flex; gap: 8px; }
+.lesson-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #99F6E4;
+  transition: background 0.2s;
+}
+.lesson-dot.active { background: var(--teal); }
+.lesson-dot.done { background: var(--teal-dk); }
+
+.lesson-title {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.2rem, 2.5vw + 1.5vh, 2rem);
+  font-weight: 700;
+  color: var(--teal-dk);
+  text-align: center;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+.lesson-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vh, 18px);
+}
+.lesson-content p { font-size: clamp(0.95rem, 1.8vw + 1vh, 1.25rem); line-height: 1.85; }
+.lesson-content strong { color: var(--teal-dk); }
+
+/* Decimal: 10分割バー */
+.tenth-bar {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  height: 46px;
+  border: 2px solid var(--teal);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tc {
+  border-right: 1px solid rgba(13,148,136,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.55rem, 1.1vw, 0.68rem);
+  font-weight: 700;
+  background: var(--teal-lt);
+  color: var(--teal-dk);
+}
+.tc:last-child { border-right: none; }
+.tc.tc-h { background: var(--teal); color: white; }
+.nth-label {
+  text-align: center;
+  font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Decimal: 位の表 */
+.decimal-place {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  max-width: 300px;
+  margin: 8px auto;
+  border: 2px solid var(--teal);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+}
+.dp-head {
+  background: var(--teal-mid);
+  color: white;
+  font-weight: 700;
+  padding: 7px 10px;
+  font-size: clamp(0.68rem, 1.3vw + 0.4vh, 0.88rem);
+  line-height: 1.4;
+}
+.dp-dot-head {
+  background: var(--teal-dk);
+  color: white;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+}
+.dp-dot-cell {
+  background: var(--teal-bar);
+  color: #99F6E4;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.dp-cell {
+  background: var(--teal-lt);
+  padding: 10px 4px;
+  font-size: clamp(1.5rem, 3.5vw + 1.5vh, 2.2rem);
+  font-weight: 900;
+  color: var(--teal-dk);
+}
+
+/* read-box, chain-wrap, calc-box, lesson-note */
+.read-box {
+  background: white;
+  border: 2px solid var(--teal-mid);
+  border-radius: 14px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.read-num {
+  font-size: clamp(1.3rem, 2.8vw + 1.8vh, 2.2rem);
+  font-weight: 900;
+  color: var(--teal-dk);
+  font-variant-numeric: tabular-nums;
+  font-family: 'Kaisei Decol', serif;
+}
+.read-arrow { font-size: 1.4rem; color: var(--muted); }
+.read-yomi { font-size: clamp(1rem, 1.8vw + 1vh, 1.45rem); font-weight: 700; color: var(--teal); }
+
+.chain-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: var(--teal-lt);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.chain-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.chain-name { font-size: clamp(0.88rem, 1.5vw + 0.7vh, 1.15rem); font-weight: 700; color: var(--teal-dk); }
+.chain-num { font-size: clamp(0.68rem, 1.1vw + 0.45vh, 0.85rem); color: var(--muted); }
+.chain-arrow { font-size: 1.1rem; color: var(--teal-mid); padding-top: 8px; }
+
+.calc-box {
+  background: white;
+  border: 2px solid #99F6E4;
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+.calc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(1.05rem, 1.8vw + 1.1vh, 1.5rem);
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+.calc-ans { color: var(--teal-dk); }
+.calc-note { font-size: clamp(0.78rem, 1.3vw + 0.55vh, 0.95rem); color: var(--muted); margin-top: 4px; }
+
+.lesson-note {
+  background: #FEF9C3;
+  border-left: 4px solid #FDE047;
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px;
+  font-size: clamp(0.85rem, 1.5vw + 0.7vh, 1.05rem);
+  color: #713F12;
+}
+
+.lesson-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0 4px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.btn-prev, .btn-next-lesson {
+  border: none;
+  border-radius: 12px;
+  padding: clamp(10px, 2vh, 14px) clamp(16px, 3vw, 26px);
+  font-family: inherit;
+  font-size: clamp(0.95rem, 1.8vw + 1vh, 1.25rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-prev { background: #E2E8F0; color: var(--muted); }
+.btn-prev:active { transform: translateY(1px); }
+@media (hover: hover) { .btn-prev:hover { background: #CBD5E1; } }
+.btn-next-lesson {
+  background: var(--teal);
+  color: white;
+  box-shadow: 0 3px 10px rgba(13,148,136,0.32);
+  flex: 1;
+}
+.btn-next-lesson:active { transform: translateY(1px); box-shadow: 0 1px 4px rgba(13,148,136,0.2); }
+@media (hover: hover) { .btn-next-lesson:hover { background: var(--teal-dk); } }
+
+/* QUIZ SCREEN */
+.quiz-header { padding: 10px 0 6px; flex-shrink: 0; }
+.progress-bar-wrap { height: 8px; background: #E2E8F0; border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--teal); border-radius: 4px; transition: width 0.3s; }
+.quiz-counter { text-align: right; font-size: clamp(0.8rem, 1.4vw + 0.5vh, 0.95rem); color: var(--muted); margin-top: 4px; }
+
+.quiz-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vh, 14px);
+  overflow-y: auto;
+}
+
+.q-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: clamp(0.75rem, 1.2vw + 0.5vh, 0.9rem);
+  font-weight: 700;
+  align-self: flex-start;
+}
+.badge-read  { background: #DBEAFE; color: #1D4ED8; }
+.badge-write { background: #D1FAE5; color: #065F46; }
+.badge-calc  { background: #FEF3C7; color: #92400E; }
+.badge-big   { background: #F3E8FF; color: #6B21A8; }
+
+.q-card {
+  background: white;
+  border-radius: 18px;
+  padding: clamp(14px, 2.5vh, 22px) clamp(16px, 3vw, 24px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.q-label { font-size: clamp(0.9rem, 1.6vw + 0.8vh, 1.15rem); color: var(--muted); text-align: center; }
+.q-bignum {
+  font-size: clamp(2rem, 4.5vw + 3vh, 3.8rem);
+  font-weight: 900;
+  color: var(--teal-dk);
+  font-variant-numeric: tabular-nums;
+  font-family: 'Kaisei Decol', serif;
+  letter-spacing: 0.04em;
+}
+.q-text-big {
+  font-size: clamp(1.2rem, 2.4vw + 1.6vh, 2rem);
+  font-weight: 900;
+  color: var(--teal-bar);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.q-yomi-big {
+  font-size: clamp(1.3rem, 2.5vw + 1.8vh, 2.2rem);
+  font-weight: 900;
+  color: var(--teal);
+  text-align: center;
+}
+
+/* Choices */
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: clamp(8px, 1.5vw, 14px);
+  flex: 1;
+  min-height: 0;
+}
+.choice-btn {
+  background: white;
+  border: 2.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: clamp(0.95rem, 1.7vw + 1.1vh, 1.4rem);
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.35;
+  word-break: break-all;
+}
+.choice-btn:active { transform: translateY(1px); }
+@media (hover: hover) {
+  .choice-btn:hover:not(:disabled) { border-color: var(--teal); background: var(--teal-lt); }
+}
+.choice-btn:disabled { cursor: default; }
+.choice-btn.correct {
+  border-color: var(--ok);
+  background: #F0FFF4;
+  color: #166534;
+  animation: btn-correct 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.choice-btn.wrong { border-color: var(--ng); background: #FFF0F4; color: #9F1239; }
+
+@keyframes btn-correct {
+  0%   { transform: scale(1); box-shadow: none; }
+  45%  { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(120,217,138,0.35); }
+  75%  { transform: scale(0.97); }
+  100% { transform: scale(1.04); box-shadow: 0 0 0 3px rgba(120,217,138,0.2); }
+}
+
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  pointer-events: none;
+  z-index: 300;
+  animation: confetti-fly linear forwards;
+}
+@keyframes confetti-fly {
+  0%   { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot)); }
+}
+
+/* Feedback */
+.fb-area {
+  flex-shrink: 0;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fb-result {
+  font-size: clamp(1.1rem, 2vw + 1.2vh, 1.5rem);
+  font-weight: 900;
+  text-align: center;
+}
+.fb-result.ok {
+  color: #166534;
+  animation: fb-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.fb-result.ng {
+  color: #9F1239;
+  animation: fb-shake 0.4s ease-out forwards;
+}
+@keyframes fb-pop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  65%  { transform: scale(1.22); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes fb-shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  50%     { transform: translateX(6px); }
+  75%     { transform: translateX(-4px); }
+}
+.fb-correct-ans { font-size: clamp(0.88rem, 1.6vw + 0.8vh, 1.05rem); color: var(--muted); text-align: center; }
+.btn-next-quiz {
+  display: none;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: clamp(10px, 2vh, 14px);
+  font-family: inherit;
+  font-size: clamp(1rem, 1.8vw + 1vh, 1.3rem);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(13,148,136,0.3);
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.btn-next-quiz.visible { display: block; }
+.btn-next-quiz:active { transform: translateY(1px); }
+@media (hover: hover) { .btn-next-quiz:hover { background: var(--teal-dk); } }
+
+/* RESULT SCREEN */
+.result-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2.5vh, 24px);
+  padding: 16px;
+  text-align: center;
+}
+.result-icon { font-size: clamp(3rem, 6vw + 4vh, 5rem); }
+.result-title {
+  font-family: 'Kaisei Decol', serif;
+  font-size: clamp(1.4rem, 2.8vw + 2vh, 2.4rem);
+  font-weight: 700;
+  color: var(--teal-dk);
+}
+.result-score { font-size: clamp(2rem, 4vw + 3vh, 3.5rem); font-weight: 900; color: var(--teal-bar); }
+.result-msg { font-size: clamp(0.95rem, 1.8vw + 1vh, 1.2rem); color: var(--muted); }
+.result-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+.btn-retry, .btn-home-result {
+  border: none;
+  border-radius: 14px;
+  padding: clamp(12px, 2.2vh, 17px);
+  font-family: inherit;
+  font-size: clamp(1rem, 1.8vw + 1vh, 1.3rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-retry { background: var(--teal); color: white; box-shadow: 0 3px 10px rgba(13,148,136,0.3); }
+.btn-retry:active { transform: translateY(1px); }
+@media (hover: hover) { .btn-retry:hover { background: var(--teal-dk); } }
+.btn-home-result { background: #E2E8F0; color: var(--muted); }
+@media (hover: hover) { .btn-home-result:hover { background: #CBD5E1; } }
+
+/* POPUP */
+.popup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.popup-overlay.show { display: flex; }
+.popup-box {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 22px;
+  width: min(360px, 88vw);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.popup-msg { font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 700; color: #333; line-height: 1.7; }
+.popup-btns { display: flex; gap: 12px; justify-content: center; }
+.btn-popup {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+.btn-popup:active { transform: translateY(1px); }
+.btn-popup.cancel { background: #eee; color: #555; }
+.btn-popup.go { background: var(--teal); color: white; }
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="screen-start" class="screen active">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="start-body">
+    <div class="title-block">
+      <div class="title-icon">🌊</div>
+      <div class="title-main"><ruby>小数<rt>しょうすう</rt></ruby> もんだい</div>
+      <div class="title-sub">小学3年生・算数「<ruby>小数<rt>しょうすう</rt></ruby>」</div>
+    </div>
+    <div class="start-cards">
+      <div class="start-card" onclick="startLesson()">
+        <div class="card-icon">📖</div>
+        <div class="card-text">
+          <div class="card-title">まなぶ</div>
+          <div class="card-desc">0.1のいみ・よみかた・たし算ひき算を かくにん</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+      <div class="start-card" onclick="startQuiz()">
+        <div class="card-icon">✏️</div>
+        <div class="card-text">
+          <div class="card-title">もんだいを といてみる</div>
+          <div class="card-desc">12もん チャレンジ！</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LESSON SCREEN -->
+<div id="screen-lesson" class="screen">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="lesson-header">
+    <div class="lesson-step-label" id="lesson-step-label">レッスン 1/4</div>
+    <div class="lesson-step-dots" id="lesson-step-dots"></div>
+  </div>
+  <div class="lesson-title" id="lesson-title"></div>
+  <div class="lesson-content" id="lesson-content"></div>
+  <div class="lesson-footer">
+    <button class="btn-prev" id="btn-lesson-prev" onclick="lessonPrev()">◀ もどる</button>
+    <button class="btn-next-lesson" id="btn-lesson-next" onclick="lessonNext()">つぎへ ▶</button>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="screen-quiz" class="screen">
+  <div class="home-bar">
+    <button class="btn-home" onclick="requestHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="quiz-header">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div class="quiz-counter" id="quiz-counter"></div>
+  </div>
+  <div class="quiz-body">
+    <span class="q-badge" id="q-badge"></span>
+    <div class="q-card" id="q-card"></div>
+    <div class="choices-grid" id="choices-grid"></div>
+    <div class="fb-area" id="fb-area"></div>
+    <button class="btn-next-quiz" id="btn-next-quiz" onclick="nextQuestion()">つぎの もんだい ▶</button>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="screen-result" class="screen">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="result-body">
+    <div class="result-icon" id="result-icon"></div>
+    <div class="result-title" id="result-title"></div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="startQuiz()">もう一かい ちょうせん</button>
+      <button class="btn-home-result" onclick="directHome()">🏠 まなびのへやへ</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOME CONFIRM POPUP -->
+<div class="popup-overlay" id="popup-home">
+  <div class="popup-box">
+    <div class="popup-msg">もどると　いまの もんだいは<br>きえるよ。「まなびのへや」に もどる？</div>
+    <div class="popup-btns">
+      <button class="btn-popup cancel" onclick="closeHomePopup()">つづける</button>
+      <button class="btn-popup go" onclick="directHome()">もどる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MODULE_ID    = 'math-shosuu-mondai';
+const SESSION_COUNT = 12;
+
+// ===== Helpers =====
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ===== Problem bank (24問) =====
+const PROBLEMS = [
+  // よみかた: 小数 → よみかた（6問）
+  { type:'read', num:'1.2', ans:'いちてんに',    ch:['いちてんに','にてんいち','いちてんいち','じゅうに'] },
+  { type:'read', num:'0.5', ans:'れいてんご',    ch:['れいてんご','ごてんれい','れいてんいつつ','てんご'] },
+  { type:'read', num:'2.3', ans:'にてんさん',    ch:['にてんさん','さんてんに','にじゅうさん','にてんみっ'] },
+  { type:'read', num:'0.8', ans:'れいてんはち',  ch:['れいてんはち','はちてんれい','れいてんや','てんはち'] },
+  { type:'read', num:'1.6', ans:'いちてんろく',  ch:['いちてんろく','ろくてんいち','いちじゅうろく','いちてんむっ'] },
+  { type:'read', num:'3.1', ans:'さんてんいち',  ch:['さんてんいち','いちてんさん','さんじゅういち','さんいちく'] },
+
+  // かきかた: よみかた → 小数（6問）
+  { type:'write', txt:'にてんさん',     ans:'2.3', ch:['2.3','3.2','23','0.23'] },
+  { type:'write', txt:'れいてんに',     ans:'0.2', ch:['0.2','2.0','20','0.02'] },
+  { type:'write', txt:'いちてんご',     ans:'1.5', ch:['1.5','5.1','15','1.05'] },
+  { type:'write', txt:'さんてんろく',   ans:'3.6', ch:['3.6','6.3','36','3.06'] },
+  { type:'write', txt:'れいてんきゅう', ans:'0.9', ch:['0.9','9.0','9','0.09'] },
+  { type:'write', txt:'にてんなな',     ans:'2.7', ch:['2.7','7.2','27','2.07'] },
+
+  // 大小くらべ（6問）
+  { type:'big', q:'いちばん おおきい 数は どれ？', ans:'1.2', ch:['0.5','1.2','0.8','1.0'] },
+  { type:'big', q:'いちばん ちいさい 数は どれ？', ans:'1.7', ch:['2.3','1.9','2.1','1.7'] },
+  { type:'big', q:'いちばん おおきい 数は どれ？', ans:'0.9', ch:['0.3','0.9','0.6','0.1'] },
+  { type:'big', q:'いちばん ちいさい 数は どれ？', ans:'1.1', ch:['1.5','1.2','1.8','1.1'] },
+  { type:'big', q:'いちばん おおきい 数は どれ？', ans:'2.0', ch:['2.0','1.9','0.5','1.8'] },
+  { type:'big', q:'いちばん ちいさい 数は どれ？', ans:'0.3', ch:['0.7','0.5','0.9','0.3'] },
+
+  // たし算（3問）— 0.1のいくつ分で計算
+  { type:'add', q:'0.6 ＋ 0.3 ＝ □', ans:'0.9', ch:['0.9','0.63','1.0','0.36'] },
+  { type:'add', q:'1.3 ＋ 0.4 ＝ □', ans:'1.7', ch:['1.7','1.34','0.9','1.43'] },
+  { type:'add', q:'0.8 ＋ 0.5 ＝ □', ans:'1.3', ch:['1.3','0.13','1.2','0.58'] },
+
+  // ひき算（3問）
+  { type:'sub', q:'1.5 － 0.3 ＝ □', ans:'1.2', ch:['1.2','1.8','0.15','1.15'] },
+  { type:'sub', q:'2.0 － 0.7 ＝ □', ans:'1.3', ch:['1.3','1.7','2.7','1.2'] },
+  { type:'sub', q:'1.1 － 0.8 ＝ □', ans:'0.3', ch:['0.3','0.8','1.8','0.28'] },
+];
+
+// ===== Lesson steps (4ステップ) =====
+const LESSON_STEPS = [
+  {
+    title: '0.1（れいてんいち）って なあに？',
+    html: `
+      <p>1を <strong>10とうぶん</strong> した ひとつ分を
+      <strong>0.1（れいてんいち）</strong> といいます。</p>
+      <div class="tenth-bar">
+        <div class="tc tc-h">0.1</div>
+        <div class="tc"></div><div class="tc"></div><div class="tc"></div>
+        <div class="tc"></div><div class="tc"></div><div class="tc"></div>
+        <div class="tc"></div><div class="tc"></div><div class="tc"></div>
+      </div>
+      <div class="nth-label">←──── 1（ぜんぶ） ────→</div>
+      <div class="read-box">
+        <div class="read-num">0.1</div>
+        <div class="read-arrow">を 10こ あつめると</div>
+        <div class="read-yomi">1 になる！</div>
+      </div>
+      <p class="lesson-note">💡 「.」は <ruby>小数点<rt>しょうすうてん</rt></ruby>（しょうすうてん）といいます。<br>
+      0.1 ＝「れいてんいち」と よみます。</p>
+    `
+  },
+  {
+    title: '<ruby>小数<rt>しょうすう</rt></ruby>の よみかた・かきかた',
+    html: `
+      <p><ruby>小数点<rt>しょうすうてん</rt></ruby>の <strong>左</strong>が「一の<ruby>位<rt>くらい</rt></ruby>」、<br>
+      <strong>右</strong>が「十分の一の<ruby>位<rt>くらい</rt></ruby>」だよ。</p>
+      <div class="decimal-place">
+        <div class="dp-head">一の<ruby>位<rt>くらい</rt></ruby></div>
+        <div class="dp-dot-head">.</div>
+        <div class="dp-head">十分の一の<ruby>位<rt>くらい</rt></ruby></div>
+        <div class="dp-cell">1</div>
+        <div class="dp-dot-cell">.</div>
+        <div class="dp-cell">2</div>
+      </div>
+      <div class="read-box">
+        <div class="read-num">1.2</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">いちてんに</div>
+      </div>
+      <div class="read-box">
+        <div class="read-num">0.7</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">れいてんなな</div>
+      </div>
+      <div class="read-box">
+        <div class="read-num">3.5</div>
+        <div class="read-arrow">→</div>
+        <div class="read-yomi">さんてんご</div>
+      </div>
+      <p class="lesson-note">💡 一の位が0のときは「れいてん〇」と よむよ！<br>
+      例：0.6 → れいてんろく</p>
+    `
+  },
+  {
+    title: '0.1の いくつ分？',
+    html: `
+      <p><ruby>小数<rt>しょうすう</rt></ruby>は <strong>0.1を 何こ あつめた数か</strong> で かんがえよう！</p>
+      <div class="chain-wrap">
+        <div class="chain-item">
+          <div class="chain-name">0.1 が 13こ</div>
+          <div class="chain-num">0.1 × 13</div>
+        </div>
+        <div class="chain-arrow">＝</div>
+        <div class="chain-item">
+          <div class="chain-name" style="color:var(--teal-dk)">1.3</div>
+        </div>
+      </div>
+      <div class="chain-wrap">
+        <div class="chain-item">
+          <div class="chain-name">0.1 が 7こ</div>
+          <div class="chain-num">0.1 × 7</div>
+        </div>
+        <div class="chain-arrow">＝</div>
+        <div class="chain-item">
+          <div class="chain-name" style="color:var(--teal-dk)">0.7</div>
+        </div>
+      </div>
+      <div class="chain-wrap">
+        <div class="chain-item">
+          <div class="chain-name">0.1 が 20こ</div>
+          <div class="chain-num">0.1 × 20</div>
+        </div>
+        <div class="chain-arrow">＝</div>
+        <div class="chain-item">
+          <div class="chain-name" style="color:var(--teal-dk)">2.0</div>
+        </div>
+      </div>
+      <p class="lesson-note">💡 0.1 が たくさん あつまると 1をこえる数になるよ！<br>
+      0.1 × 10こ ＝ 1.0　/ 0.1 × 15こ ＝ 1.5</p>
+    `
+  },
+  {
+    title: '<ruby>小数<rt>しょうすう</rt></ruby>の たし算・ひき算',
+    html: `
+      <p><strong>0.1のいくつ分か</strong> で かんがえると かんたん！</p>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>1.3 ＋ 0.4</span>
+          <span class="calc-ans">＝ 1.7</span>
+        </div>
+        <div class="calc-note">0.1が 13こ ＋ 4こ ＝ 17こ → 1.7</div>
+      </div>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>0.8 ＋ 0.5</span>
+          <span class="calc-ans">＝ 1.3</span>
+        </div>
+        <div class="calc-note">0.1が 8こ ＋ 5こ ＝ 13こ → 1.3</div>
+      </div>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>2.0 － 0.7</span>
+          <span class="calc-ans">＝ 1.3</span>
+        </div>
+        <div class="calc-note">0.1が 20こ － 7こ ＝ 13こ → 1.3</div>
+      </div>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span>1.1 － 0.8</span>
+          <span class="calc-ans">＝ 0.3</span>
+        </div>
+        <div class="calc-note">0.1が 11こ － 8こ ＝ 3こ → 0.3</div>
+      </div>
+      <p class="lesson-note">💡 答えの一の位が0になるときも、「0.3」のように かくよ！</p>
+    `
+  }
+];
+
+// ===== State =====
+let lessonStep = 0;
+let sessionProblems = [];
+let currentIdx = 0;
+let correctCount = 0;
+let answered = false;
+
+// ===== Confetti =====
+function launchConfetti() {
+  const colors = ['#FFD700','#FF6B6B','#4ECDC4','#A78BFA','#F472B6','#34D399','#FBBF24','#60A5FA'];
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight * 0.55;
+  for (let i = 0; i < 32; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const size = 8 + Math.random() * 8;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 140 + Math.random() * 140;
+    const dx = Math.cos(angle) * dist;
+    const dy = -(60 + Math.random() * 180);
+    const rot = (Math.random() - 0.5) * 720;
+    const dur = 0.7 + Math.random() * 0.6;
+    el.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      width:${size}px; height:${size * (Math.random() > 0.5 ? 1 : 2.2)}px;
+      background:${colors[i % colors.length]};
+      border-radius:${Math.random() > 0.4 ? '50%' : '2px'};
+      --dx:${dx}px; --dy:${dy}px; --rot:${rot}deg;
+      animation-duration:${dur}s;
+    `;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+
+// ===== Navigation =====
+function directHome() {
+  location.href = '../index.html';
+}
+function requestHome() {
+  document.getElementById('popup-home').classList.add('show');
+}
+function closeHomePopup() {
+  document.getElementById('popup-home').classList.remove('show');
+}
+
+// ===== Start =====
+function startLesson() {
+  lessonStep = 0;
+  renderLesson();
+  showScreen('screen-lesson');
+}
+
+function startQuiz() {
+  sessionProblems = shuffle([...PROBLEMS]).slice(0, SESSION_COUNT);
+  currentIdx = 0;
+  correctCount = 0;
+  renderQuestion();
+  showScreen('screen-quiz');
+}
+
+// ===== Lesson =====
+function renderLesson() {
+  const step = LESSON_STEPS[lessonStep];
+  document.getElementById('lesson-step-label').textContent = `レッスン ${lessonStep + 1}/${LESSON_STEPS.length}`;
+  document.getElementById('lesson-title').innerHTML = step.title;
+  document.getElementById('lesson-content').innerHTML = step.html;
+
+  // dots
+  const dots = document.getElementById('lesson-step-dots');
+  dots.innerHTML = '';
+  LESSON_STEPS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'lesson-dot' + (i < lessonStep ? ' done' : i === lessonStep ? ' active' : '');
+    dots.appendChild(d);
+  });
+
+  document.getElementById('btn-lesson-prev').style.visibility = lessonStep === 0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('btn-lesson-next');
+  nextBtn.textContent = lessonStep === LESSON_STEPS.length - 1 ? 'もんだいへ ▶' : 'つぎへ ▶';
+}
+
+function lessonNext() {
+  if (lessonStep < LESSON_STEPS.length - 1) {
+    lessonStep++;
+    renderLesson();
+  } else {
+    startQuiz();
+  }
+}
+
+function lessonPrev() {
+  if (lessonStep > 0) { lessonStep--; renderLesson(); }
+}
+
+// ===== Quiz =====
+function renderQuestion() {
+  const q = sessionProblems[currentIdx];
+  const total = sessionProblems.length;
+
+  // progress
+  document.getElementById('progress-fill').style.width = `${(currentIdx / total) * 100}%`;
+  document.getElementById('quiz-counter').textContent = `${currentIdx + 1} / ${total}`;
+
+  // badge
+  const badge = document.getElementById('q-badge');
+  const typeMap = {
+    read:  ['badge-read',  'よみかた'],
+    write: ['badge-write', 'かきかた'],
+    big:   ['badge-big',   'おおきさくらべ'],
+    add:   ['badge-calc',  'たし算'],
+    sub:   ['badge-calc',  'ひき算'],
+  };
+  const [cls, label] = typeMap[q.type] || ['badge-read', q.type];
+  badge.className = 'q-badge ' + cls;
+  badge.textContent = label;
+
+  // card
+  const card = document.getElementById('q-card');
+  if (q.type === 'read') {
+    card.innerHTML = `
+      <div class="q-label">この数の よみかたは？</div>
+      <div class="q-bignum">${q.num}</div>
+    `;
+  } else if (q.type === 'write') {
+    card.innerHTML = `
+      <div class="q-label">この よみかたを 数で かいてみよう</div>
+      <div class="q-yomi-big">${q.txt}</div>
+    `;
+  } else if (q.type === 'big') {
+    card.innerHTML = `
+      <div class="q-label">${q.q}</div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="q-label">こたえを えらんでね</div>
+      <div class="q-text-big">${q.q}</div>
+    `;
+  }
+
+  // choices
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = '';
+  const shuffled = shuffle([...q.ch]);
+  shuffled.forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = val;
+    btn.dataset.val = val;
+    btn.addEventListener('click', () => checkAnswer(val));
+    grid.appendChild(btn);
+  });
+
+  // reset feedback
+  document.getElementById('fb-area').innerHTML = '';
+  document.getElementById('btn-next-quiz').classList.remove('visible');
+  answered = false;
+}
+
+function checkAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+
+  const q = sessionProblems[currentIdx];
+  const correct = String(chosen) === String(q.ans);
+
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.disabled = true;
+    if (String(btn.dataset.val) === String(q.ans)) btn.classList.add('correct');
+  });
+  if (!correct) {
+    const wrongBtn = [...document.querySelectorAll('.choice-btn')].find(b => String(b.dataset.val) === String(chosen));
+    if (wrongBtn) wrongBtn.classList.add('wrong');
+  }
+
+  const fb = document.getElementById('fb-area');
+  if (correct) {
+    correctCount++;
+    launchConfetti();
+    fb.innerHTML = `<div class="fb-result ok">✨ せいかい！</div>`;
+  } else {
+    fb.innerHTML = `
+      <div class="fb-result ng">💦 もういちど！</div>
+      <div class="fb-correct-ans">こたえは「${q.ans}」だよ</div>
+    `;
+  }
+
+  document.getElementById('btn-next-quiz').classList.add('visible');
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= sessionProblems.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ===== Result =====
+function showResult() {
+  const total = sessionProblems.length;
+  const pct = Math.round(correctCount / total * 100);
+
+  let icon, title, msg;
+  if (pct === 100) {
+    icon = '🏆'; title = 'かんぺき！すごい！';
+    msg = '全もん せいかい！小数マスターだ！';
+  } else if (pct >= 70) {
+    icon = '🌟'; title = 'よくできました！';
+    msg = 'あともう少しで かんぺき！もう一かい やってみよう。';
+  } else {
+    icon = '💪'; title = 'もう一かい チャレンジ！';
+    msg = 'レッスンを見てからもう一かいやってみよう。';
+  }
+
+  document.getElementById('result-icon').textContent = icon;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-score').textContent = `${correctCount} / ${total}`;
+  document.getElementById('result-msg').textContent = msg;
+
+  showScreen('screen-result');
+  recordVisit();
+}
+
+// ===== LocalStorage =====
+function recordVisit() {
+  try {
+    const key = 'manabi_room_module_' + MODULE_ID;
+    const data = JSON.parse(localStorage.getItem(key)) || { visitCount: 0, lastVisited: null };
+    data.visitCount += 1;
+    data.lastVisited = Date.now();
+    localStorage.setItem(key, JSON.stringify(data));
+
+    const dayKey = (() => {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    })();
+    const daysKey = 'manabi_room_days';
+    const days = JSON.parse(localStorage.getItem(daysKey)) || [];
+    if (!days.includes(dayKey)) { days.push(dayKey); localStorage.setItem(daysKey, JSON.stringify(days.sort())); }
+  } catch (_) {}
+}
+</script>
+</body>
+</html>
