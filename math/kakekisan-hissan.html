@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>かけ算のひっさん もんだい</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky:    #0284C7;
+  --sky-lt: #E0F2FE;
+  --sky-dk: #075985;
+  --sky-mid:#0EA5E9;
+  --ok:  #78D98A;
+  --ng:  #FF8FAA;
+  --text:#1e293b;
+  --muted:#64748b;
+  --bg:  #F0F9FF;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+ruby { ruby-align: center; }
+rt   { font-size: 0.55em; font-weight: 400; }
+
+.screen {
+  display: none;
+  width: min(900px, 92vw);
+  height: 100%;
+  min-height: 0;
+}
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top:    max(env(safe-area-inset-top),    10px);
+  padding-bottom: max(env(safe-area-inset-bottom), 10px);
+}
+
+/* HOME BAR */
+.home-bar { width:100%; display:flex; justify-content:flex-start; margin-bottom:10px; }
+.btn-home {
+  background:white; border:2px solid var(--sky); color:var(--sky-dk);
+  border-radius:20px; padding:8px 18px;
+  font-size:clamp(0.8rem,2.5vw,1rem); font-family:inherit; font-weight:700;
+  cursor:pointer; min-height:44px;
+}
+.btn-home:active { transform:translateY(1px); }
+@media (hover:hover) { .btn-home:hover { background:var(--sky-lt); transition:background .15s; } }
+
+/* POPUP */
+.popup-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+  z-index:100; align-items:center; justify-content:center;
+}
+.popup-overlay.show { display:flex; }
+.popup-box {
+  background:white; border-radius:20px; padding:28px 22px;
+  width:min(360px,88vw); text-align:center;
+  display:flex; flex-direction:column; gap:14px;
+}
+.popup-msg { font-size:clamp(1rem,3vw,1.2rem); font-weight:700; color:#333; line-height:1.7; }
+.popup-btns { display:flex; gap:12px; justify-content:center; }
+.btn-popup {
+  flex:1; padding:14px; border-radius:12px; border:none;
+  font-size:clamp(0.9rem,2.5vw,1rem); font-family:inherit; font-weight:700;
+  cursor:pointer; min-height:44px;
+}
+.btn-popup:active { transform:translateY(1px); }
+.btn-popup.cancel { background:#eee; color:#555; }
+.btn-popup.go     { background:var(--sky); color:white; }
+@media (hover:hover) {
+  .btn-popup.cancel:hover { background:#ddd; }
+  .btn-popup.go:hover     { background:var(--sky-dk); }
+}
+
+/* START */
+.start-body {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:clamp(14px,3vh,36px);
+  overflow-y:auto; min-height:0; width:100%;
+}
+.title-block { text-align:center; }
+.title-icon  { font-size:clamp(3rem,8vw+3vh,6rem); line-height:1.2; }
+.title-main  {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(1.8rem,3.5vw+2vh,4rem);
+  color:var(--sky-dk); font-weight:700;
+}
+.title-sub { font-size:clamp(0.85rem,2.4vw,1rem); color:#888; margin-top:6px; }
+.start-cards {
+  display:flex; flex-direction:column; gap:clamp(12px,2vh,20px);
+  width:100%; max-width:560px;
+}
+.start-card {
+  background:white; border-radius:20px;
+  padding:clamp(16px,2.5vh,28px) 22px;
+  display:flex; align-items:center; gap:16px;
+  box-shadow:0 2px 8px rgba(2,132,199,.12);
+  cursor:pointer; border:3px solid transparent; min-height:80px;
+}
+.start-card:active { border-color:var(--sky); }
+@media (hover:hover) {
+  .start-card { transition:transform .15s, box-shadow .15s, border-color .15s; }
+  .start-card:hover { border-color:var(--sky); box-shadow:0 6px 20px rgba(2,132,199,.22); transform:translateY(-2px); }
+}
+.card-icon  { font-size:2.2rem; flex-shrink:0; }
+.card-text  { flex:1; }
+.card-title { font-size:clamp(1.1rem,2vw+1.2vh,2rem); font-weight:700; color:var(--sky-dk); }
+.card-desc  { font-size:clamp(0.8rem,2.2vw,0.9rem); color:#888; margin-top:3px; }
+.card-arrow { font-size:1.5rem; color:var(--sky); flex-shrink:0; }
+
+/* LESSON */
+.lesson-header {
+  width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
+}
+.lesson-title {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(1.1rem,3.5vw,1.6rem); color:var(--sky-dk); font-weight:700;
+}
+.lesson-step-ind {
+  background:var(--sky-lt); color:var(--sky); border-radius:20px;
+  padding:4px 14px; font-size:clamp(0.8rem,2vw,.95rem); font-weight:700;
+}
+.lesson-step { display:none; width:100%; }
+.lesson-step.active { display:flex; flex-direction:column; flex:1; min-height:0; }
+.lesson-card {
+  background:white; border-radius:20px;
+  padding:clamp(14px,2vh,26px) clamp(16px,2.5vw,28px);
+  margin-bottom:clamp(8px,1.2vh,14px);
+  box-shadow:0 2px 8px rgba(2,132,199,.1);
+  flex:1; overflow-y:auto; min-height:0;
+}
+.lesson-heading {
+  font-size:clamp(1.1rem,2vw+1.5vh,2rem); font-weight:900;
+  color:var(--sky-dk); margin-bottom:clamp(8px,1.5vh,14px);
+}
+.lesson-body { font-size:clamp(1rem,1.8vw+1vh,1.5rem); color:#333; line-height:1.9; }
+.lesson-body p { margin-bottom:4px; }
+.lesson-body strong { color:var(--sky); }
+.lesson-hl {
+  background:var(--sky-lt); border-radius:8px;
+  padding:clamp(5px,1vh,10px) 14px; display:inline-block;
+  font-weight:700; color:var(--sky-dk); margin:6px 0;
+  font-size:clamp(1rem,2vw+1vh,1.6rem);
+}
+.lnav-row { display:flex; gap:12px; justify-content:center; margin-top:4px; }
+.btn-lnav-back {
+  flex:1; max-width:160px; background:white; border:3px solid var(--sky); color:var(--sky);
+  border-radius:16px; padding:14px; font-size:clamp(0.95rem,2.8vw,1.1rem);
+  font-family:inherit; font-weight:700; cursor:pointer; min-height:52px;
+}
+.btn-lnav-back:active { transform:translateY(2px); }
+.btn-lnav-next {
+  flex:2; max-width:280px; background:var(--sky); border:none; color:white;
+  border-radius:16px; padding:16px; font-size:clamp(1rem,3vw,1.2rem);
+  font-family:inherit; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 0 var(--sky-dk); min-height:52px;
+}
+.btn-lnav-next:active { transform:translateY(3px); box-shadow:0 1px 0 var(--sky-dk); }
+@media (hover:hover) {
+  .btn-lnav-back:hover { background:var(--sky-lt); transition:background .15s; }
+  .btn-lnav-next:hover { background:var(--sky-dk); transition:background .15s; }
+}
+
+/* 筆算ブロック */
+.hissan-block {
+  display:inline-flex; flex-direction:column;
+  margin:8px auto;
+  font-weight:900;
+  font-size:clamp(1.2rem,3vw+1.5vh,2.2rem);
+  font-family:'Kaisei Decol',serif;
+  border:3px solid var(--sky); border-radius:12px;
+  padding:10px 16px; background:white;
+  box-shadow:0 2px 8px rgba(2,132,199,.12);
+}
+.hissan-row { display:flex; align-items:center; }
+.h-op  { min-width:1.6em; text-align:right; padding-right:4px; color:var(--sky-dk); }
+.h-d   { min-width:1.6em; text-align:center; color:#222; }
+.hissan-line {
+  align-self:stretch; height:3px;
+  background:var(--sky-dk); border-radius:2px; margin:6px 0;
+}
+.h-q   { color:#bbb; }
+.h-ans { color:var(--sky-dk); }
+
+/* QUIZ */
+.quiz-top {
+  width:100%; display:flex; align-items:center;
+  justify-content:space-between; margin-bottom:8px;
+}
+.quiz-counter { font-size:clamp(0.9rem,2.5vw,1.05rem); font-weight:700; color:var(--sky-dk); }
+.progress-bar-wrap {
+  width:100%; height:10px; background:#BAE6FD; border-radius:99px;
+  margin-bottom:8px; overflow:hidden;
+}
+.progress-bar-fill {
+  height:100%; background:var(--sky); border-radius:99px; transition:width .3s;
+}
+.quiz-main {
+  flex:1; display:flex; flex-direction:column;
+  gap:clamp(6px,1vh,12px); overflow-y:auto; min-height:0;
+}
+.question-card {
+  background:white; border-radius:20px;
+  padding:clamp(10px,1.8vh,20px) 20px; width:100%;
+  text-align:center; box-shadow:0 2px 8px rgba(2,132,199,.1); flex-shrink:0;
+}
+.question-badge {
+  display:inline-block; background:var(--sky-lt); color:var(--sky-dk);
+  border-radius:20px; padding:3px 14px;
+  font-size:clamp(0.8rem,1.5vw+0.5vh,1.1rem); font-weight:700;
+  margin-bottom:clamp(4px,.8vh,10px);
+}
+
+/* スクラッチパッド */
+.scratch-wrap {
+  background:white; border-radius:16px;
+  border:2.5px dashed #7DD3FC;
+  overflow:hidden; position:relative;
+  height:clamp(100px,16vh,170px); flex-shrink:0;
+}
+.scratch-label {
+  position:absolute; top:6px; left:10px;
+  font-size:clamp(0.7rem,1.5vw,.82rem); color:#7DD3FC; font-weight:700;
+  pointer-events:none; z-index:1; user-select:none;
+}
+.scratch-canvas { width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+.btn-scratch-clear {
+  position:absolute; bottom:6px; right:8px;
+  background:var(--sky-lt); border:2px solid #7DD3FC; color:var(--sky);
+  border-radius:10px; padding:4px 12px;
+  font-size:clamp(0.75rem,1.8vw,.88rem); font-family:inherit;
+  font-weight:700; cursor:pointer; min-height:32px; z-index:2;
+}
+.btn-scratch-clear:active { transform:scale(.95); }
+@media (hover:hover) { .btn-scratch-clear:hover { background:#BAE6FD; transition:background .15s; } }
+
+/* CHOICES */
+.choices-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:clamp(8px,1.2vh,14px); width:100%; flex:1; min-height:0;
+}
+.btn-choice {
+  background:white; border:3px solid #BAE6FD; border-radius:16px;
+  padding:clamp(10px,2vh,24px) 10px;
+  font-size:clamp(1.3rem,2.5vw+2vh,3.2rem);
+  font-family:'Kaisei Decol',serif; font-weight:900; color:var(--sky-dk); cursor:pointer;
+  box-shadow:0 3px 0 #BAE6FD;
+}
+.btn-choice:active { transform:translateY(2px); box-shadow:0 1px 0 #BAE6FD; }
+.btn-choice.correct { background:var(--ok); border-color:#4CAF50; color:white; box-shadow:none;
+  animation:btn-correct .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+.btn-choice.wrong   { background:var(--ng); border-color:#E05B7D; color:white; box-shadow:none; }
+.btn-choice:disabled { cursor:default; }
+@media (hover:hover) {
+  .btn-choice { transition:border-color .12s, background .12s; }
+  .btn-choice:hover:not(:disabled) { border-color:var(--sky); background:var(--sky-lt); }
+}
+@keyframes btn-correct {
+  0%  { transform:scale(1); box-shadow:0 3px 0 #BAE6FD; }
+  45% { transform:scale(1.12); box-shadow:0 0 0 6px rgba(120,217,138,.35); }
+  75% { transform:scale(.97); }
+  100%{ transform:scale(1.04); box-shadow:0 0 0 3px rgba(120,217,138,.2); }
+}
+
+/* FEEDBACK */
+.feedback-area { width:100%; }
+.feedback-card {
+  border-radius:16px; padding:12px 14px; text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.feedback-card.correct-fb { background:#F0FDF4; border:3px solid #78D98A; }
+.feedback-card.wrong-fb   { background:#FFF0F4; border:3px solid #FF8FAA; }
+.feedback-result-text {
+  font-size:clamp(1rem,3vw,1.3rem); font-weight:900; margin-bottom:8px;
+}
+.feedback-card.correct-fb .feedback-result-text { color:#15803D; animation:fb-pop .4s cubic-bezier(.34,1.56,.64,1) forwards; }
+.feedback-card.wrong-fb   .feedback-result-text { color:#BE185D; animation:fb-shake .4s ease-out forwards; }
+@keyframes fb-pop   { 0%{transform:scale(.4);opacity:0;} 65%{transform:scale(1.2);opacity:1;} 100%{transform:scale(1);opacity:1;} }
+@keyframes fb-shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 50%{transform:translateX(6px);} 75%{transform:translateX(-4px);} }
+.fb-hissan { font-size:clamp(1rem,2.5vw+1vh,1.8rem); padding:8px 12px; box-shadow:none; }
+
+.fb-hint {
+  display:flex; align-items:flex-start; gap:8px;
+  background:var(--sky-lt); border:2px solid #7DD3FC; border-radius:12px;
+  padding:10px 14px; margin-top:10px; text-align:left;
+}
+.fb-hint-icon { font-size:1.2rem; flex-shrink:0; margin-top:2px; }
+.fb-hint-text {
+  font-size:clamp(.88rem,1.8vw+.8vh,1.05rem);
+  font-weight:700; color:var(--sky-dk); line-height:1.85;
+}
+
+.exp-panel {
+  margin-top:8px; background:#FFFBEB;
+  border-left:4px solid #FCD34D; border-radius:0 12px 12px 0;
+  padding:10px 14px; font-size:clamp(.82rem,1.5vw+.7vh,1rem);
+  color:#78350F; line-height:1.75; text-align:left;
+}
+.exp-panel strong { color:#92400E; }
+
+.btn-next-q {
+  width:100%; max-width:400px; align-self:center;
+  background:var(--sky); border:none; color:white;
+  border-radius:16px; padding:16px; font-size:clamp(1rem,3vw,1.2rem);
+  font-family:inherit; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 0 var(--sky-dk); min-height:52px; flex-shrink:0;
+}
+.btn-next-q:active { transform:translateY(3px); box-shadow:0 1px 0 var(--sky-dk); }
+@media (hover:hover) { .btn-next-q:hover { background:var(--sky-dk); transition:background .15s; } }
+
+/* RESULT */
+.result-body {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:clamp(8px,2vh,20px);
+  overflow-y:auto; min-height:0; width:100%;
+}
+.result-icon  { font-size:clamp(3rem,6vw+4vh,7rem); }
+.result-title {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(1.8rem,3vw+2.5vh,4rem); font-weight:700; color:var(--sky-dk);
+}
+.score-box {
+  background:white; border-radius:20px;
+  padding:clamp(14px,2.5vh,26px) 40px; text-align:center;
+  box-shadow:0 2px 8px rgba(2,132,199,.12); width:100%; max-width:400px;
+}
+.score-big {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(3rem,5vw+5vh,7rem); font-weight:700; color:var(--sky);
+}
+.score-denom { font-size:clamp(1.2rem,2vw+1.5vh,2.5rem); color:#aaa; font-weight:700; }
+.score-label { font-size:clamp(.85rem,1.5vw+.5vh,1.2rem); color:#999; margin-top:2px; }
+.result-msg {
+  font-size:clamp(1rem,1.8vw+1vh,1.5rem); font-weight:700; color:#555;
+  text-align:center; line-height:1.7;
+}
+.result-btns { display:flex; flex-direction:column; gap:14px; width:100%; max-width:400px; }
+.btn-retry {
+  background:var(--sky); border:none; color:white; border-radius:16px;
+  padding:18px; font-size:clamp(1rem,3vw,1.2rem);
+  font-family:inherit; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 0 var(--sky-dk); min-height:56px;
+}
+.btn-retry:active { transform:translateY(3px); box-shadow:0 1px 0 var(--sky-dk); }
+@media (hover:hover) { .btn-retry:hover { background:var(--sky-dk); transition:background .15s; } }
+.btn-home-lg {
+  background:white; border:3px solid var(--sky); color:var(--sky); border-radius:16px;
+  padding:16px; font-size:clamp(1rem,3vw,1.15rem);
+  font-family:inherit; font-weight:700; cursor:pointer; min-height:52px;
+}
+.btn-home-lg:active { transform:translateY(2px); }
+@media (hover:hover) { .btn-home-lg:hover { background:var(--sky-lt); transition:background .15s; } }
+
+/* confetti */
+.confetti-piece { position:fixed; pointer-events:none; z-index:300; animation:confetti-fly linear forwards; }
+@keyframes confetti-fly { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;transform:translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot));} }
+</style>
+</head>
+<body>
+
+<!-- HOME POPUP -->
+<div class="popup-overlay" id="homePopup">
+  <div class="popup-box">
+    <p class="popup-msg">もどると　いまの もんだいは<br>きえるよ。「まなびのへや」に もどる？</p>
+    <div class="popup-btns">
+      <button class="btn-popup cancel" onclick="closeHomePopup()">つづける</button>
+      <button class="btn-popup go"     onclick="goHome()">もどる</button>
+    </div>
+  </div>
+</div>
+
+<!-- START -->
+<section class="screen active" id="scrStart">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="start-body">
+    <div class="title-block">
+      <div class="title-icon">✖️</div>
+      <div class="title-main">かけ算のひっさん</div>
+      <div class="title-sub">小学3年生・算数「かけ算の<ruby>筆算<rt>ひっさん</rt></ruby>」</div>
+    </div>
+    <div class="start-cards">
+      <div class="start-card" onclick="startLesson()">
+        <div class="card-icon">📖</div>
+        <div class="card-text">
+          <div class="card-title">まなぶ</div>
+          <div class="card-desc">ひっさんの やりかたを かくにん</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+      <div class="start-card" onclick="startQuiz()">
+        <div class="card-icon">✏️</div>
+        <div class="card-text">
+          <div class="card-title">もんだいを といてみる</div>
+          <div class="card-desc">12もん チャレンジ！かきかきエリアつき</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON -->
+<section class="screen" id="scrLesson">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="lesson-header">
+    <div class="lesson-title">📖 まなぶ</div>
+    <div class="lesson-step-ind" id="lStepInd">1 / 4</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="lesson-step active" id="lstep1">
+    <div class="lesson-card">
+      <div class="lesson-heading">ひっさんの しくみ ✏️</div>
+      <div class="lesson-body">
+        <p>かずを <strong>たて</strong>に ならべて、<strong>一のくらい</strong>から じゅんに かけていくよ！</p>
+        <div style="text-align:center; margin:12px 0;">
+          <div class="hissan-block" id="lesson-h1"></div>
+        </div>
+        <p>① 一のくらい：2×3＝<strong>6</strong></p>
+        <p>② 十のくらい：1×3＝<strong>3</strong></p>
+        <p>こたえ → <span class="lesson-hl">36</span></p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="lesson-step" id="lstep2">
+    <div class="lesson-card">
+      <div class="lesson-heading">くり上がりの ある ひっさん ✨</div>
+      <div class="lesson-body">
+        <p>一のくらいの こたえが <strong>10いじょう</strong>になったら、<br>
+        十のくらいへ <strong>1くり上げる</strong>よ！</p>
+        <div style="text-align:center; margin:12px 0;">
+          <div class="hissan-block" id="lesson-h2"></div>
+        </div>
+        <p>① 一のくらい：3×4＝<strong>12</strong><br>
+        　→ <strong>2</strong>をかいて、<strong>1</strong>をとなりへわたす（くり上げ）</p>
+        <p>② 十のくらい：1×4＋<strong>1</strong>（わたされた）＝<strong>5</strong></p>
+        <p>こたえ → <span class="lesson-hl">52</span></p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="lesson-step" id="lstep3">
+    <div class="lesson-card">
+      <div class="lesson-heading">3けた × 1けたの ひっさん</div>
+      <div class="lesson-body">
+        <p>3けたでも やりかたは おなじ！<br>
+        <strong>一・十・百</strong> の くらいを じゅんにかけていくよ。</p>
+        <div style="text-align:center; margin:12px 0;">
+          <div class="hissan-block" id="lesson-h3"></div>
+        </div>
+        <p>① 一のくらい：3×4＝<strong>12</strong> → 2をかいて1くり上げ</p>
+        <p>② 十のくらい：1×4＋<strong>1</strong>＝<strong>5</strong></p>
+        <p>③ 百のくらい：2×4＝<strong>8</strong></p>
+        <p>こたえ → <span class="lesson-hl">852</span></p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="lesson-step" id="lstep4">
+    <div class="lesson-card">
+      <div class="lesson-heading">まとめ ✨</div>
+      <div class="lesson-body">
+        <p><strong>かけ算のひっさん 3つのルール</strong></p>
+        <div class="lesson-hl">① 一のくらいから じゅんに かける</div>
+        <br>
+        <div class="lesson-hl">② こたえが 10いじょうになったら となりへ くり上げる</div>
+        <br>
+        <div class="lesson-hl">③ 上のくらいの かけ算には くり上げた数も たす</div>
+        <br>
+        <p>もんだいでは <strong>かきかきエリア</strong> に じぶんで ひっさんを 書きながら<br>
+        ゆっくり かんがえてみよう！</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="startQuiz()">もんだいに ちょうせん！ ›</button>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="screen" id="scrQuiz">
+  <div class="home-bar">
+    <button class="btn-home" onclick="requestHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="quiz-top">
+    <div class="quiz-counter" id="qProgText">1 / 12もん</div>
+    <div class="quiz-counter" id="qScoreText">⭐ 0</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="qProgBar" style="width:0%"></div>
+  </div>
+  <div class="quiz-main">
+    <div class="question-card">
+      <div class="question-badge" id="qBadge"></div>
+      <div style="text-align:center;">
+        <div class="hissan-block" id="qHissan"></div>
+      </div>
+    </div>
+    <div class="scratch-wrap" id="scratchWrap">
+      <span class="scratch-label">✏️ かきかきエリア（ゆびや ペンで かいてみよう）</span>
+      <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
+      <button class="btn-scratch-clear" onclick="clearCanvas()">けす</button>
+    </div>
+    <div class="choices-grid" id="choicesGrid"></div>
+    <div class="feedback-area" id="feedbackArea" style="display:none"></div>
+    <button class="btn-next-q" id="btnNextQ" onclick="nextQuestion()" style="display:none">つぎの もんだい ›</button>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="screen" id="scrResult">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="result-body">
+    <div class="result-icon" id="resultIcon">🎉</div>
+    <div class="result-title" id="resultTitle">すごい！</div>
+    <div class="score-box">
+      <div>
+        <span class="score-big" id="scoreBig">0</span><span class="score-denom"> / 12</span>
+      </div>
+      <div class="score-label">せいかい！</div>
+    </div>
+    <p class="result-msg" id="resultMsg"></p>
+    <div class="result-btns">
+      <button class="btn-retry"   onclick="startQuiz()">もういちど やる</button>
+      <button class="btn-home-lg" onclick="directHome()">🏠 まなびのへやへ もどる</button>
+    </div>
+  </div>
+</section>
+
+<script>
+'use strict';
+
+const MODULE_ID  = 'math-kakekisan-hissan-mondai';
+const KEY_MODULE = 'manabi_room_module_' + MODULE_ID;
+const KEY_DAYS   = 'manabi_room_days';
+const QUIZ_COUNT = 12;
+
+// ── ユーティリティ ──
+function loadJson(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function saveJson(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function recordVisit() {
+  const mod = loadJson(KEY_MODULE) || { visitCount:0, lastVisited:null };
+  mod.visitCount = (mod.visitCount || 0) + 1;
+  const today = new Date().toISOString().slice(0, 10);
+  mod.lastVisited = today;
+  saveJson(KEY_MODULE, mod);
+  const days = loadJson(KEY_DAYS) || [];
+  if (!days.includes(today)) { days.push(today); saveJson(KEY_DAYS, days.sort()); }
+}
+
+// ── 画面切り替え ──
+const SCREEN_IDS = ['scrStart','scrLesson','scrQuiz','scrResult'];
+function showScreen(id) {
+  SCREEN_IDS.forEach(s => document.getElementById(s).classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'scrQuiz') initCanvas();
+}
+
+let midQuiz = false;
+function directHome()    { location.href = '../index.html'; }
+function requestHome()   { if (midQuiz) document.getElementById('homePopup').classList.add('show'); else directHome(); }
+function closeHomePopup(){ document.getElementById('homePopup').classList.remove('show'); }
+function goHome()        { closeHomePopup(); directHome(); }
+
+// ── レッスン ──
+let currentLStep = 1;
+const TOTAL_LSTEPS = 4;
+function showLStep(n) {
+  for (let i = 1; i <= TOTAL_LSTEPS; i++)
+    document.getElementById('lstep' + i).classList.toggle('active', i === n);
+  document.getElementById('lStepInd').textContent = n + ' / ' + TOTAL_LSTEPS;
+  currentLStep = n;
+}
+function nextLStep() { if (currentLStep < TOTAL_LSTEPS) showLStep(currentLStep + 1); }
+function prevLStep() { if (currentLStep > 1) showLStep(currentLStep - 1); }
+function startLesson() {
+  buildLessonHissan();
+  showLStep(1);
+  showScreen('scrLesson');
+}
+
+// ── 筆算ブロック描画 ──
+function fillKakekisanHissan(el, a, b, showAns) {
+  const ans    = a * b;
+  const aStr   = String(a);
+  const bStr   = String(b);
+  const ansStr = String(ans);
+  const len    = Math.max(aStr.length, bStr.length + 1, ansStr.length);
+
+  function makeRow(str, opChar, dClass) {
+    const padded  = str.padStart(len, ' ');
+    const opHtml  = opChar
+      ? `<span class="h-op">${opChar}</span>`
+      : `<span class="h-op">　</span>`;
+    const dHtml = padded.split('').map(c =>
+      `<span class="${dClass}">${c === ' ' ? ' ' : c}</span>`
+    ).join('');
+    return `<div class="hissan-row">${opHtml}${dHtml}</div>`;
+  }
+
+  const ansRowHtml = showAns
+    ? makeRow(ansStr, null, 'h-d h-ans')
+    : (() => {
+        const qRow   = '？'.repeat(ansStr.length).padStart(len, ' ');
+        const opHtml = `<span class="h-op">　</span>`;
+        const dHtml  = qRow.split('').map(c =>
+          `<span class="${c === '？' ? 'h-d h-q' : 'h-d'}">${c === ' ' ? ' ' : c}</span>`
+        ).join('');
+        return `<div class="hissan-row">${opHtml}${dHtml}</div>`;
+      })();
+
+  el.innerHTML =
+    makeRow(aStr, null,  'h-d') +
+    makeRow(bStr, '×',   'h-d') +
+    '<div class="hissan-line"></div>' +
+    ansRowHtml;
+}
+
+function buildLessonHissan() {
+  fillKakekisanHissan(document.getElementById('lesson-h1'), 12,  3, true);
+  fillKakekisanHissan(document.getElementById('lesson-h2'), 13,  4, true);
+  fillKakekisanHissan(document.getElementById('lesson-h3'), 213, 4, true);
+}
+
+// ── 問題バンク（24問 → 毎回12問ランダム） ──
+// ※ 2けた×1けた・3けた×1けたのみ（教科書の学習範囲）
+const PROBLEMS = [
+  // 2けた×1けた（くり上がりなし）
+  { type:'mul2_plain',  a:12,  b:3, ans:36,  choices:[36,  39,  33, 26],  badge:'2けた×1けた' },
+  { type:'mul2_plain',  a:21,  b:4, ans:84,  choices:[84,  88,  80, 74],  badge:'2けた×1けた' },
+  { type:'mul2_plain',  a:23,  b:2, ans:46,  choices:[46,  48,  44, 36],  badge:'2けた×1けた' },
+  { type:'mul2_plain',  a:31,  b:3, ans:93,  choices:[93,  96,  90, 83],  badge:'2けた×1けた' },
+  { type:'mul2_plain',  a:41,  b:2, ans:82,  choices:[82,  84,  80, 92],  badge:'2けた×1けた' },
+  { type:'mul2_plain',  a:22,  b:4, ans:88,  choices:[88,  84,  82, 78],  badge:'2けた×1けた' },
+
+  // 2けた×1けた（一の位でくり上がり）
+  { type:'mul2_carry1', a:13,  b:4, ans:52,  choices:[52,  42,  56, 48],  badge:'2けた×1けた' },
+  { type:'mul2_carry1', a:16,  b:3, ans:48,  choices:[48,  38,  46, 43],  badge:'2けた×1けた' },
+  { type:'mul2_carry1', a:24,  b:3, ans:72,  choices:[72,  62,  70, 74],  badge:'2けた×1けた' },
+  { type:'mul2_carry1', a:17,  b:5, ans:85,  choices:[85,  55,  80, 75],  badge:'2けた×1けた' },
+  { type:'mul2_carry1', a:14,  b:4, ans:56,  choices:[56,  46,  50, 54],  badge:'2けた×1けた' },
+  { type:'mul2_carry1', a:15,  b:6, ans:90,  choices:[90,  60,  65, 96],  badge:'2けた×1けた' },
+
+  // 2けた×1けた（十の位にもくり上がり）
+  { type:'mul2_carry2', a:36,  b:4, ans:144, choices:[144, 124, 134, 140], badge:'2けた×1けた' },
+  { type:'mul2_carry2', a:27,  b:4, ans:108, choices:[108,  88,  98, 110], badge:'2けた×1けた' },
+  { type:'mul2_carry2', a:46,  b:3, ans:138, choices:[138, 128, 136, 139], badge:'2けた×1けた' },
+  { type:'mul2_carry2', a:35,  b:6, ans:210, choices:[210, 180, 200, 216], badge:'2けた×1けた' },
+  { type:'mul2_carry2', a:57,  b:2, ans:114, choices:[114, 104, 110, 116], badge:'2けた×1けた' },
+  { type:'mul2_carry2', a:29,  b:4, ans:116, choices:[116,  86,  96, 110], badge:'2けた×1けた' },
+
+  // 3けた×1けた
+  { type:'mul3',        a:123, b:3, ans:369, choices:[369, 339, 399, 362], badge:'3けた×1けた' },
+  { type:'mul3',        a:312, b:2, ans:624, choices:[624, 614, 626, 524], badge:'3けた×1けた' },
+  { type:'mul3',        a:213, b:4, ans:852, choices:[852, 842, 862, 855], badge:'3けた×1けた' },
+  { type:'mul3',        a:214, b:3, ans:642, choices:[642, 632, 652, 612], badge:'3けた×1けた' },
+  { type:'mul3',        a:231, b:4, ans:924, choices:[924, 824, 914, 934], badge:'3けた×1けた' },
+  { type:'mul3',        a:132, b:3, ans:396, choices:[396, 363, 393, 366], badge:'3けた×1けた' },
+];
+
+// ── 解説生成 ──
+function getExplanation(p) {
+  const a = p.a, b = p.b;
+  const a0 = a % 10;
+  const a1 = Math.floor(a / 10) % 10;
+  const a2 = Math.floor(a / 100);
+
+  if (p.type === 'mul2_plain') {
+    return `<strong>ひっさんの やりかた：</strong><br>
+① 一のくらい：${a0}×${b}＝<strong>${a0 * b}</strong><br>
+② 十のくらい：${a1}×${b}＝<strong>${a1 * b}</strong><br>
+→ こたえ <strong>${p.ans}</strong>`;
+  }
+
+  if (p.type === 'mul2_carry1') {
+    const ones = a0 * b;
+    const c1   = Math.floor(ones / 10);
+    return `<strong>くり上がりに きをつけよう！</strong><br>
+① 一のくらい：${a0}×${b}＝<strong>${ones}</strong><br>
+　→ <strong>${ones % 10}</strong>をかいて <strong>${c1}</strong>くり上げ<br>
+② 十のくらい：${a1}×${b}＋${c1}（くり上げ）＝<strong>${a1 * b + c1}</strong><br>
+→ こたえ <strong>${p.ans}</strong>`;
+  }
+
+  if (p.type === 'mul2_carry2') {
+    const ones     = a0 * b;
+    const c1       = Math.floor(ones / 10);
+    const tens_raw = a1 * b + c1;
+    const c2       = Math.floor(tens_raw / 10);
+    let exp = `<strong>くり上がりが 2かい あるよ！</strong><br>
+① 一のくらい：${a0}×${b}＝<strong>${ones}</strong> → ${ones % 10}をかいて ${c1}くり上げ<br>
+② 十のくらい：${a1}×${b}＋${c1}＝<strong>${tens_raw}</strong> → ${tens_raw % 10}をかいて ${c2}くり上げ<br>
+③ 百のくらい：くり上げの <strong>${c2}</strong><br>`;
+    exp += `→ こたえ <strong>${p.ans}</strong>`;
+    return exp;
+  }
+
+  if (p.type === 'mul3') {
+    const ones     = a0 * b;
+    const c1       = Math.floor(ones / 10);
+    const tens_raw = a1 * b + c1;
+    const c2       = Math.floor(tens_raw / 10);
+    const hund_raw = a2 * b + c2;
+    let exp = `<strong>3けたも おなじ やりかた！</strong><br>
+① 一のくらい：${a0}×${b}＝<strong>${ones}</strong>`;
+    if (c1 > 0) exp += ` → ${ones % 10}かいて ${c1}くり上げ`;
+    exp += `<br>② 十のくらい：${a1}×${b}`;
+    if (c1 > 0) exp += `＋${c1}`;
+    exp += `＝<strong>${tens_raw}</strong>`;
+    if (c2 > 0) exp += ` → ${tens_raw % 10}かいて ${c2}くり上げ`;
+    exp += `<br>③ 百のくらい：${a2}×${b}`;
+    if (c2 > 0) exp += `＋${c2}`;
+    exp += `＝<strong>${hund_raw}</strong><br>→ こたえ <strong>${p.ans}</strong>`;
+    return exp;
+  }
+
+  return `こたえは <strong>${p.ans}</strong> だよ。もう一かい かんがえてみよう！`;
+}
+
+// ── どの位でまちがえたか分析 ──
+function analyzeMultiplyError(p, wrongAns) {
+  const a = p.a, b = p.b;
+  const a0 = a % 10;
+  const a1 = Math.floor(a / 10) % 10;
+  const a2 = Math.floor(a / 100);
+
+  const ones     = a0 * b;
+  const c1       = Math.floor(ones / 10);
+  const tens_raw = a1 * b + c1;
+  const c2       = Math.floor(tens_raw / 10);
+  const hund_raw = a2 * b + c2;
+
+  const cor = String(p.ans).padStart(4, '0');
+  const wrg = String(wrongAns).padStart(4, '0');
+
+  if (cor[3] !== wrg[3]) {
+    const h = `一のくらい：${a0}×${b}＝<strong>${ones}</strong>`
+      + (c1 > 0 ? `<br>→ <strong>${ones % 10}</strong>をかいて <strong>${c1}</strong>くり上げよう！` : `<br>→ <strong>${ones}</strong>をかこう！`);
+    return { col:'一のくらい', hint:h };
+  }
+  if (cor[2] !== wrg[2]) {
+    let h = `十のくらい：${a1}×${b}`;
+    if (c1 > 0) h += `＋<strong>${c1}</strong>（くり上げ）`;
+    h += `＝<strong>${tens_raw}</strong>`;
+    h += c2 > 0
+      ? `<br>→ <strong>${tens_raw % 10}</strong>をかいて <strong>${c2}</strong>くり上げよう！`
+      : `<br>→ <strong>${tens_raw}</strong>をかこう！`;
+    return { col:'十のくらい', hint:h };
+  }
+  if (cor[1] !== wrg[1]) {
+    let h;
+    if (a2 > 0) {
+      h = `百のくらい：${a2}×${b}`;
+      if (c2 > 0) h += `＋<strong>${c2}</strong>（くり上げ）`;
+      h += `＝<strong>${hund_raw}</strong>`;
+    } else {
+      h = `百のくらいは くり上げの <strong>${c2}</strong> だよ！`;
+    }
+    return { col:'百のくらい', hint:h };
+  }
+  return null;
+}
+
+// ── クイズ ──
+let quizProblems = [], qIdx = 0, score = 0, answered = false;
+
+function startQuiz() {
+  quizProblems = shuffle(PROBLEMS).slice(0, QUIZ_COUNT);
+  qIdx = 0; score = 0; midQuiz = true;
+  showScreen('scrQuiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const p = quizProblems[qIdx];
+  answered = false;
+  document.getElementById('qProgText').textContent = (qIdx + 1) + ' / ' + QUIZ_COUNT + 'もん';
+  document.getElementById('qScoreText').textContent = '⭐ ' + score;
+  document.getElementById('qProgBar').style.width = (qIdx / QUIZ_COUNT * 100) + '%';
+  document.getElementById('qBadge').textContent = p.badge;
+  fillKakekisanHissan(document.getElementById('qHissan'), p.a, p.b, false);
+  document.getElementById('feedbackArea').style.display = 'none';
+  document.getElementById('btnNextQ').style.display = 'none';
+  clearCanvas();
+
+  const grid = document.getElementById('choicesGrid');
+  grid.innerHTML = '';
+  shuffle(p.choices).forEach(val => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-choice';
+    btn.dataset.val = val;
+    btn.textContent = val;
+    btn.onclick = () => selectAnswer(val, btn, p);
+    grid.appendChild(btn);
+  });
+}
+
+function selectAnswer(val, btn, p) {
+  if (answered) return;
+  answered = true;
+  const isCorrect = (val === p.ans);
+  if (isCorrect) { score++; launchConfetti(); }
+
+  document.querySelectorAll('.btn-choice').forEach(b => {
+    b.disabled = true;
+    if (Number(b.dataset.val) === p.ans) b.classList.add('correct');
+    else if (b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  showFeedback(p, isCorrect, isCorrect ? null : val);
+  document.getElementById('qScoreText').textContent = '⭐ ' + score;
+  const btnNext = document.getElementById('btnNextQ');
+  btnNext.style.display = 'block';
+  btnNext.textContent = (qIdx + 1 >= QUIZ_COUNT) ? 'けっかを みる →' : 'つぎの もんだい ›';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= QUIZ_COUNT) { midQuiz = false; showResult(); }
+  else renderQuestion();
+}
+
+function showFeedback(p, isCorrect, wrongVal) {
+  const area = document.getElementById('feedbackArea');
+  area.style.display = 'block';
+  const cls = isCorrect ? 'correct-fb' : 'wrong-fb';
+  const txt = isCorrect ? '⭕ せいかい！ すごい！' : '❌ ざんねん… こたえは「' + p.ans + '」だよ';
+
+  const fbHissan = document.createElement('div');
+  fbHissan.className = 'hissan-block fb-hissan';
+  fillKakekisanHissan(fbHissan, p.a, p.b, true);
+
+  let hintHtml = '';
+  if (!isCorrect && wrongVal != null) {
+    const err = analyzeMultiplyError(p, wrongVal);
+    if (err) {
+      hintHtml = `<div class="fb-hint">
+        <span class="fb-hint-icon">💡</span>
+        <div class="fb-hint-text"><strong>${err.col}</strong>を かくにんしよう！<br>${err.hint}</div>
+      </div>`;
+    }
+  }
+
+  let expHtml = '';
+  if (!isCorrect) {
+    expHtml = `<div class="exp-panel"><strong>ひっさんの やりかた：</strong><br>${getExplanation(p)}</div>`;
+  }
+
+  area.innerHTML = `<div class="feedback-card ${cls}">
+    <div class="feedback-result-text">${txt}</div>
+    <div style="text-align:center;">${fbHissan.outerHTML}</div>
+    ${hintHtml}
+    ${expHtml}
+  </div>`;
+}
+
+// ── けっか ──
+function showResult() {
+  recordVisit();
+  const pct = Math.round(score / QUIZ_COUNT * 100);
+  let icon, title, msg;
+  if (pct === 100) { icon='🏆'; title='かんぺき！'; msg='かけ算のひっさん マスターだ！'; }
+  else if (pct >= 70) { icon='🌟'; title='よくできました！'; msg='あともう少しで かんぺき！もう一かい やってみよう。'; }
+  else { icon='💪'; title='もう一かい チャレンジ！'; msg='レッスンを 見てから もう一かい やってみよう。'; }
+  document.getElementById('resultIcon').textContent  = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('scoreBig').textContent    = score;
+  document.getElementById('resultMsg').textContent   = msg;
+  showScreen('scrResult');
+}
+
+// ── スクラッチキャンバス ──
+let isDrawing = false, lastX = 0, lastY = 0, ctx = null;
+
+function initCanvas() {
+  const canvas = document.getElementById('scratchCanvas');
+  const wrap   = document.getElementById('scratchWrap');
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#0284C7';
+  ctx.lineWidth   = 2.5;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return [src.clientX - r.left, src.clientY - r.top];
+  }
+  canvas.onpointerdown = e => { isDrawing = true; [lastX, lastY] = getPos(e); canvas.setPointerCapture(e.pointerId); };
+  canvas.onpointermove = e => {
+    if (!isDrawing) return;
+    const [x, y] = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    lastX = x; lastY = y;
+  };
+  canvas.onpointerup = canvas.onpointercancel = () => { isDrawing = false; };
+}
+
+function clearCanvas() {
+  if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+
+// ── confetti ──
+function launchConfetti() {
+  const colors = ['#FFD700','#FF6B6B','#4ECDC4','#A78BFA','#F472B6','#34D399','#FBBF24','#60A5FA'];
+  const cx = window.innerWidth / 2, cy = window.innerHeight * 0.55;
+  for (let i = 0; i < 32; i++) {
+    const el   = document.createElement('div');
+    const size = 6 + Math.random() * 8;
+    const angle= (Math.random() * 260 - 130) * (Math.PI / 180);
+    const dist = 120 + Math.random() * 160;
+    el.className = 'confetti-piece';
+    el.style.cssText = [
+      `left:${cx + (Math.random() - 0.5) * 60}px`, `top:${cy}px`,
+      `width:${size}px`, `height:${size}px`,
+      `background:${colors[i % colors.length]}`,
+      `border-radius:${Math.random() > 0.4 ? '50%' : '3px'}`,
+      `--dx:${(Math.sin(angle) * dist).toFixed(0)}px`,
+      `--dy:${(-Math.abs(Math.cos(angle)) * dist - 40).toFixed(0)}px`,
+      `--rot:${(Math.random() * 720 - 360).toFixed(0)}deg`,
+      `animation-duration:${(0.7 + Math.random() * 0.5).toFixed(2)}s`,
+    ].join(';');
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove(), { once:true });
+  }
+}
+</script>
+</body>
+</html>
