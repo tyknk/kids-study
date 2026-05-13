@@ -375,6 +375,68 @@ rt   { font-size: 0.55em; font-weight: 400; }
 /* confetti */
 .confetti-piece { position:fixed; pointer-events:none; z-index:300; animation:confetti-fly linear forwards; }
 @keyframes confetti-fly { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;transform:translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot));} }
+
+/* ── PC最適化: 768px以上 ── */
+@media (min-width: 768px) {
+  .lesson-title          { font-size: 1.4rem; }
+  .lesson-step-ind       { font-size: 0.95rem; }
+  .lesson-heading        { font-size: 1.9rem; }
+  .lesson-body           { font-size: 1.3rem; gap: 10px; }
+  .lesson-hl             { font-size: 1.5rem; padding: 10px 20px; }
+  .hissan-block          { font-size: 2.4rem; padding: 12px 18px; }
+  .lesson-card           { gap: 16px; }
+  .btn-lnav-next         { font-size: 1.2rem; }
+  .btn-lnav-back         { font-size: 1rem; }
+
+  .quiz-counter          { font-size: 1.05rem; }
+  .question-badge        { font-size: 0.95rem; }
+  .scratch-label         { font-size: 0.85rem; }
+  .btn-scratch-clear     { font-size: 0.85rem; }
+  .btn-choice            { font-size: 2.2rem; }
+  .feedback-result-text  { font-size: 1.4rem; }
+  .fb-hissan             { font-size: 1.7rem; }
+  .fb-hint-text          { font-size: 0.95rem; }
+  .exp-panel             { font-size: 0.9rem; }
+  .btn-next-q            { font-size: 1.15rem; }
+
+  .card-title            { font-size: 1.3rem; }
+  .card-desc             { font-size: 0.9rem; }
+  .result-msg            { font-size: 1.2rem; }
+  .btn-retry             { font-size: 1.15rem; }
+  .btn-home-lg           { font-size: 1.05rem; }
+}
+
+/* ── PC最適化: 1024px以上 ── */
+@media (min-width: 1024px) {
+  .lesson-title          { font-size: 1.7rem; }
+  .lesson-step-ind       { font-size: 1.1rem; }
+  .lesson-heading        { font-size: 2.4rem; }
+  .lesson-body           { font-size: 1.55rem; gap: 14px; }
+  .lesson-hl             { font-size: 1.85rem; padding: 12px 24px; }
+  .hissan-block          { font-size: 3rem; padding: 16px 24px; }
+  .lesson-card           { gap: 22px; padding: 32px 40px; }
+  .btn-lnav-next         { font-size: 1.35rem; padding: 18px; }
+  .btn-lnav-back         { font-size: 1.1rem; padding: 16px; }
+
+  .quiz-counter          { font-size: 1.2rem; }
+  .question-badge        { font-size: 1.1rem; }
+  .scratch-label         { font-size: 1rem; }
+  .btn-scratch-clear     { font-size: 1rem; }
+  .btn-choice            { font-size: 2.8rem; }
+  .feedback-result-text  { font-size: 1.65rem; }
+  .fb-hissan             { font-size: 2.2rem; }
+  .fb-hint-text          { font-size: 1.1rem; }
+  .exp-panel             { font-size: 1rem; }
+  .btn-next-q            { font-size: 1.35rem; }
+
+  .card-title            { font-size: 1.55rem; }
+  .card-desc             { font-size: 1rem; }
+  .card-icon             { font-size: 2.8rem; }
+  .result-msg            { font-size: 1.45rem; }
+  .score-label           { font-size: 1rem; }
+  .btn-retry             { font-size: 1.35rem; }
+  .btn-home-lg           { font-size: 1.25rem; }
+}
 </style>
 </head>
 <body>
