@@ -662,9 +662,9 @@ const SUBJECTS = [
     id: "math",
     label: "さんすう",
     emoji: "🧮",
-    note: "7つのべんきょう",
+    note: "10のべんきょう",
     available: true,
-    description: "かけ算・わり算・ながさ・なんばい・ひっさん・おおきな数・小数を、レッスンとれんしゅうで学べます。"
+    description: "かけ算・わり算・ながさ・なんばい・ひっさん・おおきな数・小数・棒グラフと表・かけ算の筆算・重さを、レッスンとれんしゅうで学べます。"
   },
   {
     id: "japanese",
@@ -748,6 +748,12 @@ const UNITS = [
     subjectId: "math",
     title: "かけ算の筆算",
     description: "2けた×1けた・3けた×1けたの筆算を、くり上がりのしくみをかくにんしながられんしゅうするたんげんです。"
+  },
+  {
+    id: "math-omosa",
+    subjectId: "math",
+    title: "重さ（g・kg）",
+    description: "グラム・キログラムのたんいのしくみをはかりで学んで、たんいへんかん・たし算ひき算をれんしゅうするたんげんです。"
   }
 ];
 
@@ -841,6 +847,16 @@ const MODULES = [
     learningType: "レッスン + れんしゅう",
     level: "きほん",
     href: "./math/kakekisan-hissan.html"
+  },
+  {
+    id: "math-omosa-mondai",
+    subjectId: "math",
+    unitId: "math-omosa",
+    title: "重さ もんだい",
+    description: "g・kgのたんいへんかんと、重さのたし算ひき算をれんしゅうしよう。はかりのよみかたもかくにんできるよ。",
+    learningType: "レッスン + れんしゅう",
+    level: "きほん",
+    href: "./math/omosa.html"
   }
 ];
 
@@ -890,6 +906,11 @@ const MODULE_META = {
     emoji: "✖️",
     bg: "linear-gradient(145deg,#E0F2FE,#BAE6FD)",
     accent: "#0284C7"
+  },
+  "math-omosa-mondai": {
+    emoji: "⚖️",
+    bg: "linear-gradient(145deg,#F0FDF4,#DCFCE7)",
+    accent: "#16A34A"
   }
 };
 

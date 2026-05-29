@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>おもさ もんだい（g・kg）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --grn:    #16A34A;
+  --grn-lt: #DCFCE7;
+  --grn-dk: #15803D;
+  --grn-mid:#22C55E;
+  --ok:  #78D98A;
+  --ng:  #FF8FAA;
+  --text:#1e293b;
+  --muted:#64748b;
+  --bg:  #F0FDF4;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+ruby { ruby-align: center; }
+rt   { font-size: 0.55em; font-weight: 400; }
+
+.screen {
+  display: none;
+  width: min(900px, 92vw);
+  height: 100%;
+  min-height: 0;
+}
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top:    max(env(safe-area-inset-top),    10px);
+  padding-bottom: max(env(safe-area-inset-bottom), 10px);
+}
+
+/* HOME BAR */
+.home-bar { width:100%; display:flex; justify-content:flex-start; margin-bottom:10px; }
+.btn-home {
+  background:white; border:2px solid var(--grn); color:var(--grn-dk);
+  border-radius:20px; padding:8px 18px;
+  font-size:clamp(0.8rem,2.5vw,1rem); font-family:inherit; font-weight:700;
+  cursor:pointer; min-height:44px;
+}
+.btn-home:active { transform:translateY(1px); }
+@media (hover:hover) { .btn-home:hover { background:var(--grn-lt); transition:background .15s; } }
+
+/* POPUP */
+.popup-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+  z-index:100; align-items:center; justify-content:center;
+}
+.popup-overlay.show { display:flex; }
+.popup-box {
+  background:white; border-radius:20px; padding:28px 22px;
+  width:min(360px,88vw); text-align:center;
+  display:flex; flex-direction:column; gap:14px;
+}
+.popup-msg { font-size:clamp(1rem,3vw,1.2rem); font-weight:700; color:#333; line-height:1.7; }
+.popup-btns { display:flex; gap:12px; justify-content:center; }
+.btn-popup {
+  flex:1; padding:14px; border-radius:12px; border:none;
+  font-size:clamp(0.9rem,2.5vw,1rem); font-family:inherit; font-weight:700;
+  cursor:pointer; min-height:44px;
+}
+.btn-popup:active { transform:translateY(1px); }
+.btn-popup.cancel { background:#eee; color:#555; }
+.btn-popup.go     { background:var(--grn); color:white; }
+@media (hover:hover) {
+  .btn-popup.cancel:hover { background:#ddd; }
+  .btn-popup.go:hover     { background:var(--grn-dk); }
+}
+
+/* START */
+.start-body {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:clamp(14px,3vh,36px);
+  overflow-y:auto; min-height:0; width:100%;
+}
+.title-block { text-align:center; }
+.title-icon  { font-size:clamp(3rem,8vw+3vh,6rem); line-height:1.2; }
+.title-main  {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(1.8rem,3.5vw+2vh,4rem);
+  color:var(--grn-dk); font-weight:700;
+}
+.title-sub { font-size:clamp(0.85rem,2vw+0.3vh,1.3rem); color:#888; margin-top:6px; }
+.start-cards {
+  display:flex; flex-direction:column; gap:clamp(12px,2vh,24px);
+  width:100%; max-width:600px;
+}
+.start-card {
+  background:white; border-radius:20px;
+  padding:clamp(16px,2.5vh,32px) clamp(18px,2.5vw,30px);
+  display:flex; align-items:center; gap:clamp(12px,2vw,22px);
+  box-shadow:0 2px 8px rgba(22,163,74,.12);
+  cursor:pointer; border:3px solid transparent; min-height:80px;
+}
+.start-card:active { border-color:var(--grn); }
+@media (hover:hover) {
+  .start-card { transition:transform .15s, box-shadow .15s, border-color .15s; }
+  .start-card:hover { border-color:var(--grn); box-shadow:0 6px 20px rgba(22,163,74,.22); transform:translateY(-2px); }
+}
+.card-icon  { font-size:clamp(2rem,4vw+1.5vh,3.5rem); flex-shrink:0; }
+.card-text  { flex:1; }
+.card-title { font-size:clamp(1.1rem,2vw+1.2vh,2.2rem); font-weight:700; color:var(--grn-dk); }
+.card-desc  { font-size:clamp(0.8rem,1.6vw+0.3vh,1.2rem); color:#888; margin-top:3px; }
+.card-arrow { font-size:clamp(1.3rem,2.5vw,2rem); color:var(--grn); flex-shrink:0; }
+
+/* LESSON */
+.lesson-header {
+  width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;
+}
+.lesson-title {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(1.1rem,2.5vw+0.8vh,2rem); color:var(--grn-dk); font-weight:700;
+}
+.lesson-step-ind {
+  background:var(--grn-lt); color:var(--grn); border-radius:20px;
+  padding:4px 14px; font-size:clamp(0.8rem,2vw,.95rem); font-weight:700;
+}
+.lesson-step { display:none; width:100%; }
+.lesson-step.active { display:flex; flex-direction:column; flex:1; min-height:0; }
+.lesson-card {
+  background:white; border-radius:20px;
+  padding:clamp(16px,2.5vh,40px) clamp(18px,3vw,44px);
+  margin-bottom:clamp(8px,1.2vh,14px);
+  box-shadow:0 2px 8px rgba(22,163,74,.1);
+  flex:1; overflow-y:auto; min-height:0;
+  display:flex; flex-direction:column; justify-content:center;
+  gap:clamp(10px,2vh,28px);
+}
+.lesson-heading {
+  font-size:clamp(1.1rem,2vw+1.5vh,3rem); font-weight:900;
+  color:var(--grn-dk); margin-bottom:0;
+}
+.lesson-body {
+  font-size:clamp(1rem,1.8vw+1.2vh,2.2rem); color:#333; line-height:1.9;
+  display:flex; flex-direction:column; gap:clamp(4px,0.8vh,14px);
+}
+.lesson-body p { margin-bottom:0; }
+.lesson-body strong { color:var(--grn); }
+.lesson-hl {
+  background:var(--grn-lt); border-radius:8px;
+  padding:clamp(6px,1.2vh,16px) clamp(14px,2vw,28px); display:inline-block;
+  font-weight:700; color:var(--grn-dk); margin:0;
+  font-size:clamp(1rem,2vw+1.2vh,2.5rem);
+}
+.lnav-row { display:flex; gap:12px; justify-content:center; margin-top:4px; }
+.btn-lnav-back {
+  flex:1; max-width:200px; background:white; border:3px solid var(--grn); color:var(--grn);
+  border-radius:16px; padding:clamp(12px,1.8vh,20px); font-size:clamp(0.95rem,2vw+0.5vh,1.4rem);
+  font-family:inherit; font-weight:700; cursor:pointer; min-height:52px;
+}
+.btn-lnav-back:active { transform:translateY(2px); }
+.btn-lnav-next {
+  flex:2; max-width:360px; background:var(--grn); border:none; color:white;
+  border-radius:16px; padding:clamp(14px,2vh,22px); font-size:clamp(1rem,2.2vw+0.6vh,1.6rem);
+  font-family:inherit; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 0 var(--grn-dk); min-height:52px;
+}
+.btn-lnav-next:active { transform:translateY(3px); box-shadow:0 1px 0 var(--grn-dk); }
+@media (hover:hover) {
+  .btn-lnav-back:hover { background:var(--grn-lt); transition:background .15s; }
+  .btn-lnav-next:hover { background:var(--grn-dk); transition:background .15s; }
+}
+
+/* SCALE container */
+.scale-wrap { text-align:center; margin:4px 0; }
+
+/* CONVERSION TABLE */
+.conv-table {
+  background:var(--grn-lt); border-radius:12px;
+  padding:clamp(8px,1.5vh,18px) clamp(12px,2vw,24px);
+  display:inline-block; min-width:min(320px,90%);
+}
+.conv-row {
+  display:flex; align-items:center; justify-content:center;
+  gap:clamp(6px,1.5vw,16px); font-size:clamp(1rem,2vw+1vh,2rem);
+  font-weight:700; padding:4px 0;
+}
+.conv-arrow { color:var(--grn-dk); font-weight:900; }
+.conv-eq    { color:#555; }
+.conv-val   { color:var(--grn-dk); }
+
+/* QUIZ */
+.quiz-top {
+  width:100%; display:flex; align-items:center;
+  justify-content:space-between; margin-bottom:8px;
+}
+.quiz-counter { font-size:clamp(0.9rem,1.8vw+0.3vh,1.4rem); font-weight:700; color:var(--grn-dk); }
+.progress-bar-wrap {
+  width:100%; height:clamp(8px,1vh,14px); background:#BBF7D0; border-radius:99px;
+  margin-bottom:8px; overflow:hidden;
+}
+.progress-bar-fill {
+  height:100%; background:var(--grn); border-radius:99px; transition:width .3s;
+}
+.quiz-main {
+  flex:1; display:flex; flex-direction:column;
+  gap:clamp(6px,1.2vh,16px); overflow-y:auto; min-height:0;
+}
+.question-card {
+  background:white; border-radius:20px;
+  padding:clamp(12px,2vh,28px) clamp(16px,2.5vw,32px); width:100%;
+  text-align:center; box-shadow:0 2px 8px rgba(22,163,74,.1); flex-shrink:0;
+}
+.question-badge {
+  display:inline-block; background:var(--grn-lt); color:var(--grn-dk);
+  border-radius:20px; padding:3px 14px;
+  font-size:clamp(0.8rem,1.5vw+0.5vh,1.5rem); font-weight:700;
+  margin-bottom:clamp(4px,.8vh,14px);
+}
+.question-text {
+  font-size:clamp(1.4rem,3vw+2vh,4rem);
+  font-family:'Kaisei Decol',serif; font-weight:700; color:#222;
+  line-height:1.4;
+}
+
+/* スクラッチパッド */
+.scratch-wrap {
+  background:white; border-radius:16px;
+  border:2.5px dashed #86EFAC;
+  overflow:hidden; position:relative;
+  height:clamp(100px,18vh,240px); flex-shrink:0;
+}
+.scratch-label {
+  position:absolute; top:6px; left:10px;
+  font-size:clamp(0.7rem,1.4vw+0.2vh,1.1rem); color:#86EFAC; font-weight:700;
+  pointer-events:none; z-index:1; user-select:none;
+}
+.scratch-canvas { width:100%; height:100%; display:block; touch-action:none; cursor:crosshair; }
+.btn-scratch-clear {
+  position:absolute; bottom:6px; right:8px;
+  background:var(--grn-lt); border:2px solid #86EFAC; color:var(--grn);
+  border-radius:10px; padding:4px 12px;
+  font-size:clamp(0.75rem,1.4vw+0.2vh,1.1rem); font-family:inherit;
+  font-weight:700; cursor:pointer; min-height:32px; z-index:2;
+}
+.btn-scratch-clear:active { transform:scale(.95); }
+@media (hover:hover) { .btn-scratch-clear:hover { background:#BBF7D0; transition:background .15s; } }
+
+/* CHOICES */
+.choices-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:clamp(8px,1.2vh,14px); width:100%; flex:1; min-height:0;
+}
+.btn-choice {
+  background:white; border:3px solid #BBF7D0; border-radius:16px;
+  padding:clamp(10px,2vh,24px) 10px;
+  font-size:clamp(1.3rem,2.5vw+2vh,3.2rem);
+  font-family:'Kaisei Decol',serif; font-weight:900; color:var(--grn-dk); cursor:pointer;
+  box-shadow:0 3px 0 #BBF7D0;
+}
+.btn-choice:active { transform:translateY(2px); box-shadow:0 1px 0 #BBF7D0; }
+.btn-choice.correct { background:var(--ok); border-color:#4CAF50; color:white; box-shadow:none;
+  animation:btn-correct .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+.btn-choice.wrong   { background:var(--ng); border-color:#E05B7D; color:white; box-shadow:none; }
+.btn-choice:disabled { cursor:default; }
+@media (hover:hover) {
+  .btn-choice { transition:border-color .12s, background .12s; }
+  .btn-choice:hover:not(:disabled) { border-color:var(--grn); background:var(--grn-lt); }
+}
+@keyframes btn-correct {
+  0%  { transform:scale(1); }
+  45% { transform:scale(1.12); box-shadow:0 0 0 6px rgba(120,217,138,.35); }
+  75% { transform:scale(.97); }
+  100%{ transform:scale(1.04); }
+}
+
+/* FEEDBACK */
+.feedback-area { width:100%; }
+.feedback-card {
+  border-radius:16px; padding:12px 14px; text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.feedback-card.correct-fb { background:#F0FDF4; border:3px solid #78D98A; }
+.feedback-card.wrong-fb   { background:#FFF0F4; border:3px solid #FF8FAA; }
+.feedback-result-text {
+  font-size:clamp(1rem,2.5vw+1vh,2rem); font-weight:900; margin-bottom:8px;
+}
+.feedback-card.correct-fb .feedback-result-text { color:#15803D; animation:fb-pop .4s cubic-bezier(.34,1.56,.64,1) forwards; }
+.feedback-card.wrong-fb   .feedback-result-text { color:#BE185D; animation:fb-shake .4s ease-out forwards; }
+@keyframes fb-pop   { 0%{transform:scale(.4);opacity:0;} 65%{transform:scale(1.2);opacity:1;} 100%{transform:scale(1);opacity:1;} }
+@keyframes fb-shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-6px);} 50%{transform:translateX(6px);} 75%{transform:translateX(-4px);} }
+
+.exp-panel {
+  margin-top:8px; background:#FFFBEB;
+  border-left:4px solid #FCD34D; border-radius:0 12px 12px 0;
+  padding:clamp(8px,1.2vh,16px) clamp(10px,1.5vw,18px);
+  font-size:clamp(.82rem,1.4vw+0.6vh,1.35rem);
+  color:#78350F; line-height:1.75; text-align:left;
+}
+.exp-panel strong { color:#92400E; }
+
+.btn-next-q {
+  width:100%; max-width:480px; align-self:center;
+  background:var(--grn); border:none; color:white;
+  border-radius:16px; padding:clamp(14px,2vh,22px); font-size:clamp(1rem,2.2vw+0.5vh,1.6rem);
+  font-family:inherit; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 0 var(--grn-dk); min-height:52px; flex-shrink:0;
+}
+.btn-next-q:active { transform:translateY(3px); box-shadow:0 1px 0 var(--grn-dk); }
+@media (hover:hover) { .btn-next-q:hover { background:var(--grn-dk); transition:background .15s; } }
+
+/* RESULT */
+.result-body {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:clamp(8px,2vh,20px);
+  overflow-y:auto; min-height:0; width:100%;
+}
+.result-icon  { font-size:clamp(3rem,6vw+4vh,7rem); }
+.result-title {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(1.8rem,3vw+2.5vh,4rem); font-weight:700; color:var(--grn-dk);
+}
+.score-box {
+  background:white; border-radius:20px;
+  padding:clamp(14px,2.5vh,26px) 40px; text-align:center;
+  box-shadow:0 2px 8px rgba(22,163,74,.12); width:100%; max-width:400px;
+}
+.score-big {
+  font-family:'Kaisei Decol',serif;
+  font-size:clamp(3rem,5vw+5vh,7rem); font-weight:700; color:var(--grn);
+}
+.score-denom { font-size:clamp(1.2rem,2vw+1.5vh,2.5rem); color:#aaa; font-weight:700; }
+.score-label { font-size:clamp(.85rem,1.5vw+.5vh,1.2rem); color:#999; margin-top:2px; }
+.result-msg {
+  font-size:clamp(1rem,1.8vw+1vh,2rem); font-weight:700; color:#555;
+  text-align:center; line-height:1.7;
+}
+.result-btns { display:flex; flex-direction:column; gap:14px; width:100%; max-width:480px; }
+.btn-retry {
+  background:var(--grn); border:none; color:white; border-radius:16px;
+  padding:clamp(16px,2.2vh,26px); font-size:clamp(1rem,2.2vw+0.5vh,1.6rem);
+  font-family:inherit; font-weight:900; cursor:pointer;
+  box-shadow:0 4px 0 var(--grn-dk); min-height:56px;
+}
+.btn-retry:active { transform:translateY(3px); box-shadow:0 1px 0 var(--grn-dk); }
+@media (hover:hover) { .btn-retry:hover { background:var(--grn-dk); transition:background .15s; } }
+.btn-home-lg {
+  background:white; border:3px solid var(--grn); color:var(--grn); border-radius:16px;
+  padding:clamp(14px,2vh,22px); font-size:clamp(1rem,2vw+0.5vh,1.5rem);
+  font-family:inherit; font-weight:700; cursor:pointer; min-height:52px;
+}
+.btn-home-lg:active { transform:translateY(2px); }
+@media (hover:hover) { .btn-home-lg:hover { background:var(--grn-lt); transition:background .15s; } }
+
+/* confetti */
+.confetti-piece { position:fixed; pointer-events:none; z-index:300; animation:confetti-fly linear forwards; }
+@keyframes confetti-fly { 0%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;transform:translateY(var(--dy)) translateX(var(--dx)) rotate(var(--rot));} }
+
+/* ── PC最適化: 768px以上 ── */
+@media (min-width: 768px) {
+  .lesson-title         { font-size: 1.4rem; }
+  .lesson-heading       { font-size: 1.9rem; }
+  .lesson-body          { font-size: 1.3rem; gap: 10px; }
+  .lesson-hl            { font-size: 1.5rem; padding: 10px 20px; }
+  .lesson-card          { gap: 16px; }
+  .btn-lnav-next        { font-size: 1.2rem; }
+  .btn-lnav-back        { font-size: 1rem; }
+  .quiz-counter         { font-size: 1.05rem; }
+  .question-badge       { font-size: 0.95rem; }
+  .question-text        { font-size: 2rem; }
+  .btn-choice           { font-size: 1.8rem; }
+  .feedback-result-text { font-size: 1.4rem; }
+  .exp-panel            { font-size: 0.9rem; }
+  .btn-next-q           { font-size: 1.15rem; }
+  .card-title           { font-size: 1.3rem; }
+  .card-desc            { font-size: 0.9rem; }
+  .result-msg           { font-size: 1.2rem; }
+  .btn-retry            { font-size: 1.15rem; }
+  .btn-home-lg          { font-size: 1.05rem; }
+  .conv-row             { font-size: 1.4rem; }
+}
+@media (min-width: 1024px) {
+  .lesson-title         { font-size: 1.7rem; }
+  .lesson-heading       { font-size: 2.4rem; }
+  .lesson-body          { font-size: 1.55rem; gap: 14px; }
+  .lesson-hl            { font-size: 1.85rem; padding: 12px 24px; }
+  .lesson-card          { gap: 22px; padding: 32px 40px; }
+  .btn-lnav-next        { font-size: 1.35rem; padding: 18px; }
+  .btn-lnav-back        { font-size: 1.1rem; padding: 16px; }
+  .quiz-counter         { font-size: 1.2rem; }
+  .question-badge       { font-size: 1.1rem; }
+  .question-text        { font-size: 2.6rem; }
+  .btn-choice           { font-size: 2.4rem; }
+  .feedback-result-text { font-size: 1.65rem; }
+  .exp-panel            { font-size: 1rem; }
+  .btn-next-q           { font-size: 1.35rem; }
+  .card-title           { font-size: 1.55rem; }
+  .card-desc            { font-size: 1rem; }
+  .card-icon            { font-size: 2.8rem; }
+  .result-msg           { font-size: 1.45rem; }
+  .btn-retry            { font-size: 1.35rem; }
+  .btn-home-lg          { font-size: 1.25rem; }
+  .conv-row             { font-size: 1.7rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HOME POPUP -->
+<div class="popup-overlay" id="homePopup">
+  <div class="popup-box">
+    <p class="popup-msg">もどると　いまの もんだいは<br>きえるよ。「まなびのへや」に もどる？</p>
+    <div class="popup-btns">
+      <button class="btn-popup cancel" onclick="closeHomePopup()">つづける</button>
+      <button class="btn-popup go"     onclick="goHome()">もどる</button>
+    </div>
+  </div>
+</div>
+
+<!-- START -->
+<section class="screen active" id="scrStart">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="start-body">
+    <div class="title-block">
+      <div class="title-icon">⚖️</div>
+      <div class="title-main">おもさ もんだい</div>
+      <div class="title-sub">小学3年生・算数「<ruby>重<rt>おも</rt></ruby>さ（g・kg）」</div>
+    </div>
+    <div class="start-cards">
+      <div class="start-card" onclick="startLesson()">
+        <div class="card-icon">📖</div>
+        <div class="card-text">
+          <div class="card-title">まなぶ</div>
+          <div class="card-desc">g と kg のしくみを かくにんしよう</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+      <div class="start-card" onclick="startQuiz()">
+        <div class="card-icon">✏️</div>
+        <div class="card-text">
+          <div class="card-title">もんだいを といてみる</div>
+          <div class="card-desc">12もん チャレンジ！かきかきエリアつき</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSON -->
+<section class="screen" id="scrLesson">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="lesson-header">
+    <div class="lesson-title">📖 まなぶ</div>
+    <div class="lesson-step-ind" id="lStepInd">1 / 4</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="lesson-step active" id="lstep1">
+    <div class="lesson-card">
+      <div class="lesson-heading">g（グラム）ってなに？ ⚖️</div>
+      <div class="lesson-body">
+        <p><strong>g（グラム）</strong>は おもさの たんいだよ。<br>1えん玉の おもさが <strong>やく 1g</strong> だよ！</p>
+        <div class="scale-wrap" id="scale1"></div>
+        <p>はかりの <strong>目もり</strong> をよんで、おもさを しらべよう。<br>
+        この はかりは <strong>300g</strong> をさしているよ。</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="lesson-step" id="lstep2">
+    <div class="lesson-card">
+      <div class="lesson-heading">kg（キログラム）ってなに？ 🏋️</div>
+      <div class="lesson-body">
+        <p><ruby>重<rt>おも</rt></ruby>いものを はかるときは <strong>kg（キログラム）</strong> を つかうよ。</p>
+        <div class="scale-wrap" id="scale2"></div>
+        <div class="lesson-hl">1kg ＝ 1000g</div>
+        <p>1kg は 1000g と おなじだよ。<br>ランドセルや すいかは kg で はかることが おおいよ！</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="lesson-step" id="lstep3">
+    <div class="lesson-card">
+      <div class="lesson-heading">g と kg を かきかえよう 🔄</div>
+      <div class="lesson-body">
+        <p><strong>1kg＝1000g</strong> をつかって、かきかえができるよ！</p>
+        <div class="conv-table">
+          <div class="conv-row">
+            <span>1kg500g</span>
+            <span class="conv-arrow">→</span>
+            <span class="conv-val">1500g</span>
+          </div>
+          <div class="conv-row" style="font-size:0.7em;color:#888;padding:0">
+            <span>（1000＋500＝1500）</span>
+          </div>
+          <div class="conv-row" style="margin-top:8px">
+            <span>2300g</span>
+            <span class="conv-arrow">→</span>
+            <span class="conv-val">2kg300g</span>
+          </div>
+          <div class="conv-row" style="font-size:0.7em;color:#888;padding:0">
+            <span>（2000g＝2kg、のこり300g）</span>
+          </div>
+        </div>
+        <p>kg の ぶんを <strong>×1000</strong> して g に なおしてから たすよ！</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="nextLStep()">つぎへ ›</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="lesson-step" id="lstep4">
+    <div class="lesson-card">
+      <div class="lesson-heading">まとめ ✨</div>
+      <div class="lesson-body">
+        <p><strong>おもさのけいさん 3つのポイント</strong></p>
+        <div class="lesson-hl">① 1kg＝1000g をおぼえよう</div>
+        <div class="lesson-hl">② kg と g を g に そろえて けいさんする</div>
+        <div class="lesson-hl">③ 1000g いじょうは kg に なおせる</div>
+        <p>もんだいでは <strong>かきかきエリア</strong> を つかって、<br>
+        じぶんで g に なおしてから けいさんしてみよう！</p>
+      </div>
+    </div>
+    <div class="lnav-row">
+      <button class="btn-lnav-back" onclick="prevLStep()">‹ もどる</button>
+      <button class="btn-lnav-next" onclick="startQuiz()">もんだいに ちょうせん！ ›</button>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="screen" id="scrQuiz">
+  <div class="home-bar">
+    <button class="btn-home" onclick="requestHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="quiz-top">
+    <div class="quiz-counter" id="qProgText">1 / 12もん</div>
+    <div class="quiz-counter" id="qScoreText">⭐ 0</div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="qProgBar" style="width:0%"></div>
+  </div>
+  <div class="quiz-main">
+    <div class="question-card">
+      <div class="question-badge" id="qBadge"></div>
+      <div class="question-text" id="qText"></div>
+    </div>
+    <div class="scratch-wrap" id="scratchWrap">
+      <span class="scratch-label">✏️ かきかきエリア（ゆびや ペンで かいてみよう）</span>
+      <canvas class="scratch-canvas" id="scratchCanvas"></canvas>
+      <button class="btn-scratch-clear" onclick="clearCanvas()">けす</button>
+    </div>
+    <div class="choices-grid" id="choicesGrid"></div>
+    <div class="feedback-area" id="feedbackArea" style="display:none"></div>
+    <button class="btn-next-q" id="btnNextQ" onclick="nextQuestion()" style="display:none">つぎの もんだい ›</button>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="screen" id="scrResult">
+  <div class="home-bar">
+    <button class="btn-home" onclick="directHome()">🏠 まなびのへや</button>
+  </div>
+  <div class="result-body">
+    <div class="result-icon" id="resultIcon">🎉</div>
+    <div class="result-title" id="resultTitle">すごい！</div>
+    <div class="score-box">
+      <div>
+        <span class="score-big" id="scoreBig">0</span><span class="score-denom"> / 12</span>
+      </div>
+      <div class="score-label">せいかい！</div>
+    </div>
+    <p class="result-msg" id="resultMsg"></p>
+    <div class="result-btns">
+      <button class="btn-retry"   onclick="startQuiz()">もういちど やる</button>
+      <button class="btn-home-lg" onclick="directHome()">🏠 まなびのへやへ もどる</button>
+    </div>
+  </div>
+</section>
+
+<script>
+'use strict';
+
+const MODULE_ID  = 'math-omosa-mondai';
+const KEY_MODULE = 'manabi_room_module_' + MODULE_ID;
+const KEY_DAYS   = 'manabi_room_days';
+const QUIZ_COUNT = 12;
+
+// ── ユーティリティ ──
+function loadJson(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function saveJson(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function recordVisit() {
+  const mod = loadJson(KEY_MODULE) || { visitCount:0, lastVisited:null };
+  mod.visitCount = (mod.visitCount || 0) + 1;
+  const today = new Date().toISOString().slice(0, 10);
+  mod.lastVisited = today;
+  saveJson(KEY_MODULE, mod);
+  const days = loadJson(KEY_DAYS) || [];
+  if (!days.includes(today)) { days.push(today); saveJson(KEY_DAYS, days.sort()); }
+}
+
+// ── はかり SVG ──
+function scaleHTML(maxG, valueG) {
+  const R = 72, cx = 100, cy = 92;
+  const pct = Math.min(1, Math.max(0.001, valueG / maxG));
+  const tx = (cx - R * Math.cos(Math.PI * pct)).toFixed(1);
+  const ty = (cy - R * Math.sin(Math.PI * pct)).toFixed(1);
+
+  const divs = maxG <= 500 ? 5 : 4;
+  let ticks = '', minor = '', lbls = '';
+  for (let i = 0; i <= divs; i++) {
+    const p = i / divs;
+    const a = Math.PI * p;
+    const ox = (cx - 72 * Math.cos(a)).toFixed(1), oy = (cy - 72 * Math.sin(a)).toFixed(1);
+    const ix = (cx - 60 * Math.cos(a)).toFixed(1), iy = (cy - 60 * Math.sin(a)).toFixed(1);
+    const lx = (cx - 86 * Math.cos(a)).toFixed(1), ly = (cy - 86 * Math.sin(a)).toFixed(1);
+    const gv = Math.round(maxG * p);
+    const lbl = gv === 0 ? '0' : gv >= 1000 ? (gv / 1000) + 'kg' : gv + 'g';
+    ticks += `<line x1="${ox}" y1="${oy}" x2="${ix}" y2="${iy}" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>`;
+    lbls  += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#64748b">${lbl}</text>`;
+  }
+  for (let i = 0; i < divs; i++) {
+    const p = (i + 0.5) / divs;
+    const a = Math.PI * p;
+    const ox = (cx - 72 * Math.cos(a)).toFixed(1), oy = (cy - 72 * Math.sin(a)).toFixed(1);
+    const ix = (cx - 66 * Math.cos(a)).toFixed(1), iy = (cy - 66 * Math.sin(a)).toFixed(1);
+    minor += `<line x1="${ox}" y1="${oy}" x2="${ix}" y2="${iy}" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round"/>`;
+  }
+
+  const colorArc = pct >= 0.999
+    ? `<path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy}" fill="none" stroke="#16A34A" stroke-width="11" stroke-linecap="round"/>`
+    : `<path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${tx} ${ty}" fill="none" stroke="#16A34A" stroke-width="11" stroke-linecap="round"/>`;
+
+  const valLbl = valueG >= 1000 && valueG % 1000 === 0
+    ? (valueG / 1000) + 'kg'
+    : valueG + 'g';
+
+  return `<svg viewBox="0 0 200 116" style="width:100%;max-width:min(240px,75vw);display:block;margin:6px auto" role="img" aria-label="はかり ${valLbl}">
+  <rect x="8" y="4" width="184" height="108" rx="14" fill="white" stroke="#DCFCE7" stroke-width="2.5"/>
+  <path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy}" fill="none" stroke="#e2e8f0" stroke-width="11" stroke-linecap="round"/>
+  ${colorArc}${minor}${ticks}${lbls}
+  <line x1="${cx}" y1="${cy}" x2="${tx}" y2="${ty}" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="${cx}" cy="${cy}" r="6" fill="#16A34A" stroke="white" stroke-width="2"/>
+  <text x="${cx}" y="${cy + 19}" text-anchor="middle" font-size="16" font-weight="bold" fill="#15803D" font-family="'Kaisei Decol',serif">${valLbl}</text>
+</svg>`;
+}
+
+// ── 問題バンク（24問）──
+const PROBLEMS = [
+  // kg → g（4問）
+  { type:'kg_to_g',    q:'1kg は　何g ですか？',           correct:'1000g', choices:['1000g','100g','10000g','500g'],   badge:'kgとg',          exp:'1kg＝<strong>1000g</strong> だよ。まずこれをおぼえよう！' },
+  { type:'kg_to_g',    q:'2kg は　何g ですか？',           correct:'2000g', choices:['2000g','200g','20000g','1000g'],  badge:'kgとg',          exp:'2kg＝2×1000＝<strong>2000g</strong> だよ。' },
+  { type:'kg_to_g',    q:'3kg は　何g ですか？',           correct:'3000g', choices:['3000g','300g','30000g','1500g'],  badge:'kgとg',          exp:'3kg＝3×1000＝<strong>3000g</strong> だよ。' },
+  { type:'kg_to_g',    q:'5kg は　何g ですか？',           correct:'5000g', choices:['5000g','500g','50000g','2500g'],  badge:'kgとg',          exp:'5kg＝5×1000＝<strong>5000g</strong> だよ。' },
+
+  // 混合 → g（6問）
+  { type:'mixed_to_g', q:'1kg500g は　何g ですか？',       correct:'1500g', choices:['1500g','1050g','500g','2500g'],   badge:'kgとg',          exp:'1kg＝1000g。<strong>1000＋500＝1500g</strong> だよ。' },
+  { type:'mixed_to_g', q:'2kg300g は　何g ですか？',       correct:'2300g', choices:['2300g','2030g','300g','3300g'],   badge:'kgとg',          exp:'2kg＝2000g。<strong>2000＋300＝2300g</strong> だよ。' },
+  { type:'mixed_to_g', q:'1kg50g は　何g ですか？',        correct:'1050g', choices:['1050g','1500g','150g','1005g'],   badge:'kgとg',          exp:'1kg＝1000g。<strong>1000＋50＝1050g</strong>。50gは500gでは ないよ！' },
+  { type:'mixed_to_g', q:'3kg400g は　何g ですか？',       correct:'3400g', choices:['3400g','3040g','400g','4400g'],   badge:'kgとg',          exp:'3kg＝3000g。<strong>3000＋400＝3400g</strong> だよ。' },
+  { type:'mixed_to_g', q:'2kg800g は　何g ですか？',       correct:'2800g', choices:['2800g','2080g','800g','3800g'],   badge:'kgとg',          exp:'2kg＝2000g。<strong>2000＋800＝2800g</strong> だよ。' },
+  { type:'mixed_to_g', q:'4kg100g は　何g ですか？',       correct:'4100g', choices:['4100g','4010g','100g','5100g'],   badge:'kgとg',          exp:'4kg＝4000g。<strong>4000＋100＝4100g</strong>。100gは1000gでは ないよ！' },
+
+  // g → kg（4問）
+  { type:'g_to_kg',    q:'2000g は　何kg ですか？',        correct:'2kg',     choices:['2kg','20kg','200kg','0.2kg'],      badge:'kgとg',          exp:'1000g＝1kg。2000÷1000＝<strong>2kg</strong> だよ。' },
+  { type:'g_to_kg',    q:'4000g は　何kg ですか？',        correct:'4kg',     choices:['4kg','40kg','400kg','0.4kg'],      badge:'kgとg',          exp:'1000g＝1kg。4000÷1000＝<strong>4kg</strong> だよ。' },
+  { type:'g_to_kg',    q:'3000g は　何kg ですか？',        correct:'3kg',     choices:['3kg','30kg','300kg','3000kg'],     badge:'kgとg',          exp:'1000g＝1kg。3000÷1000＝<strong>3kg</strong> だよ。' },
+  { type:'g_to_kg',    q:'1500g は　何kg 何g ですか？',    correct:'1kg500g', choices:['1kg500g','1kg50g','15kg','1kg5g'], badge:'kgとg',          exp:'1000g＝1kg。1500g＝1000g＋500g＝<strong>1kg500g</strong> だよ。' },
+
+  // たし算（5問）
+  { type:'add', q:'600g＋500g＝？',            correct:'1100g', choices:['1100g','1000g','1060g','1150g'], badge:'おもさのけいさん', exp:'600＋500＝<strong>1100g</strong>。1100g＝1kg100g だよ。' },
+  { type:'add', q:'800g＋700g＝？',            correct:'1500g', choices:['1500g','1400g','1050g','1560g'], badge:'おもさのけいさん', exp:'800＋700＝<strong>1500g</strong>。1500g＝1kg500g だよ。' },
+  { type:'add', q:'1kg200g＋500g＝？（gで）',  correct:'1700g', choices:['1700g','700g','1200g','2200g'],  badge:'おもさのけいさん', exp:'1kg200g＝1200g。1200＋500＝<strong>1700g</strong> だよ。' },
+  { type:'add', q:'1kg400g＋1kg300g＝？（gで）',correct:'2700g',choices:['2700g','2070g','700g','2500g'],  badge:'おもさのけいさん', exp:'1kg400g＝1400g、1kg300g＝1300g。1400＋1300＝<strong>2700g</strong> だよ。' },
+  { type:'add', q:'500g＋500g＝？',            correct:'1000g', choices:['1000g','500g','1500g','100g'],   badge:'おもさのけいさん', exp:'500＋500＝<strong>1000g</strong>。1000g＝1kg だよ！' },
+
+  // ひき算（5問）
+  { type:'sub', q:'1kg－300g＝？（gで）',        correct:'700g',  choices:['700g','1300g','300g','1000g'],  badge:'おもさのけいさん', exp:'1kg＝1000g。1000－300＝<strong>700g</strong> だよ。' },
+  { type:'sub', q:'2kg－800g＝？（gで）',        correct:'1200g', choices:['1200g','1800g','800g','2800g'], badge:'おもさのけいさん', exp:'2kg＝2000g。2000－800＝<strong>1200g</strong> だよ。' },
+  { type:'sub', q:'1kg500g－600g＝？（gで）',    correct:'900g',  choices:['900g','1100g','600g','1900g'],  badge:'おもさのけいさん', exp:'1kg500g＝1500g。1500－600＝<strong>900g</strong> だよ。' },
+  { type:'sub', q:'2kg100g－400g＝？（gで）',    correct:'1700g', choices:['1700g','2500g','400g','1600g'], badge:'おもさのけいさん', exp:'2kg100g＝2100g。2100－400＝<strong>1700g</strong> だよ。' },
+  { type:'sub', q:'3kg－1kg200g＝？（gで）',     correct:'1800g', choices:['1800g','2200g','1200g','4200g'],badge:'おもさのけいさん', exp:'3kg＝3000g、1kg200g＝1200g。3000－1200＝<strong>1800g</strong> だよ。' },
+];
+
+// ── 画面管理 ──
+const SCREENS = ['scrStart','scrLesson','scrQuiz','scrResult'];
+function showScreen(id) {
+  SCREENS.forEach(s => {
+    const el = document.getElementById(s);
+    el.classList.toggle('active', s === id);
+  });
+}
+
+function directHome()  { location.href = '../index.html'; }
+function requestHome() { if (midQuiz) { document.getElementById('homePopup').classList.add('show'); } else { directHome(); } }
+function closeHomePopup() { document.getElementById('homePopup').classList.remove('show'); }
+function goHome()      { closeHomePopup(); directHome(); }
+
+// ── レッスン ──
+let lStep = 1;
+const LSTEP_MAX = 4;
+
+function startLesson() {
+  lStep = 1;
+  updateLStep();
+  initScales();
+  showScreen('scrLesson');
+}
+function nextLStep() {
+  if (lStep < LSTEP_MAX) { lStep++; updateLStep(); }
+  else { startQuiz(); }
+}
+function prevLStep() {
+  if (lStep > 1) { lStep--; updateLStep(); }
+}
+function updateLStep() {
+  for (let i = 1; i <= LSTEP_MAX; i++) {
+    document.getElementById('lstep' + i).classList.toggle('active', i === lStep);
+  }
+  document.getElementById('lStepInd').textContent = `${lStep} / ${LSTEP_MAX}`;
+}
+function initScales() {
+  document.getElementById('scale1').innerHTML = scaleHTML(500,  300);
+  document.getElementById('scale2').innerHTML = scaleHTML(2000, 1000);
+}
+
+// ── クイズ ──
+let quizProblems = [];
+let qIdx = 0, score = 0, midQuiz = false;
+
+function startQuiz() {
+  quizProblems = shuffle(PROBLEMS).slice(0, QUIZ_COUNT);
+  qIdx = 0; score = 0; midQuiz = true;
+  recordVisit();
+  showScreen('scrQuiz');
+  initCanvas();
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const p = quizProblems[qIdx];
+  document.getElementById('qProgText').textContent = `${qIdx + 1} / ${QUIZ_COUNT}もん`;
+  document.getElementById('qScoreText').textContent = `⭐ ${score}`;
+  document.getElementById('qProgBar').style.width = `${(qIdx / QUIZ_COUNT) * 100}%`;
+  document.getElementById('qBadge').textContent = p.badge;
+  document.getElementById('qText').textContent = p.q;
+  document.getElementById('feedbackArea').style.display = 'none';
+  document.getElementById('btnNextQ').style.display    = 'none';
+  clearCanvas();
+
+  const grid = document.getElementById('choicesGrid');
+  grid.innerHTML = '';
+  shuffle([...p.choices]).forEach(ch => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-choice';
+    btn.textContent = ch;
+    btn.onclick = () => checkAnswer(p, ch, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function checkAnswer(p, selected, btn) {
+  document.querySelectorAll('.btn-choice').forEach(b => { b.disabled = true; });
+  const ok = selected === p.correct;
+  if (ok) {
+    score++;
+    btn.classList.add('correct');
+    launchConfetti();
+    document.getElementById('feedbackArea').style.display = 'block';
+    document.getElementById('feedbackArea').innerHTML =
+      `<div class="feedback-card correct-fb"><div class="feedback-result-text">⭕ せいかい！</div></div>`;
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.btn-choice').forEach(b => {
+      if (b.textContent === p.correct) b.classList.add('correct');
+    });
+    document.getElementById('feedbackArea').style.display = 'block';
+    document.getElementById('feedbackArea').innerHTML =
+      `<div class="feedback-card wrong-fb">
+        <div class="feedback-result-text">❌ もういちど！</div>
+        <div style="font-size:clamp(0.9rem,2vw,1.1rem);color:#555;margin-bottom:6px">こたえは <strong>${p.correct}</strong> だよ</div>
+        <div class="exp-panel">${p.exp}</div>
+      </div>`;
+  }
+  document.getElementById('btnNextQ').style.display = 'block';
+  document.getElementById('qScoreText').textContent = `⭐ ${score}`;
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx < QUIZ_COUNT) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  midQuiz = false;
+  document.getElementById('qProgBar').style.width = '100%';
+  const pct = score / QUIZ_COUNT;
+  let icon, title, msg;
+  if (pct === 1)        { icon='🏆'; title='かんぺき！';   msg='ぜんもん せいかい！すごいね！'; }
+  else if (pct >= 0.8)  { icon='🎉'; title='すごい！';     msg='もうすこしで かんぺき！'; }
+  else if (pct >= 0.6)  { icon='😊'; title='よくできた！'; msg='つぎは もっと できるよ！'; }
+  else                   { icon='💪'; title='がんばろう！'; msg='レッスンを もういちど みてみよう！'; }
+  document.getElementById('resultIcon').textContent   = icon;
+  document.getElementById('resultTitle').textContent  = title;
+  document.getElementById('scoreBig').textContent     = score;
+  document.getElementById('resultMsg').textContent    = msg;
+  showScreen('scrResult');
+}
+
+// ── スクラッチキャンバス ──
+let isDrawing = false, lastX = 0, lastY = 0, ctx = null;
+
+function initCanvas() {
+  const canvas = document.getElementById('scratchCanvas');
+  const wrap   = document.getElementById('scratchWrap');
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#16A34A';
+  ctx.lineWidth   = 2.5;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return [src.clientX - r.left, src.clientY - r.top];
+  }
+  canvas.onpointerdown = e => { isDrawing = true; [lastX, lastY] = getPos(e); canvas.setPointerCapture(e.pointerId); };
+  canvas.onpointermove = e => {
+    if (!isDrawing) return;
+    const [x, y] = getPos(e);
+    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+    lastX = x; lastY = y;
+  };
+  canvas.onpointerup = canvas.onpointercancel = () => { isDrawing = false; };
+}
+
+function clearCanvas() {
+  if (ctx) ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+}
+
+// ── confetti ──
+function launchConfetti() {
+  const colors = ['#FFD700','#FF6B6B','#4ECDC4','#A78BFA','#F472B6','#34D399','#FBBF24','#60A5FA'];
+  const cx = window.innerWidth / 2, cy = window.innerHeight * 0.55;
+  for (let i = 0; i < 32; i++) {
+    const el   = document.createElement('div');
+    const size = 6 + Math.random() * 8;
+    const angle= (Math.random() * 260 - 130) * (Math.PI / 180);
+    const dist = 120 + Math.random() * 160;
+    el.className = 'confetti-piece';
+    el.style.cssText = [
+      `left:${cx + (Math.random() - 0.5) * 60}px`, `top:${cy}px`,
+      `width:${size}px`, `height:${size}px`,
+      `background:${colors[i % colors.length]}`,
+      `border-radius:${Math.random() > 0.4 ? '50%' : '3px'}`,
+      `--dx:${(Math.sin(angle) * dist).toFixed(0)}px`,
+      `--dy:${(-Math.abs(Math.cos(angle)) * dist - 40).toFixed(0)}px`,
+      `--rot:${(Math.random() * 720 - 360).toFixed(0)}deg`,
+      `animation-duration:${(0.7 + Math.random() * 0.5).toFixed(2)}s`,
+    ].join(';');
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove(), { once:true });
+  }
+}
+</script>
+</body>
+</html>
